@@ -188,7 +188,9 @@ TEST(TestDDPBipedal, TestCase1)
 
   // Run MPC loop
   bool first_iter = true;
-  std::ofstream ofs("/tmp/TestDDPBipedalResult.txt");
+  std::string file_path = "/tmp/TestDDPBipedalResult.txt";
+  std::ofstream ofs(file_path);
+  ofs << "time com_pos com_vel planned_zmp ref_zmp" << std::endl;
   while(current_t < end_t)
   {
     // Solve
@@ -220,6 +222,11 @@ TEST(TestDDPBipedal, TestCase1)
   double ref_zmp = ref_zmp_func(current_t);
   EXPECT_LT(std::abs(current_x[0] - ref_zmp), 1e-1);
   EXPECT_LT(std::abs(current_x[1]), 1e-1);
+
+  std::cout << "Run the following commands in gnuplot:\n"
+            << "  set key autotitle columnhead\n"
+            << "  set key noenhanced\n"
+            << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:4 w lp, \"\" u 1:5 w l lw 3\n";
 }
 
 int main(int argc, char ** argv)
