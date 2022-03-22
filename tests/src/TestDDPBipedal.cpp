@@ -2,18 +2,36 @@
 
 #include <gtest/gtest.h>
 
+#include <fstream>
+#include <iostream>
+
 #include <noc_ddp/DDP.h>
 
+/** \brief DDP problem for bipedal walking.
+
+    State is [CoM_pos, CoM_vel]. Input is [ZMP].
+    Running cost is CoM_vel^2 + (ZMP - ZMP_ref)^2.
+    Terminal cost is (CoM_pos - ZMP_ref)^2 + CoM_vel^2.
+ */
 class DDPProblemBipedal : public NOC::DDPProblem<2, 1>
 {
+public:
+  struct CostWeight
+  {
+    CostWeight() {}
+
+    double running_vel = 1e-14;
+    double running_zmp = 1e-1;
+    double terminal_pos = 1e2;
+    double terminal_vel = 1.0;
+  };
+
 public:
   DDPProblemBipedal(double dt,
                     const std::function<double(double)> & ref_zmp_func,
                     const std::function<double(double)> & omega2_func,
-                    double running_vel_scale = 1e-6,
-                    double terminal_vel_scale = 1e-6)
-  : DDPProblem(dt, 2, 1), ref_zmp_func_(ref_zmp_func), omega2_func_(omega2_func), running_vel_scale_(running_vel_scale),
-    terminal_vel_scale_(terminal_vel_scale)
+                    const CostWeight & cost_weight = CostWeight())
+  : DDPProblem(dt, 2, 1), ref_zmp_func_(ref_zmp_func), omega2_func_(omega2_func), cost_weight_(cost_weight)
   {
   }
 
@@ -24,12 +42,14 @@ public:
 
   virtual double runningCost(double t, const StateDimVector & x, const InputDimVector & u) const override
   {
-    return running_vel_scale_ * 0.5 * std::pow(x[1], 2) + 0.5 * std::pow(u[0] - ref_zmp_func_(t), 2);
+    return cost_weight_.running_vel * 0.5 * std::pow(x[1], 2)
+           + cost_weight_.running_zmp * 0.5 * std::pow(u[0] - ref_zmp_func_(t), 2);
   }
 
   virtual double terminalCost(double t, const StateDimVector & x) const override
   {
-    return terminal_vel_scale_ * 0.5 * std::pow(x[1], 2);
+    return cost_weight_.terminal_pos * 0.5 * std::pow(x[0] - ref_zmp_func_(t), 2)
+           + cost_weight_.terminal_vel * 0.5 * std::pow(x[1], 2);
   }
 
   virtual void calcStateqDeriv(double t,
@@ -64,8 +84,8 @@ public:
                                     Eigen::Ref<InputDimVector> running_cost_deriv_u) const override
   {
     running_cost_deriv_x[0] = 0;
-    running_cost_deriv_x[1] = running_vel_scale_ * x[1];
-    running_cost_deriv_u[0] = u[0] - ref_zmp_func_(t);
+    running_cost_deriv_x[1] = cost_weight_.running_vel * x[1];
+    running_cost_deriv_u[0] = cost_weight_.running_zmp * (u[0] - ref_zmp_func_(t));
   }
 
   virtual void calcRunningCostDeriv(double t,
@@ -78,8 +98,8 @@ public:
                                     Eigen::Ref<StateInputDimMatrix> running_cost_deriv_xu) const override
   {
     calcRunningCostDeriv(t, x, u, running_cost_deriv_x, running_cost_deriv_u);
-    running_cost_deriv_xx << 0, 0, 0, running_vel_scale_;
-    running_cost_deriv_uu << 1;
+    running_cost_deriv_xx << 0, 0, 0, cost_weight_.running_vel;
+    running_cost_deriv_uu << cost_weight_.running_zmp;
     running_cost_deriv_xu << 0, 0;
   }
 
@@ -87,8 +107,8 @@ public:
                                      const StateDimVector & x,
                                      Eigen::Ref<StateDimVector> terminal_cost_deriv_x) const override
   {
-    terminal_cost_deriv_x[0] = 0;
-    terminal_cost_deriv_x[1] = terminal_vel_scale_ * x[1];
+    terminal_cost_deriv_x[0] = cost_weight_.terminal_pos * (x[0] - ref_zmp_func_(t));
+    terminal_cost_deriv_x[1] = cost_weight_.terminal_vel * x[1];
   }
 
   virtual void calcTerminalCostDeriv(double t,
@@ -97,7 +117,7 @@ public:
                                      Eigen::Ref<StateStateDimMatrix> terminal_cost_deriv_xx) const override
   {
     calcTerminalCostDeriv(t, x, terminal_cost_deriv_x);
-    terminal_cost_deriv_xx << 0, 0, 0, terminal_vel_scale_;
+    terminal_cost_deriv_xx << cost_weight_.terminal_pos, 0, 0, cost_weight_.terminal_vel;
   }
 
 protected:
@@ -118,27 +138,34 @@ protected:
   }
 
 protected:
-  std::function<double(double)> ref_zmp_func_ = nullptr;
-  std::function<double(double)> omega2_func_ = nullptr;
-
-  double running_vel_scale_ = 1e-6;
-  double terminal_vel_scale_ = 1e-6;
+  std::function<double(double)> ref_zmp_func_;
+  std::function<double(double)> omega2_func_;
+  CostWeight cost_weight_;
 };
 
 TEST(TestDDPBipedal, TestCase1)
 {
   double dt = 0.01; // [sec]
-  double horizon_duration = 2.0; // [sec]
+  double horizon_duration = 3.0; // [sec]
   int horizon_steps = static_cast<int>(horizon_duration / dt);
+  double end_t = 20.0; // [sec]
 
-  std::function<double(double)> ref_zmp_func = [](double t) {
-    if(t < 1.0)
+  // Instantiate problem
+  std::function<double(double)> ref_zmp_func = [&](double t) {
+    if(t <= 1.5 || t >= end_t - 1.5)
     {
       return 0.0;
     }
     else
     {
-      return 0.3;
+      if(static_cast<int>(std::floor((t - 1.0) / 1.0)) % 2 == 0)
+      {
+        return 0.15; // [m]
+      }
+      else
+      {
+        return -0.15; // [m]
+      }
     }
   };
   std::function<double(double)> omega2_func = [](double t) {
@@ -149,17 +176,40 @@ TEST(TestDDPBipedal, TestCase1)
   };
   auto ddp_problem = std::make_shared<DDPProblemBipedal>(dt, ref_zmp_func, omega2_func);
 
+  // Instantiate solver
   auto ddp_solver = std::make_shared<NOC::DDPSolver<2, 1>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
 
+  // Initialize MPC
   double current_t = 0;
   DDPProblemBipedal::StateDimVector current_x = DDPProblemBipedal::StateDimVector(0, 0);
-  std::vector<DDPProblemBipedal::InputDimVector> initial_u_list;
-  initial_u_list.assign(horizon_steps, DDPProblemBipedal::InputDimVector::Zero());
+  std::vector<DDPProblemBipedal::InputDimVector> current_u_list;
+  current_u_list.assign(horizon_steps, DDPProblemBipedal::InputDimVector::Zero());
 
-  ddp_solver->solve(current_t, current_x, initial_u_list);
+  // Run MPC loop
+  bool first_iter = true;
+  std::ofstream ofs("/tmp/TestDDPBipedalResult.txt");
+  while(current_t < end_t)
+  {
+    // Solve
+    ddp_solver->solve(current_t, current_x, current_u_list);
+    if(first_iter)
+    {
+      first_iter = false;
+      ddp_solver->dumpTraceData("/tmp/TestDDPBipedalTraceData.txt");
+    }
 
-  ddp_solver->dumpTraceDataList("/tmp/TestDDPBipedal.txt");
+    // Dump
+    ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
+        << ddp_solver->controlData().u_list[0].transpose() << std::endl;
+
+    // Update to next step
+    current_t += dt;
+    current_x = ddp_solver->controlData().x_list[1];
+    current_u_list = ddp_solver->controlData().u_list;
+    current_u_list.erase(current_u_list.begin());
+    current_u_list.push_back(current_u_list.back());
+  }
 }
 
 int main(int argc, char ** argv)

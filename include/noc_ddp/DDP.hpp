@@ -1,8 +1,8 @@
 /* Author: Masaki Murooka */
 
 #include <chrono>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 namespace NOC
 {
@@ -50,6 +50,13 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
                                           const StateDimVector & current_x,
                                           const std::vector<InputDimVector> & initial_u_list)
 {
+  // Check initial_u_list
+  if(initial_u_list.size() != config_.horizon_steps)
+  {
+    throw std::invalid_argument("initial_u_list length should be " + std::to_string(config_.horizon_steps) + " but "
+                                + std::to_string(initial_u_list.size()) + ".");
+  }
+
   // Initialize variables
   trace_data_list_.clear();
   current_t_ = current_t;
@@ -57,9 +64,9 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   dlambda_ = config_.initial_dlambda;
 
   // Resize list
-  x_candidate_list_.resize(config_.horizon_steps + 1);
-  u_candidate_list_.resize(config_.horizon_steps);
-  cost_candidate_list_.resize(config_.horizon_steps + 1);
+  candidate_control_data_.x_list.resize(config_.horizon_steps + 1);
+  candidate_control_data_.u_list.resize(config_.horizon_steps);
+  candidate_control_data_.cost_list.resize(config_.horizon_steps + 1);
   derivative_list_.resize(config_.horizon_steps);
   for(auto & derivative : derivative_list_)
   {
@@ -69,18 +76,19 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   K_list_.resize(config_.horizon_steps);
 
   // Initialize state and cost sequence
-  u_list_ = initial_u_list;
-  x_list_.resize(config_.horizon_steps + 1);
-  cost_list_.resize(config_.horizon_steps + 1);
-  x_list_[0] = current_x;
+  control_data_.u_list = initial_u_list;
+  control_data_.x_list.resize(config_.horizon_steps + 1);
+  control_data_.cost_list.resize(config_.horizon_steps + 1);
+  control_data_.x_list[0] = current_x;
   for(int i = 0; i < config_.horizon_steps; i++)
   {
     double t = current_t_ + i * problem_->dt();
-    x_list_[i + 1] = problem_->stateEq(t, x_list_[i], u_list_[i]);
-    cost_list_[i] = problem_->runningCost(t, x_list_[i], u_list_[i]);
+    control_data_.x_list[i + 1] = problem_->stateEq(t, control_data_.x_list[i], control_data_.u_list[i]);
+    control_data_.cost_list[i] = problem_->runningCost(t, control_data_.x_list[i], control_data_.u_list[i]);
   }
   double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
-  cost_list_[config_.horizon_steps] = problem_->terminalCost(terminal_t, x_list_[config_.horizon_steps]);
+  control_data_.cost_list[config_.horizon_steps] =
+      problem_->terminalCost(terminal_t, control_data_.x_list[config_.horizon_steps]);
 
   // Optimization loop
   int retval = 0;
@@ -114,8 +122,8 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       auto & derivative = derivative_list_[i];
 
       double t = current_t_ + i * problem_->dt();
-      const StateDimVector & x = x_list_[i];
-      const InputDimVector & u = u_list_[i];
+      const StateDimVector & x = control_data_.x_list[i];
+      const InputDimVector & u = control_data_.u_list[i];
       if(config_.use_state_eq_second_derivative)
       {
         problem_->calcStateqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
@@ -129,7 +137,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
                                      derivative.Lxu);
     }
     double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
-    problem_->calcTerminalCostDeriv(terminal_t, x_list_[config_.horizon_steps], last_Vx_, last_Vxx_);
+    problem_->calcTerminalCostDeriv(terminal_t, control_data_.x_list[config_.horizon_steps], last_Vx_, last_Vxx_);
 
     trace_data.duration_derivative =
         1e3
@@ -166,14 +174,14 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   double k_rel_norm = 0;
   for(int i = 0; i < config_.horizon_steps; i++)
   {
-    k_rel_norm = std::max(k_rel_norm, k_list_[i].norm() / (u_list_[i].norm() + 1.0));
+    k_rel_norm = std::max(k_rel_norm, k_list_[i].norm() / (control_data_.u_list[i].norm() + 1.0));
   }
   trace_data.k_rel_norm = k_rel_norm;
   if(k_rel_norm < config_.k_rel_norm_thre && lambda_ < config_.lambda_thre)
   {
     if(config_.verbose_print)
     {
-      std::cout << "[DDP] Terminate due to small gradient." << std::endl;
+      std::cout << "[DDP] Terminate due to small gradient. (iter: " << iter << ")" << std::endl;
     }
     return 1; // Terminate
   }
@@ -185,15 +193,16 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   {
     auto start_time = std::chrono::system_clock::now();
 
+    double alpha = 0;
     double cost_update_expected = 0;
     double cost_update_ratio = 0;
     for(int i = 0; i < config_.alpha_list.size(); i++)
     {
-      double alpha = config_.alpha_list[i];
+      alpha = config_.alpha_list[i];
 
       forwardPass(alpha);
 
-      cost_update_actual = cost_list_.sum() - cost_candidate_list_.sum();
+      cost_update_actual = control_data_.cost_list.sum() - candidate_control_data_.cost_list.sum();
       cost_update_expected = -1 * alpha * (dV_[0] + alpha * dV_[1]);
       cost_update_ratio = cost_update_actual / cost_update_expected;
       if(cost_update_expected < 0)
@@ -204,15 +213,10 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       if(cost_update_ratio > config_.cost_update_ratio_thre)
       {
         forward_pass_success = true;
-        trace_data.alpha = alpha;
         break;
       }
-
-      if(i == config_.alpha_list.size() - 1)
-      {
-        trace_data.alpha = 0;
-      }
     }
+    trace_data.alpha = alpha;
     trace_data.cost_update_actual = cost_update_actual;
     trace_data.cost_update_expected = cost_update_expected;
     trace_data.cost_update_ratio = cost_update_ratio;
@@ -239,16 +243,16 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     }
 
     // Accept changes
-    x_list_ = x_candidate_list_;
-    u_list_ = u_candidate_list_;
-    cost_list_ = cost_candidate_list_;
+    control_data_.x_list = candidate_control_data_.x_list;
+    control_data_.u_list = candidate_control_data_.u_list;
+    control_data_.cost_list = candidate_control_data_.cost_list;
 
     // Check for termination due to small cost update
     if(cost_update_actual < config_.cost_update_thre)
     {
       if(config_.verbose_print)
       {
-        std::cout << "[DDP] Terminate due to small cost update." << std::endl;
+        std::cout << "[DDP] Terminate due to small cost update. (iter: " << iter << ")" << std::endl;
       }
       retval = 1; // Terminate
     }
@@ -268,7 +272,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     }
   }
 
-  trace_data.cost = cost_list_.sum();
+  trace_data.cost = control_data_.cost_list.sum();
   trace_data.lambda = lambda_;
   trace_data.dlambda = dlambda_;
 
@@ -406,29 +410,33 @@ template<int StateDim, int InputDim>
 void DDPSolver<StateDim, InputDim>::forwardPass(double alpha)
 {
   // Set initial state
-  x_candidate_list_[0] = x_list_[0];
+  candidate_control_data_.x_list[0] = control_data_.x_list[0];
 
   for(int i = 0; i < config_.horizon_steps; i++)
   {
     // Calculate input
-    u_candidate_list_[i] = u_list_[i] + alpha * k_list_[i] + K_list_[i] * (x_candidate_list_[i] - x_list_[i]);
+    candidate_control_data_.u_list[i] = control_data_.u_list[i] + alpha * k_list_[i]
+                                        + K_list_[i] * (candidate_control_data_.x_list[i] - control_data_.x_list[i]);
 
     // \todo Impose constraints on input
 
     // Calculate next state and cost
     double t = current_t_ + i * problem_->dt();
-    x_candidate_list_[i + 1] = problem_->stateEq(t, x_candidate_list_[i], u_candidate_list_[i]);
-    cost_candidate_list_[i] = problem_->runningCost(t, x_candidate_list_[i], u_candidate_list_[i]);
+    candidate_control_data_.x_list[i + 1] =
+        problem_->stateEq(t, candidate_control_data_.x_list[i], candidate_control_data_.u_list[i]);
+    candidate_control_data_.cost_list[i] =
+        problem_->runningCost(t, candidate_control_data_.x_list[i], candidate_control_data_.u_list[i]);
   }
   double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
-  cost_candidate_list_[config_.horizon_steps] =
-      problem_->terminalCost(terminal_t, x_candidate_list_[config_.horizon_steps]);
+  candidate_control_data_.cost_list[config_.horizon_steps] =
+      problem_->terminalCost(terminal_t, candidate_control_data_.x_list[config_.horizon_steps]);
 }
 
 template<int StateDim, int InputDim>
-void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_path) const
+void DDPSolver<StateDim, InputDim>::dumpTraceData(const std::string & file_path) const
 {
   std::ofstream ofs(file_path);
+  // clang-format off
   ofs << "iter "
       << "cost "
       << "lambda "
@@ -441,8 +449,10 @@ void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_p
       << "duration_derivative "
       << "duration_backward "
       << "duration_forward" << std::endl;
+  // clang-format on
   for(const auto & trace_data : trace_data_list_)
   {
+    // clang-format off
     ofs << trace_data.iter << " "
         << trace_data.cost << " "
         << trace_data.lambda << " "
@@ -454,7 +464,9 @@ void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_p
         << trace_data.cost_update_ratio << " "
         << trace_data.duration_derivative << " "
         << trace_data.duration_backward << " "
-        << trace_data.duration_forward << std::endl;
+        << trace_data.duration_forward
+        << std::endl;
+    // clang-format on
   }
 }
 } // namespace NOC

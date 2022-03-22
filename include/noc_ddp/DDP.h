@@ -217,6 +217,19 @@ public:
   /*! \brief Configuration. */
   struct Configuration
   {
+    /** \brief Constructor. */
+    Configuration()
+    {
+      // Initialize alpha_list
+      int list_size = 11;
+      alpha_list.resize(list_size);
+      Eigen::VectorXd alpha_exponent_list = Eigen::VectorXd::LinSpaced(list_size, 0, -3);
+      for(int i = 0; i < list_size; i++)
+      {
+        alpha_list[i] = std::pow(10, alpha_exponent_list[i]);
+      }
+    }
+
     //! Whether to enable verbose print
     bool verbose_print = true;
 
@@ -257,13 +270,26 @@ public:
     double lambda_thre = 1e-5;
 
     //! List of alpha (scaling factor of k)
-    Eigen::VectorXd alpha_list = Eigen::VectorXd::LinSpaced(11, 0, -3);
+    Eigen::VectorXd alpha_list;
 
     //! Allowable threshold of cost update ratio
     double cost_update_ratio_thre = 0;
 
     //! Termination threshold of cost update
     double cost_update_thre = 1e-7;
+  };
+
+  /*! \brief Control data. */
+  struct ControlData
+  {
+    //! Sequence of state (x[0], ..., x[N-1], x[N])
+    std::vector<StateDimVector> x_list;
+
+    //! Sequence of input (u[0], ..., u[N-1])
+    std::vector<InputDimVector> u_list;
+
+    //! Sequence of cost (L[0], ..., L[N-1], phi[N])
+    Eigen::VectorXd cost_list;
   };
 
   /*! \brief Derivatives of DDP problem. */
@@ -351,13 +377,13 @@ public:
     //! Ratio of actual and expected update values of cost
     double cost_update_ratio = 0;
 
-    //! Duration to calculate derivatives
+    //! Duration to calculate derivatives [msec]
     double duration_derivative = 0;
 
-    //! Duration to process backward pass
+    //! Duration to process backward pass [msec]
     double duration_backward = 0;
 
-    //! Duration to process forward pass
+    //! Duration to process forward pass [msec]
     double duration_forward = 0;
   };
 
@@ -389,10 +415,16 @@ public:
   */
   bool solve(double current_t, const StateDimVector & current_x, const std::vector<InputDimVector> & initial_u_list);
 
-  /** \brief Dump trace data list.
+  /** \brief Const accessor to control data. */
+  inline const ControlData & controlData() const
+  {
+    return control_data_;
+  }
+
+  /** \brief Dump trace data.
       \param file_path path to output file
   */
-  void dumpTraceDataList(const std::string & file_path) const;
+  void dumpTraceData(const std::string & file_path) const;
 
 protected:
   /** \brief Process one iteration.
@@ -430,23 +462,11 @@ protected:
   //! Scaling factor of regularization coefficient
   double dlambda_ = 0;
 
-  //! Sequence of state (x[0], ..., x[N-1], x[N])
-  std::vector<StateDimVector> x_list_;
+  //! Control data (sequence of state, input, and cost)
+  ControlData control_data_;
 
-  //! Sequence of input (u[0], ..., u[N-1])
-  std::vector<InputDimVector> u_list_;
-
-  //! Sequence of cost (L[0], ..., L[N-1], phi[N])
-  Eigen::VectorXd cost_list_;
-
-  //! Sequence of candidate state
-  std::vector<StateDimVector> x_candidate_list_;
-
-  //! Sequence of candidate input
-  std::vector<InputDimVector> u_candidate_list_;
-
-  //! Sequence of candidate cost
-  Eigen::VectorXd cost_candidate_list_;
+  //! Candidate of control data (sequence of state, input, and cost)
+  ControlData candidate_control_data_;
 
   //! Sequence of feedforward term for input (k[0], ..., k[N-1])
   std::vector<InputDimVector> k_list_;
