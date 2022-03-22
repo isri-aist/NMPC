@@ -199,9 +199,14 @@ TEST(TestDDPBipedal, TestCase1)
       ddp_solver->dumpTraceData("/tmp/TestDDPBipedalTraceData.txt");
     }
 
+    // Check ZMP
+    double planned_zmp = ddp_solver->controlData().u_list[0][0];
+    double ref_zmp = ref_zmp_func(current_t);
+    EXPECT_LT(std::abs(planned_zmp - ref_zmp), 1e-1);
+
     // Dump
-    ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
-        << ddp_solver->controlData().u_list[0].transpose() << std::endl;
+    ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " " << planned_zmp << " " << ref_zmp
+        << std::endl;
 
     // Update to next step
     current_t += dt;
@@ -210,6 +215,11 @@ TEST(TestDDPBipedal, TestCase1)
     current_u_list.erase(current_u_list.begin());
     current_u_list.push_back(current_u_list.back());
   }
+
+  // Check final CoM
+  double ref_zmp = ref_zmp_func(current_t);
+  EXPECT_LT(std::abs(current_x[0] - ref_zmp), 1e-1);
+  EXPECT_LT(std::abs(current_x[1]), 1e-1);
 }
 
 int main(int argc, char ** argv)
