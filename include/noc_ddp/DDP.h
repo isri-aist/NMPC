@@ -38,8 +38,12 @@ public:
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  /** \brief Constructor. */
-  DDPProblem(int state_dim = StateDim, int input_dim = InputDim);
+  /** \brief Constructor.
+      \param dt discretization timestep [sec]
+      \param state_dim state dimension
+      \param input_dim input dimension
+   */
+  DDPProblem(double dt, int state_dim = StateDim, int input_dim = InputDim);
 
   /** \brief Gets the state dimension. */
   inline int stateDim() const
@@ -53,38 +57,50 @@ public:
     return input_dim_;
   }
 
+  /** \brief Gets the discretization timestep [sec]. */
+  inline double dt() const
+  {
+    return dt_;
+  }
+
   /** \brief Calculate discrete state equation.
+      \param t time
       \param x current state (x[k])
       \param u current input (u[k])
       \returns next state (x[k+1])
    */
-  virtual StateDimVector stateEq(const StateDimVector & x, const InputDimVector & u) const = 0;
+  virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u) const = 0;
 
   /** \brief Calculate running cost.
+      \param t time
       \param x current state (x[k])
       \param u current input (u[k])
       \returns running cost (L[k])
    */
-  virtual double runningCost(const StateDimVector & x, const InputDimVector & u) const = 0;
+  virtual double runningCost(double t, const StateDimVector & x, const InputDimVector & u) const = 0;
 
   /** \brief Calculate terminal cost.
+      \param t time
       \param x current state (x[k])
       \returns terminal cost (phi[k])
    */
-  virtual double terminalCost(const StateDimVector & x) const = 0;
+  virtual double terminalCost(double t, const StateDimVector & x) const = 0;
 
   /** \brief Calculate first-order derivatives of discrete state equation.
+      \param t time
       \param x state
       \param u input
       \param state_eq_deriv_x first-order derivative of state equation w.r.t. state
       \param state_eq_deriv_u first-order derivative of state equation w.r.t. input
   */
-  virtual void calcStateqDeriv(const StateDimVector & x,
+  virtual void calcStateqDeriv(double t,
+                               const StateDimVector & x,
                                const InputDimVector & u,
                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const = 0;
 
   /** \brief Calculate first-order and second-order derivatives of discrete state equation.
+      \param t time
       \param x state
       \param u input
       \param state_eq_deriv_x first-order derivative of state equation w.r.t. state
@@ -93,7 +109,8 @@ public:
       \param state_eq_deriv_uu second-order derivative of state equation w.r.t. input
       \param state_eq_deriv_xu second-order derivative of state equation w.r.t. state and input
   */
-  virtual void calcStateqDeriv(const StateDimVector & x,
+  virtual void calcStateqDeriv(double t,
+                               const StateDimVector & x,
                                const InputDimVector & u,
                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
@@ -102,17 +119,20 @@ public:
                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const = 0;
 
   /** \brief Calculate first-order derivatives of running cost.
+      \param t time
       \param x state
       \param u input
       \param running_cost_deriv_x first-order derivative of running cost w.r.t. state
       \param running_cost_deriv_u first-order derivative of running cost w.r.t. input
   */
-  virtual void calcRunningCostDeriv(const StateDimVector & x,
+  virtual void calcRunningCostDeriv(double t,
+                                    const StateDimVector & x,
                                     const InputDimVector & u,
                                     Eigen::Ref<StateDimVector> running_cost_deriv_x,
                                     Eigen::Ref<InputDimVector> running_cost_deriv_u) const = 0;
 
   /** \brief Calculate first-order and second-order derivatives of running cost.
+      \param t time
       \param x state
       \param u input
       \param running_cost_deriv_x first-order derivative of running cost w.r.t. state
@@ -121,7 +141,8 @@ public:
       \param running_cost_deriv_uu second-order derivative of running cost w.r.t. input
       \param running_cost_deriv_xu second-order derivative of running cost w.r.t. state and input
   */
-  virtual void calcRunningCostDeriv(const StateDimVector & x,
+  virtual void calcRunningCostDeriv(double t,
+                                    const StateDimVector & x,
                                     const InputDimVector & u,
                                     Eigen::Ref<StateDimVector> running_cost_deriv_x,
                                     Eigen::Ref<InputDimVector> running_cost_deriv_u,
@@ -130,18 +151,22 @@ public:
                                     Eigen::Ref<StateInputDimMatrix> running_cost_deriv_xu) const = 0;
 
   /** \brief Calculate first-order derivatives of terminal cost.
+      \param t time
       \param x state
       \param terminal_cost_deriv_x first-order derivative of terminal cost w.r.t. state
   */
-  virtual void calcTerminalCostDeriv(const StateDimVector & x,
+  virtual void calcTerminalCostDeriv(double t,
+                                     const StateDimVector & x,
                                      Eigen::Ref<StateDimVector> terminal_cost_deriv_x) const = 0;
 
   /** \brief Calculate first-order and second-order derivatives of terminal cost.
+      \param t time
       \param x state
       \param terminal_cost_deriv_x first-order derivative of terminal cost w.r.t. state
       \param terminal_cost_deriv_xx second-order derivative of terminal cost w.r.t. state
   */
-  virtual void calcTerminalCostDeriv(const StateDimVector & x,
+  virtual void calcTerminalCostDeriv(double t,
+                                     const StateDimVector & x,
                                      Eigen::Ref<StateDimVector> terminal_cost_deriv_x,
                                      Eigen::Ref<StateStateDimMatrix> terminal_cost_deriv_xx) const = 0;
 
@@ -151,6 +176,9 @@ protected:
 
   //! Input dimension
   const int input_dim_ = 0;
+
+  //! Discretization timestep [sec]
+  double dt_ = 0;
 };
 
 /** \brief DDP solver.
@@ -194,6 +222,9 @@ public:
 
     //! Whether to use second-order derivatives of state equation
     bool use_state_eq_second_derivative = false;
+
+    //! Whether input has constraints
+    bool with_input_constraint = false;
 
     //! Maximum iteration of optimization loop
     int max_iter = 500;
@@ -338,12 +369,30 @@ public:
   */
   DDPSolver(const std::shared_ptr<DDPProblem<StateDim, InputDim>> & problem);
 
+  /** \brief Accessor to configuration. */
+  inline Configuration & config()
+  {
+    return config_;
+  }
+
+  /** \brief Const accessor to configuration. */
+  inline const Configuration & config() const
+  {
+    return config_;
+  }
+
   /** \brief Solve optimization.
+      \param current_t current time [sec]
       \param current_x current state
       \param initial_u_list initial sequence of input
       \return whether the process is finished successfully
   */
-  bool solve(const StateDimVector & current_x, const std::vector<InputDimVector> & initial_u_list);
+  bool solve(double current_t, const StateDimVector & current_x, const std::vector<InputDimVector> & initial_u_list);
+
+  /** \brief Dump trace data list.
+      \param file_path path to output file
+  */
+  void dumpTraceDataList(const std::string & file_path) const;
 
 protected:
   /** \brief Process one iteration.
@@ -362,7 +411,7 @@ protected:
   */
   void forwardPass(double alpha);
 
-public:
+protected:
   //! Configuration
   Configuration config_;
 
@@ -371,6 +420,9 @@ public:
 
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
+
+  //! Current time [sec]
+  double current_t_ = 0;
 
   //! Regularization coefficient
   double lambda_ = 0;

@@ -2,11 +2,13 @@
 
 #include <chrono>
 #include <iostream>
+#include <fstream>
 
 namespace NOC
 {
 template<int StateDim, int InputDim>
-DDPProblem<StateDim, InputDim>::DDPProblem(int state_dim, int input_dim) : state_dim_(state_dim), input_dim_(input_dim)
+DDPProblem<StateDim, InputDim>::DDPProblem(double dt, int state_dim, int input_dim)
+: dt_(dt), state_dim_(state_dim), input_dim_(input_dim)
 {
   // Check dimension is positive
   if(state_dim_ <= 0)
@@ -44,11 +46,13 @@ DDPSolver<StateDim, InputDim>::DDPSolver(const std::shared_ptr<DDPProblem<StateD
 }
 
 template<int StateDim, int InputDim>
-bool DDPSolver<StateDim, InputDim>::solve(const StateDimVector & current_x,
+bool DDPSolver<StateDim, InputDim>::solve(double current_t,
+                                          const StateDimVector & current_x,
                                           const std::vector<InputDimVector> & initial_u_list)
 {
   // Initialize variables
   trace_data_list_.clear();
+  current_t_ = current_t;
   lambda_ = config_.initial_lambda;
   dlambda_ = config_.initial_dlambda;
 
@@ -57,6 +61,10 @@ bool DDPSolver<StateDim, InputDim>::solve(const StateDimVector & current_x,
   u_candidate_list_.resize(config_.horizon_steps);
   cost_candidate_list_.resize(config_.horizon_steps + 1);
   derivative_list_.resize(config_.horizon_steps);
+  for(auto & derivative : derivative_list_)
+  {
+    derivative.setStateDim(config_.use_state_eq_second_derivative ? problem_->stateDim() : 0);
+  }
   k_list_.resize(config_.horizon_steps);
   K_list_.resize(config_.horizon_steps);
 
@@ -67,10 +75,12 @@ bool DDPSolver<StateDim, InputDim>::solve(const StateDimVector & current_x,
   x_list_[0] = current_x;
   for(int i = 0; i < config_.horizon_steps; i++)
   {
-    x_list_[i + 1] = problem_->stateEq(x_list_[i], u_list_[i]);
-    cost_list_[i] = problem_->runningCost(x_list_[i], u_list_[i]);
+    double t = current_t_ + i * problem_->dt();
+    x_list_[i + 1] = problem_->stateEq(t, x_list_[i], u_list_[i]);
+    cost_list_[i] = problem_->runningCost(t, x_list_[i], u_list_[i]);
   }
-  cost_list_[config_.horizon_steps] = problem_->terminalCost(x_list_[config_.horizon_steps]);
+  double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
+  cost_list_[config_.horizon_steps] = problem_->terminalCost(terminal_t, x_list_[config_.horizon_steps]);
 
   // Optimization loop
   int retval = 0;
@@ -102,22 +112,24 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     for(int i = 0; i < config_.horizon_steps; i++)
     {
       auto & derivative = derivative_list_[i];
-      derivative.setStateDim(config_.use_state_eq_second_derivative ? problem_->stateDim() : 0);
 
+      double t = current_t_ + i * problem_->dt();
       const StateDimVector & x = x_list_[i];
       const InputDimVector & u = u_list_[i];
       if(config_.use_state_eq_second_derivative)
       {
-        problem_->calcStateqDeriv(x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu, derivative.Fxu);
+        problem_->calcStateqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
+                                  derivative.Fxu);
       }
       else
       {
-        problem_->calcStateqDeriv(x, u, derivative.Fx, derivative.Fu);
+        problem_->calcStateqDeriv(t, x, u, derivative.Fx, derivative.Fu);
       }
-      problem_->calcRunningCostDeriv(x, u, derivative.Lx, derivative.Lu, derivative.Lxx, derivative.Luu,
+      problem_->calcRunningCostDeriv(t, x, u, derivative.Lx, derivative.Lu, derivative.Lxx, derivative.Luu,
                                      derivative.Lxu);
     }
-    problem_->calcTerminalCostDeriv(x_list_[config_.horizon_steps], last_Vx_, last_Vxx_);
+    double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
+    problem_->calcTerminalCostDeriv(terminal_t, x_list_[config_.horizon_steps], last_Vx_, last_Vxx_);
 
     trace_data.duration_derivative =
         1e3
@@ -377,7 +389,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     }
 
     // Update cost-to-go approximation
-    dV_ += Eigen::Vector2d(k.transpose() * Qu, 0.5 * k.transpose() * Quu * k);
+    dV_ += Eigen::Vector2d(k.dot(Qu), 0.5 * k.dot(Quu * k));
     Vx = Qx + K.transpose() * Quu * k + K.transpose() * Qu + Qux.transpose() * k;
     Vxx = Qxx + K.transpose() * Quu * K + K.transpose() * Qux + Qux.transpose() * K;
     Vxx = 0.5 * (Vxx + Vxx.transpose());
@@ -398,16 +410,51 @@ void DDPSolver<StateDim, InputDim>::forwardPass(double alpha)
 
   for(int i = 0; i < config_.horizon_steps; i++)
   {
-    // Calculate new input
+    // Calculate input
     u_candidate_list_[i] = u_list_[i] + alpha * k_list_[i] + K_list_[i] * (x_candidate_list_[i] - x_list_[i]);
 
     // \todo Impose constraints on input
 
-    // Calculate new state of next step
-    x_candidate_list_[i + 1] = problem_->stateEq(x_candidate_list_[i], u_candidate_list_[i]);
-
-    cost_candidate_list_[i] = problem_->runningCost(x_candidate_list_[i], u_candidate_list_[i]);
+    // Calculate next state and cost
+    double t = current_t_ + i * problem_->dt();
+    x_candidate_list_[i + 1] = problem_->stateEq(t, x_candidate_list_[i], u_candidate_list_[i]);
+    cost_candidate_list_[i] = problem_->runningCost(t, x_candidate_list_[i], u_candidate_list_[i]);
   }
-  cost_candidate_list_[config_.horizon_steps] = problem_->terminalCost(x_candidate_list_[config_.horizon_steps]);
+  double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
+  cost_candidate_list_[config_.horizon_steps] =
+      problem_->terminalCost(terminal_t, x_candidate_list_[config_.horizon_steps]);
+}
+
+template<int StateDim, int InputDim>
+void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_path) const
+{
+  std::ofstream ofs(file_path);
+  ofs << "iter "
+      << "cost "
+      << "lambda "
+      << "dlambda "
+      << "alpha "
+      << "k_rel_norm "
+      << "cost_update_actual "
+      << "cost_update_expected "
+      << "cost_update_ratio "
+      << "duration_derivative "
+      << "duration_backward "
+      << "duration_forward" << std::endl;
+  for(const auto & trace_data : trace_data_list_)
+  {
+    ofs << trace_data.iter << " "
+        << trace_data.cost << " "
+        << trace_data.lambda << " "
+        << trace_data.dlambda << " "
+        << trace_data.alpha << " "
+        << trace_data.k_rel_norm << " "
+        << trace_data.cost_update_actual << " "
+        << trace_data.cost_update_expected << " "
+        << trace_data.cost_update_ratio << " "
+        << trace_data.duration_derivative << " "
+        << trace_data.duration_backward << " "
+        << trace_data.duration_forward << std::endl;
+  }
 }
 } // namespace NOC
