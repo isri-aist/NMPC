@@ -156,7 +156,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       lambda_ = std::max(lambda_ * dlambda_, config_.lambda_min);
       if(lambda_ > config_.lambda_max)
       {
-        if(config_.verbose_print)
+        if(config_.print_level >= 1)
         {
           std::cout << "[DDP] Failure due to large lambda." << std::endl;
         }
@@ -179,7 +179,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   trace_data.k_rel_norm = k_rel_norm;
   if(k_rel_norm < config_.k_rel_norm_thre && lambda_ < config_.lambda_thre)
   {
-    if(config_.verbose_print)
+    if(config_.print_level >= 2)
     {
       std::cout << "[DDP] Terminate due to small gradient. (iter: " << iter << ")" << std::endl;
     }
@@ -250,7 +250,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     // Check for termination due to small cost update
     if(cost_update_actual < config_.cost_update_thre)
     {
-      if(config_.verbose_print)
+      if(config_.print_level >= 2)
       {
         std::cout << "[DDP] Terminate due to small cost update. (iter: " << iter << ")" << std::endl;
       }
@@ -264,7 +264,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     lambda_ = std::max(lambda_ * dlambda_, config_.lambda_min);
     if(lambda_ > config_.lambda_max)
     {
-      if(config_.verbose_print)
+      if(config_.print_level >= 1)
       {
         std::cout << "[DDP] Failure due to large lambda." << std::endl;
       }
@@ -382,7 +382,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       Eigen::LLT<InputInputDimMatrix> llt_Quu_F(Quu_F);
       if(llt_Quu_F.info() == Eigen::NumericalIssue)
       {
-        if(config_.verbose_print)
+        if(config_.print_level >= 1)
         {
           std::cout << "[DDP] Quu_F is not positive definite in Cholesky decomposition (LLT)." << std::endl;
         }

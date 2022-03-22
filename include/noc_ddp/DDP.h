@@ -230,8 +230,8 @@ public:
       }
     }
 
-    //! Whether to enable verbose print
-    bool verbose_print = true;
+    //! Print level (0: no print, 1: print only important, 2: print all)
+    int print_level = 1;
 
     //! Whether to use second-order derivatives of state equation
     bool use_state_eq_second_derivative = false;
