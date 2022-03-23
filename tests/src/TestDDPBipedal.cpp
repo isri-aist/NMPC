@@ -151,16 +151,17 @@ TEST(TestDDPBipedal, TestCase1)
   double end_t = 20.0; // [sec]
 
   // Instantiate problem
+  constexpr double epsilon_t = 1e-6;
   std::function<double(double)> ref_zmp_func = [&](double t) {
     // Add small values to avoid numerical instability at inequality bounds
-    constexpr double epsilon_t = 1e-6;
-    if(t <= 1.5 + epsilon_t || t >= end_t - 1.5 + epsilon_t)
+    t += epsilon_t;
+    if(t <= 1.5 || t >= end_t - 1.5)
     {
       return 0.0;
     }
     else
     {
-      if(static_cast<int>(std::floor((t - 1.0 + epsilon_t) / 1.0)) % 2 == 0)
+      if(static_cast<int>(std::floor((t - 1.0) / 1.0)) % 2 == 0)
       {
         return 0.15; // [m]
       }
@@ -171,8 +172,38 @@ TEST(TestDDPBipedal, TestCase1)
     }
   };
   std::function<double(double)> omega2_func = [](double t) {
-    double cog_pos_z = 1.0; // [m]
+    // Add small values to avoid numerical instability at inequality bounds
+    t += epsilon_t;
+    double cog_pos_z_high = 1.0; // [m]
+    double cog_pos_z_low = 0.3; // [m]
+    double cog_pos_z = 0.0;
     double cog_acc_z = 0.0;
+    if(t < 7.0)
+    {
+      cog_pos_z = cog_pos_z_high;
+    }
+    else if(t < 8.0)
+    {
+      double theta = M_PI * (t - 7.0) + M_PI;
+      double scale = (cog_pos_z_low - cog_pos_z_high) / 2.0;
+      cog_pos_z = scale * (std::cos(theta) + 1.0) + cog_pos_z_high;
+      cog_acc_z = -1 * std::pow(M_PI, 2) * scale * std::cos(theta);
+    }
+    else if(t < 12.0)
+    {
+      cog_pos_z = cog_pos_z_low;
+    }
+    else if(t < 13.0)
+    {
+      double theta = M_PI * (t - 12.0) + M_PI;
+      double scale = (cog_pos_z_high - cog_pos_z_low) / 2.0;
+      cog_pos_z = scale * (std::cos(theta) + 1.0) + cog_pos_z_low;
+      cog_acc_z = -1 * std::pow(M_PI, 2) * scale * std::cos(theta);
+    }
+    else
+    {
+      cog_pos_z = cog_pos_z_high;
+    }
     constexpr double g = 9.80665;
     return (cog_acc_z + g) / cog_pos_z;
   };
@@ -192,7 +223,7 @@ TEST(TestDDPBipedal, TestCase1)
   bool first_iter = true;
   std::string file_path = "/tmp/TestDDPBipedalResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time com_pos com_vel planned_zmp ref_zmp" << std::endl;
+  ofs << "time com_pos com_vel planned_zmp ref_zmp omega2" << std::endl;
   while(current_t < end_t)
   {
     // Solve
@@ -209,7 +240,7 @@ TEST(TestDDPBipedal, TestCase1)
     EXPECT_LT(std::abs(planned_zmp - ref_zmp), 1e-2);
     // Dump
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " " << planned_zmp << " " << ref_zmp
-        << std::endl;
+        << " " << omega2_func(current_t) << std::endl;
 
     // Update to next step
     current_t += dt;
