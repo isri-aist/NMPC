@@ -230,7 +230,7 @@ public:
       }
     }
 
-    //! Print level (0: no print, 1: print only important, 2: print all)
+    //! Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose)
     int print_level = 1;
 
     //! Whether to use second-order derivatives of state equation
@@ -249,7 +249,7 @@ public:
     int reg_type = 1;
 
     //! Initial regularization coefficient
-    double initial_lambda = 1e-6;
+    double initial_lambda = 1e-4; // 1.0
 
     //! Initial scaling factor of regularization coefficient
     double initial_dlambda = 1.0;

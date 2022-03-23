@@ -152,13 +152,15 @@ TEST(TestDDPBipedal, TestCase1)
 
   // Instantiate problem
   std::function<double(double)> ref_zmp_func = [&](double t) {
-    if(t <= 1.5 || t >= end_t - 1.5)
+    // Add small values to avoid numerical instability at inequality bounds
+    constexpr double epsilon_t = 1e-6;
+    if(t <= 1.5 + epsilon_t || t >= end_t - 1.5 + epsilon_t)
     {
       return 0.0;
     }
     else
     {
-      if(static_cast<int>(std::floor((t - 1.0) / 1.0)) % 2 == 0)
+      if(static_cast<int>(std::floor((t - 1.0 + epsilon_t) / 1.0)) % 2 == 0)
       {
         return 0.15; // [m]
       }
@@ -169,7 +171,7 @@ TEST(TestDDPBipedal, TestCase1)
     }
   };
   std::function<double(double)> omega2_func = [](double t) {
-    double cog_pos_z = 1.0;
+    double cog_pos_z = 1.0; // [m]
     double cog_acc_z = 0.0;
     constexpr double g = 9.80665;
     return (cog_acc_z + g) / cog_pos_z;
@@ -204,8 +206,7 @@ TEST(TestDDPBipedal, TestCase1)
     // Check ZMP
     double planned_zmp = ddp_solver->controlData().u_list[0][0];
     double ref_zmp = ref_zmp_func(current_t);
-    EXPECT_LT(std::abs(planned_zmp - ref_zmp), 1e-1);
-
+    EXPECT_LT(std::abs(planned_zmp - ref_zmp), 1e-2);
     // Dump
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " " << planned_zmp << " " << ref_zmp
         << std::endl;
@@ -220,8 +221,8 @@ TEST(TestDDPBipedal, TestCase1)
 
   // Check final CoM
   double ref_zmp = ref_zmp_func(current_t);
-  EXPECT_LT(std::abs(current_x[0] - ref_zmp), 1e-1);
-  EXPECT_LT(std::abs(current_x[1]), 1e-1);
+  EXPECT_LT(std::abs(current_x[0] - ref_zmp), 1e-2);
+  EXPECT_LT(std::abs(current_x[1]), 1e-2);
 
   std::cout << "Run the following commands in gnuplot:\n"
             << "  set key autotitle columnhead\n"

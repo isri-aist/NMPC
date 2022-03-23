@@ -58,7 +58,6 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
 
   // Initialize variables
-  trace_data_list_.clear();
   current_t_ = current_t;
   lambda_ = config_.initial_lambda;
   dlambda_ = config_.initial_dlambda;
@@ -90,9 +89,23 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   control_data_.cost_list[config_.horizon_steps] =
       problem_->terminalCost(terminal_t, control_data_.x_list[config_.horizon_steps]);
 
+  // Initialize trace data
+  trace_data_list_.clear();
+  TraceData initial_trace_data;
+  initial_trace_data.iter = 0;
+  initial_trace_data.cost = control_data_.cost_list.sum();
+  initial_trace_data.lambda = lambda_;
+  initial_trace_data.dlambda = dlambda_;
+  trace_data_list_.push_back(initial_trace_data);
+
+  if(config_.print_level >= 3)
+  {
+    std::cout << "[DDP] Initial cost: " << control_data_.cost_list.sum() << std::endl;
+  }
+
   // Optimization loop
   int retval = 0;
-  for(int iter = 0; iter < config_.max_iter; iter++)
+  for(int iter = 1; iter <= config_.max_iter; iter++)
   {
     retval = procOnce(iter);
     if(retval != 0)
@@ -101,12 +114,22 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
     }
   }
 
+  if(config_.print_level >= 3)
+  {
+    std::cout << "[DDP] Final cost: " << control_data_.cost_list.sum() << std::endl;
+  }
+
   return retval == 1;
 }
 
 template<int StateDim, int InputDim>
 int DDPSolver<StateDim, InputDim>::procOnce(int iter)
 {
+  if(config_.print_level >= 3)
+  {
+    std::cout << "[DDP] Start iteration " << iter << std::endl;
+  }
+
   // Append trace data
   trace_data_list_.push_back(TraceData());
   auto & trace_data = trace_data_list_.back();
@@ -158,9 +181,13 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       {
         if(config_.print_level >= 1)
         {
-          std::cout << "[DDP] Failure due to large lambda." << std::endl;
+          std::cout << "[DDP] Failure due to large lambda. (iter: " << iter << ")" << std::endl;
         }
         return -1; // Failure
+      }
+      if(config_.print_level >= 3)
+      {
+        std::cout << "[DDP/Backward] Increase lambda to " << lambda_ << std::endl;
       }
     }
 
@@ -226,22 +253,15 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
         * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
               .count();
   }
+  if(!forward_pass_success && config_.print_level >= 3)
+  {
+    std::cout << "[DDP] Forward pass failed." << std::endl;
+  }
 
   // STEP 4: accept step (or not)
   int retval = 0; // Continue
   if(forward_pass_success)
   {
-    // Decrease lambda
-    dlambda_ = std::min(dlambda_ / config_.lambda_factor, 1 / config_.lambda_factor);
-    if(lambda_ > config_.lambda_min)
-    {
-      lambda_ *= dlambda_;
-    }
-    else
-    {
-      lambda_ = 0;
-    }
-
     // Accept changes
     control_data_.x_list = candidate_control_data_.x_list;
     control_data_.u_list = candidate_control_data_.u_list;
@@ -256,6 +276,21 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       }
       retval = 1; // Terminate
     }
+
+    // Decrease lambda
+    dlambda_ = std::min(dlambda_ / config_.lambda_factor, 1 / config_.lambda_factor);
+    if(lambda_ > config_.lambda_min)
+    {
+      lambda_ *= dlambda_;
+    }
+    else
+    {
+      lambda_ = 0;
+    }
+    if(config_.print_level >= 3)
+    {
+      std::cout << "[DDP/Forward] Decrease lambda to " << lambda_ << std::endl;
+    }
   }
   else
   {
@@ -266,9 +301,13 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     {
       if(config_.print_level >= 1)
       {
-        std::cout << "[DDP] Failure due to large lambda." << std::endl;
+        std::cout << "[DDP] Failure due to large lambda. (iter: " << iter << ")" << std::endl;
       }
       retval = -1; // Failure
+    }
+    if(config_.print_level >= 3)
+    {
+      std::cout << "[DDP/Forward] Increase lambda to " << lambda_ << std::endl;
     }
   }
 
