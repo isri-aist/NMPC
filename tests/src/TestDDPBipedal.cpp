@@ -52,7 +52,7 @@ public:
            + cost_weight_.terminal_vel * 0.5 * std::pow(x[1], 2);
   }
 
-  virtual void calcStateqDeriv(double t,
+  virtual void calcStatEqDeriv(double t,
                                const StateDimVector & x,
                                const InputDimVector & u,
                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
@@ -62,7 +62,7 @@ public:
     state_eq_deriv_u = B(t);
   }
 
-  virtual void calcStateqDeriv(double t,
+  virtual void calcStatEqDeriv(double t,
                                const StateDimVector & x,
                                const InputDimVector & u,
                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
@@ -71,7 +71,7 @@ public:
                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
   {
-    calcStateqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
+    calcStatEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
     state_eq_deriv_xx.assign(2, StateStateDimMatrix::Zero());
     state_eq_deriv_uu.assign(2, InputInputDimMatrix::Zero());
     state_eq_deriv_xu.assign(2, StateInputDimMatrix::Zero());

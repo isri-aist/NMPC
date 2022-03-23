@@ -133,7 +133,6 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   // Append trace data
   trace_data_list_.push_back(TraceData());
   auto & trace_data = trace_data_list_.back();
-
   trace_data.iter = iter;
 
   // Step 1: differentiate dynamics and cost along new trajectory
@@ -149,12 +148,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       const InputDimVector & u = control_data_.u_list[i];
       if(config_.use_state_eq_second_derivative)
       {
-        problem_->calcStateqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
+        problem_->calcStatEqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
                                   derivative.Fxu);
       }
       else
       {
-        problem_->calcStateqDeriv(t, x, u, derivative.Fx, derivative.Fu);
+        problem_->calcStatEqDeriv(t, x, u, derivative.Fx, derivative.Fu);
       }
       problem_->calcRunningCostDeriv(t, x, u, derivative.Lx, derivative.Lu, derivative.Lxx, derivative.Luu,
                                      derivative.Lxu);
@@ -214,7 +213,6 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   }
 
   // STEP 3: forward pass, line-search to find new control sequence, trajectory, cost
-  // \todo Parallel line-search by broadcasting
   bool forward_pass_success = false;
   double cost_update_actual = 0;
   {
@@ -279,7 +277,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
 
     // Decrease lambda
     dlambda_ = std::min(dlambda_ / config_.lambda_factor, 1 / config_.lambda_factor);
-    if(lambda_ > config_.lambda_min)
+    if(lambda_ >= config_.lambda_min)
     {
       lambda_ *= dlambda_;
     }
@@ -321,7 +319,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
 template<int StateDim, int InputDim>
 bool DDPSolver<StateDim, InputDim>::backwardPass()
 {
-  // To avoid memory allocation costs, the vector and matrix variables are created outside of loop
+  // To avoid repetitive memory allocation, the vector and matrix variables are created outside of loop
   StateDimVector Vx = last_Vx_;
   StateStateDimMatrix Vxx = last_Vxx_;
   StateStateDimMatrix Vxx_reg;
@@ -334,7 +332,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
   InputStateDimMatrix Qux_reg;
   InputInputDimMatrix Quu_F;
 
-  InputStateDimMatrix VxFxu;
+  InputStateDimMatrix VxFux;
   InputInputDimMatrix VxFuu;
 
   InputDimVector k;
@@ -366,8 +364,8 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     {
       throw std::runtime_error("Vector-tensor product is not implemented yet.");
       // \todo Need operation to compute a matrix by vector and tensor product
-      // VxFxu = Vx * Fxu;
-      // Qux += VxFxu
+      // VxFux = Vx * Fxu.transpose();
+      // Qux += VxFux
     }
 
     Quu = Luu + Fu.transpose() * Vxx * Fu;
@@ -397,7 +395,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     Qux_reg = Lxu.transpose() + Fu.transpose() * Vxx_reg * Fx;
     if(config_.use_state_eq_second_derivative)
     {
-      Qux_reg += VxFxu;
+      Qux_reg += VxFux;
     }
 
     Quu_F = Luu + Fu.transpose() * Vxx_reg * Fu;
