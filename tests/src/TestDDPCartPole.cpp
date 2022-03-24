@@ -5,6 +5,9 @@
 #include <fstream>
 #include <iostream>
 
+#include <ros/ros.h>
+#include <visualization_msgs/MarkerArray.h>
+
 #include <noc_ddp/DDP.h>
 
 /** \brief DDP problem for cart-pole.
@@ -187,7 +190,7 @@ public:
     terminal_cost_deriv_xx = cost_weight_.terminal_x.asDiagonal();
   }
 
-protected:
+public:
   static constexpr double g_ = 9.80665; // [m/s^2]
 
   std::function<double(double)> ref_pos_func_;
@@ -199,8 +202,114 @@ protected:
   double pole_length_ = 1.0; // [m]
 };
 
+visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDimVector & x,
+                                              const DDPProblemCartPole::InputDimVector & u,
+                                              const std::shared_ptr<DDPProblemCartPole> & ddp_problem)
+{
+  std_msgs::Header header_msg;
+  header_msg.frame_id = "world";
+  header_msg.stamp = ros::Time::now();
+
+  // Instantiate marker array
+  visualization_msgs::MarkerArray marker_arr_msg;
+
+  // Delete marker
+  visualization_msgs::Marker del_marker;
+  del_marker.action = visualization_msgs::Marker::DELETEALL;
+  del_marker.header = header_msg;
+  del_marker.id = marker_arr_msg.markers.size();
+  marker_arr_msg.markers.push_back(del_marker);
+
+  // Cart marker
+  visualization_msgs::Marker cart_marker;
+  cart_marker.header = header_msg;
+  cart_marker.ns = "cart";
+  cart_marker.id = marker_arr_msg.markers.size();
+  cart_marker.type = visualization_msgs::Marker::CUBE;
+  cart_marker.color.r = 0;
+  cart_marker.color.g = 1;
+  cart_marker.color.b = 0;
+  cart_marker.color.a = 1;
+  cart_marker.scale.x = 0.8;
+  cart_marker.scale.y = 0.4;
+  cart_marker.scale.z = 0.1;
+  cart_marker.pose.position.x = x[0];
+  cart_marker.pose.position.y = 0;
+  cart_marker.pose.position.z = 0;
+  cart_marker.pose.orientation.w = 1.0;
+  marker_arr_msg.markers.push_back(cart_marker);
+
+  // Mass marker
+  visualization_msgs::Marker mass_marker;
+  mass_marker.header = header_msg;
+  mass_marker.ns = "mass";
+  cart_marker.id = marker_arr_msg.markers.size();
+  mass_marker.type = visualization_msgs::Marker::CYLINDER;
+  mass_marker.color.r = 0;
+  mass_marker.color.g = 0;
+  mass_marker.color.b = 1;
+  mass_marker.color.a = 1;
+  mass_marker.scale.x = 0.4;
+  mass_marker.scale.y = 0.4;
+  mass_marker.scale.z = 0.1;
+  mass_marker.pose.position.x = x[0] + ddp_problem->pole_length_ * -1 * std::sin(x[1]);
+  mass_marker.pose.position.y = ddp_problem->pole_length_ * std::cos(x[1]);
+  mass_marker.pose.position.z = 2.0;
+  mass_marker.pose.orientation.w = 1.0;
+  marker_arr_msg.markers.push_back(mass_marker);
+
+  // Pole marker
+  visualization_msgs::Marker pole_marker;
+  pole_marker.header = header_msg;
+  pole_marker.ns = "pole";
+  pole_marker.id = marker_arr_msg.markers.size();
+  pole_marker.type = visualization_msgs::Marker::LINE_LIST;
+  pole_marker.color.r = 0;
+  pole_marker.color.g = 0;
+  pole_marker.color.b = 0;
+  pole_marker.color.a = 1;
+  pole_marker.scale.x = 0.1;
+  pole_marker.pose.position.z = 1.0;
+  pole_marker.pose.orientation.w = 1.0;
+  pole_marker.points.resize(2);
+  pole_marker.points[0].x = cart_marker.pose.position.x;
+  pole_marker.points[0].y = cart_marker.pose.position.y;
+  pole_marker.points[1].x = mass_marker.pose.position.x;
+  pole_marker.points[1].y = mass_marker.pose.position.y;
+  marker_arr_msg.markers.push_back(pole_marker);
+
+  // Force marker
+  visualization_msgs::Marker force_marker;
+  force_marker.header = header_msg;
+  force_marker.ns = "force";
+  force_marker.id = marker_arr_msg.markers.size();
+  force_marker.type = visualization_msgs::Marker::ARROW;
+  force_marker.color.r = 1;
+  force_marker.color.g = 0;
+  force_marker.color.b = 0;
+  force_marker.color.a = 1;
+  force_marker.scale.x = 0.2;
+  force_marker.scale.y = 0.4;
+  force_marker.scale.z = 0.2;
+  force_marker.pose.position.z = 3.0;
+  force_marker.pose.orientation.w = 1.0;
+  force_marker.points.resize(2);
+  force_marker.points[0].x = cart_marker.pose.position.x;
+  force_marker.points[0].y = cart_marker.pose.position.y;
+  force_marker.points[1].x = cart_marker.pose.position.x + 0.2 * u[0];
+  force_marker.points[1].y = cart_marker.pose.position.y;
+  marker_arr_msg.markers.push_back(force_marker);
+
+  return marker_arr_msg;
+}
+
 TEST(TestDDPCartPole, TestCase1)
 {
+  // Setup ROS
+  ros::NodeHandle nh;
+  ros::NodeHandle pnh("~");
+  ros::Publisher marker_arr_pub = nh.advertise<visualization_msgs::MarkerArray>("marker_arr", 1);
+
   double dt = 0.01; // [sec]
   double horizon_duration = 2.0; // [sec]
   int horizon_steps = static_cast<int>(horizon_duration / dt);
@@ -273,6 +382,7 @@ TEST(TestDDPCartPole, TestCase1)
   std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
   std::ofstream ofs(file_path);
   ofs << "time pos theta vel omega force ref_pos iter" << std::endl;
+  ros::Rate rate(1.0 / dt);
   while(current_t < end_t)
   {
     // Solve
@@ -299,6 +409,11 @@ TEST(TestDDPCartPole, TestCase1)
     current_u_list = ddp_solver->controlData().u_list;
     current_u_list.erase(current_u_list.begin());
     current_u_list.push_back(current_u_list.back());
+
+    // Publish marker
+    marker_arr_pub.publish(makeMarkerArr(current_x, current_u_list[0], ddp_problem));
+    ros::spinOnce();
+    rate.sleep();
   }
 
   // Check final pos
@@ -316,6 +431,7 @@ TEST(TestDDPCartPole, TestCase1)
 
 int main(int argc, char ** argv)
 {
+  ros::init(argc, argv, "test_ddp_cart_pole");
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
