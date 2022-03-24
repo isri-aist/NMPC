@@ -26,5 +26,17 @@
   </test>
 
   <node pkg="rviz" type="rviz" name="rviz"
-        args="-d $(find noc_ddp)/tests/rviz/TestDDPCartPole.rviz" />
+        args="-d $(find noc_ddp)/tests/rviz/TestDDPCartPole.rviz" >
+    <rosparam>
+      rviz_service_call/buttons:
+        - service_name: /dist_left_large
+          text: left large disturbance
+        - service_name: /dist_left_small
+          text: left small disturbance
+        - service_name: /dist_right_small
+          text: right small disturbance
+        - service_name: /dist_right_large
+          text: right large disturbance
+    </rosparam>
+  </node>
 </launch>

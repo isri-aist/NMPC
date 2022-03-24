@@ -3,10 +3,12 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
+#include <functional>
 #include <iostream>
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <std_srvs/Empty.h>
 
 #include <noc_ddp/DDP.h>
 
@@ -221,6 +223,8 @@ double current_t = 0;
 DDPProblemCartPole::StateDimVector current_x = DDPProblemCartPole::StateDimVector::Zero();
 DDPProblemCartPole::InputDimVector current_u = DDPProblemCartPole::InputDimVector::Zero();
 std::vector<DDPProblemCartPole::InputDimVector> initial_u_list;
+double dist_t = 0;
+DDPProblemCartPole::InputDimVector dist_u = DDPProblemCartPole::InputDimVector::Zero();
 bool first_iter = true;
 
 void mpcTimerCallback(const ros::TimerEvent & event)
@@ -236,6 +240,13 @@ void mpcTimerCallback(const ros::TimerEvent & event)
     first_iter = false;
     ddp_solver->dumpTraceDataList("/tmp/TestDDPCartPoleTraceData.txt");
   }
+}
+
+bool distCallback(std_srvs::Empty::Request & req, std_srvs::Empty::Response & res, double dist_force)
+{
+  dist_u << dist_force;
+  dist_t = current_t + 0.5; // [sec]
+  return true;
 }
 
 void checkDerivatives(const std::shared_ptr<DDPProblemCartPole> & ddp_problem)
@@ -349,7 +360,9 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   marker_arr_msg.markers.push_back(pole_marker);
 
   // Force marker
-  if(std::abs(u[0]) > 0.1)
+  constexpr double force_scale = 0.04;
+  constexpr double force_thre = 0.1; // [N]
+  if(std::abs(u[0]) > force_thre)
   {
     visualization_msgs::Marker force_marker;
     force_marker.header = header_msg;
@@ -368,9 +381,34 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
     force_marker.points.resize(2);
     force_marker.points[0].x = cart_marker.pose.position.x;
     force_marker.points[0].y = cart_marker.pose.position.y;
-    force_marker.points[1].x = cart_marker.pose.position.x + 0.2 * u[0];
+    force_marker.points[1].x = cart_marker.pose.position.x + force_scale * u[0];
     force_marker.points[1].y = cart_marker.pose.position.y;
     marker_arr_msg.markers.push_back(force_marker);
+  }
+
+  // Disturbance marker
+  if(std::abs(dist_u[0]) > force_thre)
+  {
+    visualization_msgs::Marker dist_marker;
+    dist_marker.header = header_msg;
+    dist_marker.ns = "disturbance";
+    dist_marker.id = marker_arr_msg.markers.size();
+    dist_marker.type = visualization_msgs::Marker::ARROW;
+    dist_marker.color.r = 1;
+    dist_marker.color.g = 1;
+    dist_marker.color.b = 0;
+    dist_marker.color.a = 1;
+    dist_marker.scale.x = 0.2;
+    dist_marker.scale.y = 0.4;
+    dist_marker.scale.z = 0.2;
+    dist_marker.pose.position.z = 3.0;
+    dist_marker.pose.orientation.w = 1.0;
+    dist_marker.points.resize(2);
+    dist_marker.points[0].x = cart_marker.pose.position.x;
+    dist_marker.points[0].y = cart_marker.pose.position.y;
+    dist_marker.points[1].x = cart_marker.pose.position.x + force_scale * dist_u[0];
+    dist_marker.points[1].y = cart_marker.pose.position.y;
+    marker_arr_msg.markers.push_back(dist_marker);
   }
 
   return marker_arr_msg;
@@ -382,6 +420,16 @@ TEST(TestDDPCartPole, TestCase1)
   ros::NodeHandle nh;
   ros::NodeHandle pnh("~");
   ros::Publisher marker_arr_pub = nh.advertise<visualization_msgs::MarkerArray>("marker_arr", 1);
+  constexpr double dist_force_small = 30; // [N]
+  ros::ServiceServer dist_left_small_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/dist_left_small", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, -1 * dist_force_small));
+  ros::ServiceServer dist_right_small_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/dist_right_small", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, dist_force_small));
+  constexpr double dist_force_large = 100; // [N]
+  ros::ServiceServer dist_left_large_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/dist_left_large", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, -1 * dist_force_large));
+  ros::ServiceServer dist_right_large_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/dist_right_large", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, dist_force_large));
 
   double horizon_dt = 0.01; // [sec]
   double horizon_duration = 2.0; // [sec]
@@ -442,9 +490,11 @@ TEST(TestDDPCartPole, TestCase1)
   current_x << 0, M_PI, 0, 0;
   current_u << 0;
   initial_u_list.assign(horizon_steps, DDPProblemCartPole::InputDimVector::Zero());
+  dist_t = 0;
+  dist_u << 0;
   std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time pos theta vel omega force ref_pos" << std::endl;
+  ofs << "time pos theta vel omega force ref_pos disturbance" << std::endl;
   ros::Rate rate(1.0 / sim_dt);
   bool no_exit = false;
   pnh.getParam("no_exit", no_exit);
@@ -457,16 +507,21 @@ TEST(TestDDPCartPole, TestCase1)
   while(ros::ok() && (no_exit || current_t < end_t))
   {
     // Simulate one step
-    current_x = sim->stateEq(current_t, current_x, current_u);
+    if(dist_t < current_t)
+    {
+      dist_u << 0;
+    }
+    current_x = sim->stateEq(current_t, current_x, current_u + dist_u);
     current_t += sim_dt;
 
     // Check pos
     double current_pos = current_x[0];
     double ref_pos = ref_pos_func(current_t);
-    EXPECT_LT(std::abs(current_pos - ref_pos), 1e1);
+    EXPECT_LT(std::abs(current_pos - ref_pos), 1e2);
 
     // Dump
-    ofs << current_t << " " << current_x.transpose() << " " << current_u.transpose() << " " << ref_pos << std::endl;
+    ofs << current_t << " " << current_x.transpose() << " " << current_u.transpose() << " " << ref_pos << " "
+        << dist_u.transpose() << std::endl;
 
     // Publish marker
     marker_arr_pub.publish(makeMarkerArr(current_x, current_u, ddp_problem));
