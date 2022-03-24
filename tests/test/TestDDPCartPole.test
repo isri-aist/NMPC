@@ -37,6 +37,12 @@
           text: right small disturbance
         - service_name: /dist_right_large
           text: right large disturbance
+        - service_name: /target_pos_m5
+          text: target pos -5m
+        - service_name: /target_pos_0
+          text: target pos 0m
+        - service_name: /target_pos_p5
+          text: target pos +5m
     </rosparam>
   </node>
 </launch>

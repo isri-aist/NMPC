@@ -2,9 +2,11 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <limits>
 
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -225,6 +227,7 @@ DDPProblemCartPole::InputDimVector current_u = DDPProblemCartPole::InputDimVecto
 std::vector<DDPProblemCartPole::InputDimVector> initial_u_list;
 double dist_t = 0;
 DDPProblemCartPole::InputDimVector dist_u = DDPProblemCartPole::InputDimVector::Zero();
+double target_pos = std::numeric_limits<double>::quiet_NaN();
 bool first_iter = true;
 
 void mpcTimerCallback(const ros::TimerEvent & event)
@@ -246,6 +249,12 @@ bool distCallback(std_srvs::Empty::Request & req, std_srvs::Empty::Response & re
 {
   dist_u << dist_force;
   dist_t = current_t + 0.5; // [sec]
+  return true;
+}
+
+bool targetPosCallback(std_srvs::Empty::Request & req, std_srvs::Empty::Response & res, double pos)
+{
+  target_pos = pos;
   return true;
 }
 
@@ -311,9 +320,9 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   cart_marker.color.g = 1;
   cart_marker.color.b = 0;
   cart_marker.color.a = 1;
-  cart_marker.scale.x = 0.8;
-  cart_marker.scale.y = 0.4;
-  cart_marker.scale.z = 0.1;
+  cart_marker.scale.x = 1.0;
+  cart_marker.scale.y = 0.6;
+  cart_marker.scale.z = 0.12;
   cart_marker.pose.position.x = x[0];
   cart_marker.pose.position.y = 0;
   cart_marker.pose.position.z = 0;
@@ -330,8 +339,8 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   mass_marker.color.g = 0;
   mass_marker.color.b = 1;
   mass_marker.color.a = 1;
-  mass_marker.scale.x = 0.4;
-  mass_marker.scale.y = 0.4;
+  mass_marker.scale.x = 0.6;
+  mass_marker.scale.y = 0.6;
   mass_marker.scale.z = 0.1;
   mass_marker.pose.position.x = x[0] + ddp_problem->param_.pole_length * -1 * std::sin(x[1]);
   mass_marker.pose.position.y = ddp_problem->param_.pole_length * std::cos(x[1]);
@@ -349,7 +358,7 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   pole_marker.color.g = 0;
   pole_marker.color.b = 0;
   pole_marker.color.a = 1;
-  pole_marker.scale.x = 0.1;
+  pole_marker.scale.x = 0.2;
   pole_marker.pose.position.z = 1.0;
   pole_marker.pose.orientation.w = 1.0;
   pole_marker.points.resize(2);
@@ -361,7 +370,7 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
 
   // Force marker
   constexpr double force_scale = 0.04;
-  constexpr double force_thre = 0.1; // [N]
+  constexpr double force_thre = 1.0; // [N]
   if(std::abs(u[0]) > force_thre)
   {
     visualization_msgs::Marker force_marker;
@@ -411,6 +420,27 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
     marker_arr_msg.markers.push_back(dist_marker);
   }
 
+  // Target marker
+  double target_pos = ddp_problem->ref_pos_func_(current_t);
+  visualization_msgs::Marker target_marker;
+  target_marker.header = header_msg;
+  target_marker.ns = "target";
+  target_marker.id = marker_arr_msg.markers.size();
+  target_marker.type = visualization_msgs::Marker::LINE_LIST;
+  target_marker.color.r = 0;
+  target_marker.color.g = 1;
+  target_marker.color.b = 1;
+  target_marker.color.a = 0.5;
+  target_marker.scale.x = 0.05;
+  target_marker.pose.position.z = -1.0;
+  target_marker.pose.orientation.w = 1.0;
+  target_marker.points.resize(2);
+  target_marker.points[0].x = target_pos;
+  target_marker.points[0].y = -1e3;
+  target_marker.points[1].x = target_pos;
+  target_marker.points[1].y = 1e3;
+  marker_arr_msg.markers.push_back(target_marker);
+
   return marker_arr_msg;
 }
 
@@ -430,6 +460,12 @@ TEST(TestDDPCartPole, TestCase1)
       "/dist_left_large", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, -1 * dist_force_large));
   ros::ServiceServer dist_right_large_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
       "/dist_right_large", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, dist_force_large));
+  ros::ServiceServer target_pos_m5_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/target_pos_m5", std::bind(targetPosCallback, std::placeholders::_1, std::placeholders::_2, -5.0));
+  ros::ServiceServer target_pos_0_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/target_pos_0", std::bind(targetPosCallback, std::placeholders::_1, std::placeholders::_2, 0.0));
+  ros::ServiceServer target_pos_p5_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
+      "/target_pos_p5", std::bind(targetPosCallback, std::placeholders::_1, std::placeholders::_2, 5.0));
 
   double horizon_dt = 0.01; // [sec]
   double horizon_duration = 2.0; // [sec]
@@ -446,13 +482,20 @@ TEST(TestDDPCartPole, TestCase1)
   std::function<double(double)> ref_pos_func = [&](double t) {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
-    if(t <= 6.0)
+    if(std::isnan(target_pos))
     {
-      return 0.0; // [m]
+      if(t <= 6.0)
+      {
+        return 0.0; // [m]
+      }
+      else
+      {
+        return 1.0; // [m]
+      }
     }
     else
     {
-      return 1.0; // [m]
+      return target_pos;
     }
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(horizon_dt, ref_pos_func);
