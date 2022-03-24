@@ -215,6 +215,63 @@ public:
   CostWeight cost_weight_;
 };
 
+// Global variables
+std::shared_ptr<NOC::DDPSolver<4, 1>> ddp_solver = nullptr;
+double current_t = 0;
+DDPProblemCartPole::StateDimVector current_x = DDPProblemCartPole::StateDimVector::Zero();
+DDPProblemCartPole::InputDimVector current_u = DDPProblemCartPole::InputDimVector::Zero();
+std::vector<DDPProblemCartPole::InputDimVector> initial_u_list;
+bool first_iter = true;
+
+void mpcTimerCallback(const ros::TimerEvent & event)
+{
+  // Solve
+  ddp_solver->solve(current_t, current_x, initial_u_list);
+  current_u = ddp_solver->controlData().u_list[0];
+  initial_u_list = ddp_solver->controlData().u_list;
+
+  // Dump
+  if(first_iter)
+  {
+    first_iter = false;
+    ddp_solver->dumpTraceDataList("/tmp/TestDDPCartPoleTraceData.txt");
+  }
+}
+
+void checkDerivatives(const std::shared_ptr<DDPProblemCartPole> & ddp_problem)
+{
+  double t = 0;
+  DDPProblemCartPole::StateDimVector x;
+  x << 1.0, -2.0, 3.0, -4.0;
+  DDPProblemCartPole::InputDimVector u;
+  u << 10.0;
+
+  DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_analytical;
+  DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_analytical;
+  ddp_problem->calcStatEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+
+  DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_numerical;
+  DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_numerical;
+  constexpr double deriv_eps = 1e-6;
+  for(int i = 0; i < ddp_problem->stateDim(); i++)
+  {
+    state_eq_deriv_x_numerical.col(i) =
+        (ddp_problem->stateEq(t, x + deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u)
+         - ddp_problem->stateEq(t, x - deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u))
+        / (2 * deriv_eps);
+  }
+  for(int i = 0; i < ddp_problem->inputDim(); i++)
+  {
+    state_eq_deriv_u_numerical.col(i) =
+        (ddp_problem->stateEq(t, x, u + deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i))
+         - ddp_problem->stateEq(t, x, u - deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i)))
+        / (2 * deriv_eps);
+  }
+
+  EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
+  EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
+}
+
 visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDimVector & x,
                                               const DDPProblemCartPole::InputDimVector & u,
                                               const std::shared_ptr<DDPProblemCartPole> & ddp_problem)
@@ -292,26 +349,29 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   marker_arr_msg.markers.push_back(pole_marker);
 
   // Force marker
-  visualization_msgs::Marker force_marker;
-  force_marker.header = header_msg;
-  force_marker.ns = "force";
-  force_marker.id = marker_arr_msg.markers.size();
-  force_marker.type = visualization_msgs::Marker::ARROW;
-  force_marker.color.r = 1;
-  force_marker.color.g = 0;
-  force_marker.color.b = 0;
-  force_marker.color.a = 1;
-  force_marker.scale.x = 0.2;
-  force_marker.scale.y = 0.4;
-  force_marker.scale.z = 0.2;
-  force_marker.pose.position.z = 3.0;
-  force_marker.pose.orientation.w = 1.0;
-  force_marker.points.resize(2);
-  force_marker.points[0].x = cart_marker.pose.position.x;
-  force_marker.points[0].y = cart_marker.pose.position.y;
-  force_marker.points[1].x = cart_marker.pose.position.x + 0.2 * u[0];
-  force_marker.points[1].y = cart_marker.pose.position.y;
-  marker_arr_msg.markers.push_back(force_marker);
+  if(std::abs(u[0]) > 0.1)
+  {
+    visualization_msgs::Marker force_marker;
+    force_marker.header = header_msg;
+    force_marker.ns = "force";
+    force_marker.id = marker_arr_msg.markers.size();
+    force_marker.type = visualization_msgs::Marker::ARROW;
+    force_marker.color.r = 1;
+    force_marker.color.g = 0;
+    force_marker.color.b = 0;
+    force_marker.color.a = 1;
+    force_marker.scale.x = 0.2;
+    force_marker.scale.y = 0.4;
+    force_marker.scale.z = 0.2;
+    force_marker.pose.position.z = 3.0;
+    force_marker.pose.orientation.w = 1.0;
+    force_marker.points.resize(2);
+    force_marker.points[0].x = cart_marker.pose.position.x;
+    force_marker.points[0].y = cart_marker.pose.position.y;
+    force_marker.points[1].x = cart_marker.pose.position.x + 0.2 * u[0];
+    force_marker.points[1].y = cart_marker.pose.position.y;
+    marker_arr_msg.markers.push_back(force_marker);
+  }
 
   return marker_arr_msg;
 }
@@ -323,13 +383,17 @@ TEST(TestDDPCartPole, TestCase1)
   ros::NodeHandle pnh("~");
   ros::Publisher marker_arr_pub = nh.advertise<visualization_msgs::MarkerArray>("marker_arr", 1);
 
-  double dt = 0.01; // [sec]
+  double horizon_dt = 0.01; // [sec]
   double horizon_duration = 2.0; // [sec]
+  double mpc_dt = 0.004; // [sec]
+  double sim_dt = 0.002; // [sec]
   double end_t = 10.0; // [sec]
-  pnh.getParam("control/dt", dt);
+  pnh.getParam("control/horizon_dt", horizon_dt);
   pnh.getParam("control/horizon_duration", horizon_duration);
+  pnh.getParam("control/mpc_dt", mpc_dt);
+  pnh.getParam("control/sim_dt", sim_dt);
 
-  // Instantiate problem
+  // Instantiate problem for MPC
   constexpr double epsilon_t = 1e-6;
   std::function<double(double)> ref_pos_func = [&](double t) {
     // Add small values to avoid numerical instability at inequality bounds
@@ -343,7 +407,7 @@ TEST(TestDDPCartPole, TestCase1)
       return 1.0; // [m]
     }
   };
-  auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
+  auto ddp_problem = std::make_shared<DDPProblemCartPole>(horizon_dt, ref_pos_func);
   pnh.getParam("param/cart_mass", ddp_problem->param_.cart_mass);
   pnh.getParam("param/pole_mass", ddp_problem->param_.pole_mass);
   pnh.getParam("param/pole_length", ddp_problem->param_.pole_length);
@@ -361,100 +425,55 @@ TEST(TestDDPCartPole, TestCase1)
     ddp_problem->cost_weight_.terminal_x = Eigen::Map<DDPProblemCartPole::StateDimVector>(param_vec.data());
   }
 
-  // Test derivatives
-  {
-    double t = 0;
-    DDPProblemCartPole::StateDimVector x;
-    x << 1.0, -2.0, 3.0, -4.0;
-    DDPProblemCartPole::InputDimVector u;
-    u << 10.0;
-
-    DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_analytical;
-    DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_analytical;
-    ddp_problem->calcStatEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
-
-    DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_numerical;
-    DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_numerical;
-    constexpr double deriv_eps = 1e-6;
-    for(int i = 0; i < ddp_problem->stateDim(); i++)
-    {
-      state_eq_deriv_x_numerical.col(i) =
-          (ddp_problem->stateEq(t, x + deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u)
-           - ddp_problem->stateEq(t, x - deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u))
-          / (2 * deriv_eps);
-    }
-    for(int i = 0; i < ddp_problem->inputDim(); i++)
-    {
-      state_eq_deriv_u_numerical.col(i) =
-          (ddp_problem->stateEq(t, x, u + deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i))
-           - ddp_problem->stateEq(t, x, u - deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i)))
-          / (2 * deriv_eps);
-    }
-
-    EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
-    EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
-  }
+  // Check derivatives
+  checkDerivatives(ddp_problem);
 
   // Instantiate solver
-  auto ddp_solver = std::make_shared<NOC::DDPSolver<4, 1>>(ddp_problem);
-  int horizon_steps = static_cast<int>(horizon_duration / dt);
+  ddp_solver = std::make_shared<NOC::DDPSolver<4, 1>>(ddp_problem);
+  int horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().max_iter = 3;
 
-  // Initialize MPC
-  double current_t = 0;
-  DDPProblemCartPole::StateDimVector current_x;
+  // Instantiate simulation (only state equation is used and cost is ignored)
+  auto sim = std::make_shared<DDPProblemCartPole>(sim_dt, ref_pos_func, ddp_problem->param_, ddp_problem->cost_weight_);
+
+  // Setup simulation loop
+  current_t = 0;
   current_x << 0, M_PI, 0, 0;
-  std::vector<DDPProblemCartPole::InputDimVector> current_u_list;
-  current_u_list.assign(horizon_steps, DDPProblemCartPole::InputDimVector::Zero());
-
-  ros::Duration(1.0).sleep();
-
-  // Run MPC loop
+  current_u << 0;
+  initial_u_list.assign(horizon_steps, DDPProblemCartPole::InputDimVector::Zero());
   std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time pos theta vel omega force ref_pos iter" << std::endl;
-  ros::Rate rate(1.0 / dt);
+  ofs << "time pos theta vel omega force ref_pos" << std::endl;
+  ros::Rate rate(1.0 / sim_dt);
   bool no_exit = false;
   pnh.getParam("no_exit", no_exit);
-  bool first_iter = true;
-  while(ros::ok())
-  {
-    if(!no_exit && current_t >= end_t)
-    {
-      break;
-    }
 
-    // Solve
-    ddp_solver->solve(current_t, current_x, current_u_list);
-    if(first_iter)
-    {
-      first_iter = false;
-      ddp_solver->dumpTraceDataList("/tmp/TestDDPCartPoleTraceData.txt");
-    }
+  // Sleep to wait for Rviz to launch
+  ros::Duration(1.0).sleep();
+
+  // Run simulation loop
+  ros::Timer mpc_timer = nh.createTimer(ros::Duration(mpc_dt), mpcTimerCallback);
+  while(ros::ok() && (no_exit || current_t < end_t))
+  {
+    // Simulate one step
+    current_x = sim->stateEq(current_t, current_x, current_u);
+    current_t += sim_dt;
 
     // Check pos
-    double planned_pos = ddp_solver->controlData().x_list[0][0];
+    double current_pos = current_x[0];
     double ref_pos = ref_pos_func(current_t);
-    EXPECT_LT(std::abs(planned_pos - ref_pos), 1e1);
+    EXPECT_LT(std::abs(current_pos - ref_pos), 1e1);
 
     // Dump
-    ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
-        << ddp_solver->controlData().u_list[0].transpose() << " " << ref_pos << " "
-        << ddp_solver->traceDataList().back().iter << std::endl;
-
-    // Update to next step
-    current_t += dt;
-    current_x = ddp_solver->controlData().x_list[1];
-    current_u_list = ddp_solver->controlData().u_list;
-    current_u_list.erase(current_u_list.begin());
-    current_u_list.push_back(current_u_list.back());
+    ofs << current_t << " " << current_x.transpose() << " " << current_u.transpose() << " " << ref_pos << std::endl;
 
     // Publish marker
-    marker_arr_pub.publish(makeMarkerArr(current_x, current_u_list[0], ddp_problem));
+    marker_arr_pub.publish(makeMarkerArr(current_x, current_u, ddp_problem));
     ros::spinOnce();
     rate.sleep();
   }
+  mpc_timer.stop();
 
   // Check final pos
   double ref_pos = ref_pos_func(current_t);
