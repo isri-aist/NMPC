@@ -1,5 +1,6 @@
 set(NOCDDP_gtest_list
   TestDDPBipedal
+  TestDDPCartPole
   )
 
 foreach(NAME IN LISTS NOCDDP_gtest_list)

@@ -423,10 +423,16 @@ public:
     return control_data_;
   }
 
-  /** \brief Dump trace data.
+  /** \brief Const accessor to trace data list. */
+  const std::vector<TraceData> & traceDataList() const
+  {
+    return trace_data_list_;
+  }
+
+  /** \brief Dump trace data list.
       \param file_path path to output file
   */
-  void dumpTraceData(const std::string & file_path) const;
+  void dumpTraceDataList(const std::string & file_path) const;
 
 protected:
   /** \brief Process one iteration.

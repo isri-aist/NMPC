@@ -223,7 +223,7 @@ TEST(TestDDPBipedal, TestCase1)
   bool first_iter = true;
   std::string file_path = "/tmp/TestDDPBipedalResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time com_pos com_vel planned_zmp ref_zmp omega2" << std::endl;
+  ofs << "time com_pos com_vel planned_zmp ref_zmp omega2 iter" << std::endl;
   while(current_t < end_t)
   {
     // Solve
@@ -231,16 +231,17 @@ TEST(TestDDPBipedal, TestCase1)
     if(first_iter)
     {
       first_iter = false;
-      ddp_solver->dumpTraceData("/tmp/TestDDPBipedalTraceData.txt");
+      ddp_solver->dumpTraceDataList("/tmp/TestDDPBipedalTraceData.txt");
     }
 
     // Check ZMP
     double planned_zmp = ddp_solver->controlData().u_list[0][0];
     double ref_zmp = ref_zmp_func(current_t);
     EXPECT_LT(std::abs(planned_zmp - ref_zmp), 1e-2);
+
     // Dump
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " " << planned_zmp << " " << ref_zmp
-        << " " << omega2_func(current_t) << std::endl;
+        << " " << omega2_func(current_t) << " " << ddp_solver->traceDataList().back().iter << std::endl;
 
     // Update to next step
     current_t += dt;

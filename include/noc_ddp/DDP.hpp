@@ -470,7 +470,7 @@ void DDPSolver<StateDim, InputDim>::forwardPass(double alpha)
 }
 
 template<int StateDim, int InputDim>
-void DDPSolver<StateDim, InputDim>::dumpTraceData(const std::string & file_path) const
+void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_path) const
 {
   std::ofstream ofs(file_path);
   // clang-format off
