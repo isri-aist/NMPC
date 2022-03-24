@@ -222,6 +222,40 @@ TEST(TestDDPCartPole, TestCase1)
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
 
+  // Test derivatives
+  {
+    double t = 0;
+    DDPProblemCartPole::StateDimVector x;
+    x << 1.0, -2.0, 3.0, -4.0;
+    DDPProblemCartPole::InputDimVector u;
+    u << 10.0;
+
+    DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_analytical;
+    DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_analytical;
+    ddp_problem->calcStatEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+
+    DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_numerical;
+    DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_numerical;
+    constexpr double deriv_eps = 1e-6;
+    for(int i = 0; i < ddp_problem->stateDim(); i++)
+    {
+      state_eq_deriv_x_numerical.col(i) =
+          (ddp_problem->stateEq(t, x + deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u)
+           - ddp_problem->stateEq(t, x - deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u))
+          / (2 * deriv_eps);
+    }
+    for(int i = 0; i < ddp_problem->inputDim(); i++)
+    {
+      state_eq_deriv_u_numerical.col(i) =
+          (ddp_problem->stateEq(t, x, u + deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i))
+           - ddp_problem->stateEq(t, x, u - deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i)))
+          / (2 * deriv_eps);
+    }
+
+    EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
+    EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
+  }
+
   // Instantiate solver
   auto ddp_solver = std::make_shared<NOC::DDPSolver<4, 1>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
