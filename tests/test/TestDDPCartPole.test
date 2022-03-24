@@ -2,6 +2,16 @@
   <test test-name="test_ddp_cart_pole"
         pkg="noc_ddp" type="TestDDPCartPole" name="test_ddp_cart_pole"
         time-limit="60.0">
+    <rosparam>
+      param:
+        cart_mass: 1.0
+        pole_mass: 0.5
+        pole_length: 2.0
+      cost:
+        running_x: [0.1, 1.0, 0.01, 0.1]
+        running_u: [0.01]
+        terminal_x: [0.1, 1.0, 0.01, 0.1]
+    </rosparam>
   </test>
 
   <node pkg="rviz" type="rviz" name="rviz"

@@ -19,13 +19,22 @@
 class DDPProblemCartPole : public NOC::DDPProblem<4, 1>
 {
 public:
+  struct Param
+  {
+    Param() {}
+
+    double cart_mass = 1.0; // [kg]
+    double pole_mass = 0.5; // [kg]
+    double pole_length = 2.0; // [m]
+  };
+
   struct CostWeight
   {
     CostWeight()
     {
-      running_x << 1e-1, 1.0, 1e-2, 1e-1;
-      running_u << 1e-4;
-      terminal_x << 1e-1, 1.0, 1e-2, 1e-1;
+      running_x << 0.1, 1.0, 0.01, 0.1;
+      running_u << 0.001;
+      terminal_x << 0.1, 1.0, 0.01, 0.1;
     }
 
     StateDimVector running_x;
@@ -36,8 +45,9 @@ public:
 public:
   DDPProblemCartPole(double dt,
                      const std::function<double(double)> & ref_pos_func,
+                     const Param & param = Param(),
                      const CostWeight & cost_weight = CostWeight())
-  : DDPProblem(dt, 4, 1), ref_pos_func_(ref_pos_func), cost_weight_(cost_weight)
+  : DDPProblem(dt, 4, 1), ref_pos_func_(ref_pos_func), param_(param), cost_weight_(cost_weight)
   {
   }
 
@@ -49,18 +59,22 @@ public:
     double omega = x[3];
     double f = u[0];
 
+    double m1 = param_.cart_mass;
+    double m2 = param_.pole_mass;
+    double l = param_.pole_length;
+
     double sin_theta = std::sin(theta);
     double cos_theta = std::cos(theta);
     double omega2 = std::pow(omega, 2);
-    double denom = cart_mass_ + pole_mass_ * std::pow(sin_theta, 2);
+    double denom = m1 + m2 * std::pow(sin_theta, 2);
 
     StateDimVector x_dot;
     // clang-format off
     x_dot[0] = vel;
     x_dot[1] = omega;
-    x_dot[2] = (f - pole_mass_ * pole_length_ * omega2 * sin_theta + pole_mass_ * g_ * sin_theta * cos_theta) / denom;
-    x_dot[3] = (f * cos_theta - pole_mass_ * pole_length_ * omega2 * sin_theta * cos_theta
-                + g_ * (cart_mass_ + pole_mass_) * sin_theta) / (pole_length_ * denom);
+    x_dot[2] = (f - m2 * l * omega2 * sin_theta + m2 * g_ * sin_theta * cos_theta) / denom;
+    x_dot[3] = (f * cos_theta - m2 * l * omega2 * sin_theta * cos_theta
+                + g_ * (m1 + m2) * sin_theta) / (l * denom);
     // clang-format on
 
     return x + dt_ * x_dot;
@@ -92,34 +106,38 @@ public:
     double omega = x[3];
     double f = u[0];
 
+    double m1 = param_.cart_mass;
+    double m2 = param_.pole_mass;
+    double l = param_.pole_length;
+
     double sin_theta = std::sin(theta);
     double cos_theta = std::cos(theta);
     double omega2 = std::pow(omega, 2);
-    double denom = cart_mass_ + pole_mass_ * std::pow(sin_theta, 2);
+    double denom = m1 + m2 * std::pow(sin_theta, 2);
 
     state_eq_deriv_x.setZero();
     // clang-format off
     state_eq_deriv_x(0, 2) = 1;
     state_eq_deriv_x(1, 3) = 1;
-    state_eq_deriv_x(2, 1) = ((-1 * pole_mass_ * pole_length_ * omega2 * cos_theta
-                               + pole_mass_ * g_ * (1 - 2 * std::pow(sin_theta, 2))) * denom
-                              + -1 * (f - pole_mass_ * pole_length_ * omega2 * sin_theta + pole_mass_ * g_ * sin_theta * cos_theta)
-                              * (2 * pole_mass_ * sin_theta * cos_theta))
+    state_eq_deriv_x(2, 1) = ((-1 * m2 * l * omega2 * cos_theta
+                               + m2 * g_ * (1 - 2 * std::pow(sin_theta, 2))) * denom
+                              + -1 * (f - m2 * l * omega2 * sin_theta + m2 * g_ * sin_theta * cos_theta)
+                              * (2 * m2 * sin_theta * cos_theta))
         / std::pow(denom, 2);
-    state_eq_deriv_x(2, 3) = (-2 * pole_mass_ * pole_length_ * omega * sin_theta) / denom;
-    state_eq_deriv_x(3, 1) = ((-1 * f * sin_theta + -1 * pole_mass_ * pole_length_ * omega2 * (1 - 2 * std::pow(sin_theta, 2))
-                               + g_ * (cart_mass_ + pole_mass_) * cos_theta) * denom
-                              + -1 * (f * cos_theta - pole_mass_ * pole_length_ * omega2 * sin_theta * cos_theta
-                                      + g_ * (cart_mass_ + pole_mass_) * sin_theta) * (2 * pole_mass_ * sin_theta * cos_theta))
-        / (pole_length_ * std::pow(denom, 2));
-    state_eq_deriv_x(3, 3) = (-2 * pole_mass_ * pole_length_ * omega * sin_theta * cos_theta) / (pole_length_ * denom);
+    state_eq_deriv_x(2, 3) = (-2 * m2 * l * omega * sin_theta) / denom;
+    state_eq_deriv_x(3, 1) = ((-1 * f * sin_theta + -1 * m2 * l * omega2 * (1 - 2 * std::pow(sin_theta, 2))
+                               + g_ * (m1 + m2) * cos_theta) * denom
+                              + -1 * (f * cos_theta - m2 * l * omega2 * sin_theta * cos_theta
+                                      + g_ * (m1 + m2) * sin_theta) * (2 * m2 * sin_theta * cos_theta))
+        / (l * std::pow(denom, 2));
+    state_eq_deriv_x(3, 3) = (-2 * m2 * l * omega * sin_theta * cos_theta) / (l * denom);
     // clang-format on
     state_eq_deriv_x *= dt_;
     state_eq_deriv_x += StateStateDimMatrix::Identity();
 
     state_eq_deriv_u.setZero();
     state_eq_deriv_u[2] = 1 / denom;
-    state_eq_deriv_u[3] = cos_theta / (pole_length_ * denom);
+    state_eq_deriv_u[3] = cos_theta / (l * denom);
     state_eq_deriv_u *= dt_;
   }
 
@@ -192,14 +210,9 @@ public:
 
 public:
   static constexpr double g_ = 9.80665; // [m/s^2]
-
   std::function<double(double)> ref_pos_func_;
-
+  Param param_;
   CostWeight cost_weight_;
-
-  double cart_mass_ = 1.0; // [kg]
-  double pole_mass_ = 0.5; // [kg]
-  double pole_length_ = 1.0; // [m]
 };
 
 visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDimVector & x,
@@ -252,8 +265,8 @@ visualization_msgs::MarkerArray makeMarkerArr(const DDPProblemCartPole::StateDim
   mass_marker.scale.x = 0.4;
   mass_marker.scale.y = 0.4;
   mass_marker.scale.z = 0.1;
-  mass_marker.pose.position.x = x[0] + ddp_problem->pole_length_ * -1 * std::sin(x[1]);
-  mass_marker.pose.position.y = ddp_problem->pole_length_ * std::cos(x[1]);
+  mass_marker.pose.position.x = x[0] + ddp_problem->param_.pole_length * -1 * std::sin(x[1]);
+  mass_marker.pose.position.y = ddp_problem->param_.pole_length * std::cos(x[1]);
   mass_marker.pose.position.z = 2.0;
   mass_marker.pose.orientation.w = 1.0;
   marker_arr_msg.markers.push_back(mass_marker);
@@ -322,14 +335,30 @@ TEST(TestDDPCartPole, TestCase1)
     t += epsilon_t;
     if(t <= 6.0)
     {
-      return 0.0;
+      return 0.0; // [m]
     }
     else
     {
-      return 0.5;
+      return 1.0; // [m]
     }
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
+  pnh.getParam("param/cart_mass", ddp_problem->param_.cart_mass);
+  pnh.getParam("param/pole_mass", ddp_problem->param_.pole_mass);
+  pnh.getParam("param/pole_length", ddp_problem->param_.pole_length);
+  std::vector<double> param_vec;
+  if(pnh.getParam("cost/running_x", param_vec))
+  {
+    ddp_problem->cost_weight_.running_x = Eigen::Map<DDPProblemCartPole::StateDimVector>(param_vec.data());
+  }
+  if(pnh.getParam("cost/running_u", param_vec))
+  {
+    ddp_problem->cost_weight_.running_u = Eigen::Map<DDPProblemCartPole::InputDimVector>(param_vec.data());
+  }
+  if(pnh.getParam("cost/terminal_x", param_vec))
+  {
+    ddp_problem->cost_weight_.terminal_x = Eigen::Map<DDPProblemCartPole::StateDimVector>(param_vec.data());
+  }
 
   // Test derivatives
   {
@@ -377,6 +406,8 @@ TEST(TestDDPCartPole, TestCase1)
   std::vector<DDPProblemCartPole::InputDimVector> current_u_list;
   current_u_list.assign(horizon_steps, DDPProblemCartPole::InputDimVector::Zero());
 
+  ros::Duration(1.0).sleep();
+
   // Run MPC loop
   bool first_iter = true;
   std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
@@ -418,10 +449,10 @@ TEST(TestDDPCartPole, TestCase1)
 
   // Check final pos
   double ref_pos = ref_pos_func(current_t);
-  EXPECT_LT(std::abs(current_x[0] - ref_pos), 1e-2);
-  EXPECT_LT(std::abs(current_x[1]), 1e-2);
-  EXPECT_LT(std::abs(current_x[2]), 1e-2);
-  EXPECT_LT(std::abs(current_x[3]), 1e-2);
+  EXPECT_LT(std::abs(current_x[0] - ref_pos), 1.0);
+  EXPECT_LT(std::abs(current_x[1]), 1e-1);
+  EXPECT_LT(std::abs(current_x[2]), 1.0);
+  EXPECT_LT(std::abs(current_x[3]), 1e-1);
 
   std::cout << "Run the following commands in gnuplot:\n"
             << "  set key autotitle columnhead\n"
