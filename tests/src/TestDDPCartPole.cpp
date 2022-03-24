@@ -325,8 +325,9 @@ TEST(TestDDPCartPole, TestCase1)
 
   double dt = 0.01; // [sec]
   double horizon_duration = 2.0; // [sec]
-  int horizon_steps = static_cast<int>(horizon_duration / dt);
   double end_t = 10.0; // [sec]
+  pnh.getParam("control/dt", dt);
+  pnh.getParam("control/horizon_duration", horizon_duration);
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
@@ -396,6 +397,7 @@ TEST(TestDDPCartPole, TestCase1)
 
   // Instantiate solver
   auto ddp_solver = std::make_shared<NOC::DDPSolver<4, 1>>(ddp_problem);
+  int horizon_steps = static_cast<int>(horizon_duration / dt);
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().max_iter = 3;
 
@@ -409,13 +411,20 @@ TEST(TestDDPCartPole, TestCase1)
   ros::Duration(1.0).sleep();
 
   // Run MPC loop
-  bool first_iter = true;
   std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
   std::ofstream ofs(file_path);
   ofs << "time pos theta vel omega force ref_pos iter" << std::endl;
   ros::Rate rate(1.0 / dt);
-  while(current_t < end_t)
+  bool no_exit = false;
+  pnh.getParam("no_exit", no_exit);
+  bool first_iter = true;
+  while(ros::ok())
   {
+    if(!no_exit && current_t >= end_t)
+    {
+      break;
+    }
+
     // Solve
     ddp_solver->solve(current_t, current_x, current_u_list);
     if(first_iter)

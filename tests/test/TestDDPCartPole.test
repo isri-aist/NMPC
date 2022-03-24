@@ -1,8 +1,14 @@
 <launch>
+  <arg name="no_exit" default="false" />
+
   <test test-name="test_ddp_cart_pole"
         pkg="noc_ddp" type="TestDDPCartPole" name="test_ddp_cart_pole"
         time-limit="60.0">
-    <rosparam>
+    <rosparam subst_value="true">
+      no_exit: $(arg no_exit)
+      control:
+        dt: 0.01 # [sec]
+        horizon_duration: 2.0 # [sec]
       param:
         cart_mass: 1.0
         pole_mass: 0.5
