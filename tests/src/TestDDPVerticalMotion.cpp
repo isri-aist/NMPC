@@ -84,9 +84,19 @@ public:
                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
   {
     calcStatEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
-    state_eq_deriv_xx.assign(stateDim(), StateStateDimMatrix::Zero());
-    state_eq_deriv_uu.assign(stateDim(), InputInputDimMatrix::Zero(inputDim(), inputDim()));
-    state_eq_deriv_xu.assign(stateDim(), StateInputDimMatrix::Zero(stateDim(), inputDim()));
+
+    if(state_eq_deriv_xx.size() != stateDim() || state_eq_deriv_uu.size() != stateDim()
+       || state_eq_deriv_xu.size() != stateDim())
+    {
+      throw std::runtime_error("Vector size should be " + std::to_string(stateDim()) + " but "
+                               + std::to_string(state_eq_deriv_xx.size()));
+    }
+    for(int i = 0; i < stateDim(); i++)
+    {
+      state_eq_deriv_xx[i].setZero();
+      state_eq_deriv_uu[i].setZero();
+      state_eq_deriv_xu[i].setZero();
+    }
   }
 
   virtual void calcRunningCostDeriv(double t,
