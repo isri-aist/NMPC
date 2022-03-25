@@ -11,6 +11,8 @@ DDPProblem<StateDim, InputDim>::DDPProblem(double dt) : dt_(dt)
 {
   // Check dimension
   static_assert(StateDim > 0, "[DDP] Template param StateDim should be positive.");
+  static_assert(InputDim >= 0 || InputDim == Eigen::Dynamic,
+                "[DDP] Template param InputDim should be non-negative or Eigen::Dynamic.");
 }
 
 template<int StateDim, int InputDim>
@@ -67,6 +69,7 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
   else
   {
+    // This assumes that the dimension is fixed, but it is efficient because it preserves existing elements
     derivative_list_.resize(config_.horizon_steps, Derivative(problem_->stateDim(), problem_->inputDim(), outer_dim));
   }
   k_list_.resize(config_.horizon_steps);
@@ -370,6 +373,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     const StateStateDimMatrix & Lxx = derivative_list_[i].Lxx;
     const InputInputDimMatrix & Luu = derivative_list_[i].Luu;
     const StateInputDimMatrix & Lxu = derivative_list_[i].Lxu;
+    int input_dim = Fu.cols();
 
     // Calculate Q
     Qu = Lu + Fu.transpose() * Vx;
@@ -422,29 +426,36 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     }
     if(config_.reg_type == 1)
     {
-      int input_dim = problem_->inputDim(t);
       Quu_F += lambda_ * InputInputDimMatrix::Identity(input_dim, input_dim);
     }
 
     // Calculate gains
-    if(config_.with_input_constraint)
+    if(input_dim > 0)
     {
-      // \todo Calculate gains with considering constraints
-      throw std::runtime_error("Input constraint is not supported yet.");
+      if(config_.with_input_constraint)
+      {
+        // \todo Calculate gains with considering constraints
+        throw std::runtime_error("Input constraint is not supported yet.");
+      }
+      else
+      {
+        Eigen::LLT<InputInputDimMatrix> llt_Quu_F(Quu_F);
+        if(llt_Quu_F.info() == Eigen::NumericalIssue)
+        {
+          if(config_.print_level >= 1)
+          {
+            std::cout << "[DDP/Backward] Quu_F is not positive definite in Cholesky decomposition (LLT)." << std::endl;
+          }
+          return false;
+        }
+        k = -1 * llt_Quu_F.solve(Qu);
+        K = -1 * llt_Quu_F.solve(Qux_reg);
+      }
     }
     else
     {
-      Eigen::LLT<InputInputDimMatrix> llt_Quu_F(Quu_F);
-      if(llt_Quu_F.info() == Eigen::NumericalIssue)
-      {
-        if(config_.print_level >= 1)
-        {
-          std::cout << "[DDP/Backward] Quu_F is not positive definite in Cholesky decomposition (LLT)." << std::endl;
-        }
-        return false;
-      }
-      k = -1 * llt_Quu_F.solve(Qu);
-      K = -1 * llt_Quu_F.solve(Qux_reg);
+      k.setZero(0);
+      K.setZero(0, problem_->stateDim());
     }
 
     // Update cost-to-go approximation
