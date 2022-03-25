@@ -42,13 +42,27 @@ public:
 
   virtual int inputDim(double t) const override
   {
-    return 1;
+    // Add small values to avoid numerical instability at inequality bounds
+    constexpr double epsilon_t = 1e-6;
+    t += epsilon_t;
+    if(2.0 < t && t < 3.0)
+    {
+      return 2;
+    }
+    else if(4.0 < t && t < 5.0)
+    {
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
   }
 
   virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u) const override
   {
     StateDimVector x_dot;
-    x_dot << x[1], u[0] / mass_ - g_;
+    x_dot << x[1], u.sum() / mass_ - g_;
     return x + dt_ * x_dot;
   }
 
@@ -76,7 +90,8 @@ public:
     state_eq_deriv_x *= dt_;
     state_eq_deriv_x += StateStateDimMatrix::Identity();
 
-    state_eq_deriv_u << 0, 1.0 / mass_;
+    state_eq_deriv_u.row(0).setZero();
+    state_eq_deriv_u.row(1).setConstant(1.0 / mass_);
     state_eq_deriv_u *= dt_;
   }
 
@@ -173,14 +188,14 @@ TEST(TestDDPVerticalMotion, TestCase1)
   double dt = 0.01; // [sec]
   double horizon_duration = 3.0; // [sec]
   int horizon_steps = static_cast<int>(horizon_duration / dt);
-  double end_t = 20.0; // [sec]
+  double end_t = 10.0; // [sec]
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
   std::function<double(double)> ref_pos_func = [&](double t) {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
-    if(t < 10.0)
+    if(t < 8.0)
     {
       return 1.0; // [m]
     }
@@ -227,15 +242,24 @@ TEST(TestDDPVerticalMotion, TestCase1)
 
     // Dump
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
-        << ddp_solver->controlData().u_list[0].transpose() << " " << ref_pos << " "
-        << ddp_solver->traceDataList().back().iter << std::endl;
+        << ddp_solver->controlData().u_list[0].sum() << " " << ref_pos << " " << ddp_solver->traceDataList().back().iter
+        << std::endl;
 
     // Update to next step
-    current_t += dt;
     current_x = ddp_solver->controlData().x_list[1];
     current_u_list = ddp_solver->controlData().u_list;
     current_u_list.erase(current_u_list.begin());
-    current_u_list.push_back(current_u_list.back());
+    double terminal_t = current_t + horizon_steps * dt;
+    int terminal_input_dim = ddp_problem->inputDim(terminal_t);
+    if(current_u_list.back().size() == terminal_input_dim)
+    {
+      current_u_list.push_back(current_u_list.back());
+    }
+    else
+    {
+      current_u_list.push_back(DDPProblemVerticalMotion::InputDimVector::Zero(terminal_input_dim));
+    }
+    current_t += dt;
   }
 
   // Check final pos

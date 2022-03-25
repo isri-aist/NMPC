@@ -26,17 +26,30 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
 {
   auto start_time = std::chrono::system_clock::now();
 
+  // Initialize variables
+  current_t_ = current_t;
+  lambda_ = config_.initial_lambda;
+  dlambda_ = config_.initial_dlambda;
+
   // Check initial_u_list
   if(initial_u_list.size() != config_.horizon_steps)
   {
     throw std::invalid_argument("initial_u_list length should be " + std::to_string(config_.horizon_steps) + " but "
                                 + std::to_string(initial_u_list.size()) + ".");
   }
-
-  // Initialize variables
-  current_t_ = current_t;
-  lambda_ = config_.initial_lambda;
-  dlambda_ = config_.initial_dlambda;
+  if constexpr(InputDim == Eigen::Dynamic)
+  {
+    for(int i = 0; i < config_.horizon_steps; i++)
+    {
+      double t = current_t_ + i * problem_->dt();
+      if(initial_u_list[i].size() != problem_->inputDim(t))
+      {
+        throw std::runtime_error("initial_u dimension should be " + std::to_string(problem_->inputDim(t)) + " but "
+                                 + std::to_string(initial_u_list[i].size()) + ". i: " + std::to_string(i)
+                                 + ", time: " + std::to_string(t));
+      }
+    }
+  }
 
   // Resize list
   candidate_control_data_.x_list.resize(config_.horizon_steps + 1);
