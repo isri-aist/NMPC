@@ -72,9 +72,9 @@ public:
                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
   {
     calcStatEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
-    state_eq_deriv_xx.assign(2, StateStateDimMatrix::Zero());
-    state_eq_deriv_uu.assign(2, InputInputDimMatrix::Zero());
-    state_eq_deriv_xu.assign(2, StateInputDimMatrix::Zero());
+    state_eq_deriv_xx.assign(stateDim(), StateStateDimMatrix::Zero());
+    state_eq_deriv_uu.assign(stateDim(), InputInputDimMatrix::Zero());
+    state_eq_deriv_xu.assign(stateDim(), StateInputDimMatrix::Zero());
   }
 
   virtual void calcRunningCostDeriv(double t,

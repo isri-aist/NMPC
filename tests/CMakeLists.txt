@@ -2,6 +2,7 @@ find_package(rostest REQUIRED)
 
 set(NOCDDP_gtest_list
   TestDDPBipedal
+  TestDDPVerticalMotion
   )
 
 set(NOCDDP_rostest_list
