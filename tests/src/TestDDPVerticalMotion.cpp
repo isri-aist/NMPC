@@ -21,7 +21,7 @@ public:
     CostWeight()
     {
       running_x << 1.0, 1e-3;
-      running_u.resize(1); // input is dynamic size so resize is necessary
+      running_u.resize(1); // input dimension is dynamic so resize is necessary
       running_u << 1e-6;
       terminal_x << 1.0, 1e-3;
     }
@@ -35,7 +35,7 @@ public:
   DDPProblemVerticalMotion(double dt,
                            const std::function<double(double)> & ref_pos_func,
                            const CostWeight & cost_weight = CostWeight())
-  : DDPProblem(dt, 2, 1), ref_pos_func_(ref_pos_func), cost_weight_(cost_weight)
+  : DDPProblem(dt), ref_pos_func_(ref_pos_func), cost_weight_(cost_weight)
   {
   }
 

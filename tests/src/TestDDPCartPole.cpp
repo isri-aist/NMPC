@@ -51,7 +51,7 @@ public:
                      const std::function<double(double)> & ref_pos_func,
                      const Param & param = Param(),
                      const CostWeight & cost_weight = CostWeight())
-  : DDPProblem(dt, 4, 1), ref_pos_func_(ref_pos_func), param_(param), cost_weight_(cost_weight)
+  : DDPProblem(dt), ref_pos_func_(ref_pos_func), param_(param), cost_weight_(cost_weight)
   {
   }
 

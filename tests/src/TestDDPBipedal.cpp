@@ -31,7 +31,7 @@ public:
                     const std::function<double(double)> & ref_zmp_func,
                     const std::function<double(double)> & omega2_func,
                     const CostWeight & cost_weight = CostWeight())
-  : DDPProblem(dt, 2, 1), ref_zmp_func_(ref_zmp_func), omega2_func_(omega2_func), cost_weight_(cost_weight)
+  : DDPProblem(dt), ref_zmp_func_(ref_zmp_func), omega2_func_(omega2_func), cost_weight_(cost_weight)
   {
   }
 

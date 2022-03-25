@@ -7,36 +7,10 @@
 namespace NOC
 {
 template<int StateDim, int InputDim>
-DDPProblem<StateDim, InputDim>::DDPProblem(double dt, int state_dim, int input_dim)
-: dt_(dt), state_dim_(state_dim), input_dim_(input_dim)
+DDPProblem<StateDim, InputDim>::DDPProblem(double dt) : dt_(dt)
 {
-  // Check dimension is positive
-  if(state_dim_ <= 0)
-  {
-    throw std::runtime_error("state_dim must be positive: " + std::to_string(state_dim_) + " <= 0");
-  }
-  if(input_dim_ < 0)
-  {
-    throw std::runtime_error("input_dim must be non-negative: " + std::to_string(input_dim_) + " < 0");
-  }
-
-  // Check dimension consistency
-  if constexpr(StateDim != Eigen::Dynamic)
-  {
-    if(state_dim_ != StateDim)
-    {
-      throw std::runtime_error("state_dim is inconsistent with template parameter: " + std::to_string(state_dim_)
-                               + " != " + std::to_string(StateDim));
-    }
-  }
-  if constexpr(InputDim != Eigen::Dynamic)
-  {
-    if(input_dim_ != InputDim)
-    {
-      throw std::runtime_error("input_dim is inconsistent with template parameter: " + std::to_string(input_dim_)
-                               + " != " + std::to_string(InputDim));
-    }
-  }
+  // Check dimension
+  static_assert(StateDim > 0, "[DDP] Template param StateDim should be positive.");
 }
 
 template<int StateDim, int InputDim>
@@ -69,12 +43,13 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   candidate_control_data_.u_list.resize(config_.horizon_steps);
   candidate_control_data_.cost_list.resize(config_.horizon_steps + 1);
   int outer_dim = config_.use_state_eq_second_derivative ? problem_->stateDim() : 0;
-  if(problem_->isDynamicDim())
+  if constexpr(InputDim == Eigen::Dynamic)
   {
     derivative_list_.clear();
     for(int i = 0; i < config_.horizon_steps; i++)
     {
-      derivative_list_.push_back(Derivative(problem_->stateDim(), problem_->inputDim(), outer_dim));
+      double t = current_t_ + i * problem_->dt();
+      derivative_list_.push_back(Derivative(problem_->stateDim(), problem_->inputDim(t), outer_dim));
     }
   }
   else
@@ -371,6 +346,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
   for(int i = config_.horizon_steps - 1; i >= 0; i--)
   {
     // Get derivatives
+    double t = current_t_ + i * problem_->dt();
     const StateStateDimMatrix & Fx = derivative_list_[i].Fx;
     const StateInputDimMatrix & Fu = derivative_list_[i].Fu;
     const std::vector<StateStateDimMatrix> & Fxx = derivative_list_[i].Fxx;
@@ -433,7 +409,8 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     }
     if(config_.reg_type == 1)
     {
-      Quu_F += lambda_ * InputInputDimMatrix::Identity(problem_->inputDim(), problem_->inputDim());
+      int input_dim = problem_->inputDim(t);
+      Quu_F += lambda_ * InputInputDimMatrix::Identity(input_dim, input_dim);
     }
 
     // Calculate gains

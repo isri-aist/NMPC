@@ -10,8 +10,8 @@
 namespace NOC
 {
 /** \brief DDP problem.
-    \tparam StateDim state dimension (fixed size only)
-    \tparam InputDim input dimension (fixed size or dynamic size (i.e., Eigen::Dynamic))
+    \tparam StateDim state dimension (fixed only)
+    \tparam InputDim input dimension (fixed or dynamic (i.e., Eigen::Dynamic))
  */
 template<int StateDim, int InputDim>
 class DDPProblem
@@ -40,27 +40,38 @@ public:
 
   /** \brief Constructor.
       \param dt discretization timestep [sec]
-      \param state_dim state dimension (can be omitted for fixed size)
-      \param input_dim input dimension (can be omitted for fixed size)
    */
-  DDPProblem(double dt, int state_dim = StateDim, int input_dim = InputDim);
-
-  /** \brief Whether state or input are dynamic size. */
-  static inline constexpr bool isDynamicDim()
-  {
-    return StateDim == Eigen::Dynamic || InputDim == Eigen::Dynamic;
-  }
+  DDPProblem(double dt);
 
   /** \brief Gets the state dimension. */
-  inline int stateDim() const
+  static inline constexpr int stateDim()
   {
-    return state_dim_;
+    return StateDim;
   }
 
   /** \brief Gets the input dimension. */
-  inline int inputDim() const
+  inline virtual int inputDim() const
   {
-    return input_dim_;
+    if constexpr(InputDim == Eigen::Dynamic)
+    {
+      throw std::runtime_error("Since input dimension is dynamic, time must be passed to inputDim().");
+    }
+    return InputDim;
+  }
+
+  /** \brief Gets the input dimension.
+      \param t time
+  */
+  inline virtual int inputDim(double t) const
+  {
+    if constexpr(InputDim == Eigen::Dynamic)
+    {
+      throw std::runtime_error("inputDim(t) must be overridden if input dimension is dynamic.");
+    }
+    else
+    {
+      return inputDim();
+    }
   }
 
   /** \brief Gets the discretization timestep [sec]. */
@@ -177,12 +188,6 @@ public:
                                      Eigen::Ref<StateStateDimMatrix> terminal_cost_deriv_xx) const = 0;
 
 protected:
-  //! State dimension
-  const int state_dim_ = 0;
-
-  //! Input dimension
-  const int input_dim_ = 0;
-
   //! Discretization timestep [sec]
   const double dt_ = 0;
 };
