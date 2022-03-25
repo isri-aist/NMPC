@@ -50,6 +50,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
                                           const StateDimVector & current_x,
                                           const std::vector<InputDimVector> & initial_u_list)
 {
+  auto start_time = std::chrono::system_clock::now();
+
   // Check initial_u_list
   if(initial_u_list.size() != config_.horizon_steps)
   {
@@ -111,6 +113,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
     std::cout << "[DDP] Initial cost: " << control_data_.cost_list.sum() << std::endl;
   }
 
+  auto setup_time = std::chrono::system_clock::now();
+
   // Optimization loop
   int retval = 0;
   for(int iter = 1; iter <= config_.max_iter; iter++)
@@ -125,6 +129,18 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   if(config_.print_level >= 3)
   {
     std::cout << "[DDP] Final cost: " << control_data_.cost_list.sum() << std::endl;
+  }
+
+  auto end_time = std::chrono::system_clock::now();
+
+  if(config_.print_level >= 3)
+  {
+    double duration_setup =
+        1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(setup_time - start_time).count();
+    double duration_opt =
+        1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - setup_time).count();
+    std::cout << "[DDP] Setup duration: " << duration_setup << " [ms], optimization duration: " << duration_opt
+              << " [ms]." << std::endl;
   }
 
   return retval == 1;
