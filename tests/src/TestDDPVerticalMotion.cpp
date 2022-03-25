@@ -13,7 +13,7 @@
     Running cost is sum of the respective quadratic terms of state and input.
     Terminal cost is quadratic term of state.
  */
-class DDPProblemVerticalMotion : public NOC::DDPProblem<2, 1>
+class DDPProblemVerticalMotion : public NOC::DDPProblem<2, Eigen::Dynamic>
 {
 public:
   struct CostWeight
@@ -21,6 +21,7 @@ public:
     CostWeight()
     {
       running_x << 1.0, 1e-3;
+      running_u.resize(1); // input is dynamic-size so resize is necessary
       running_u << 1e-6;
       terminal_x << 1.0, 1e-3;
     }
@@ -84,8 +85,8 @@ public:
   {
     calcStatEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
     state_eq_deriv_xx.assign(stateDim(), StateStateDimMatrix::Zero());
-    state_eq_deriv_uu.assign(stateDim(), InputInputDimMatrix::Zero());
-    state_eq_deriv_xu.assign(stateDim(), StateInputDimMatrix::Zero());
+    state_eq_deriv_uu.assign(stateDim(), InputInputDimMatrix::Zero(inputDim(), inputDim()));
+    state_eq_deriv_xu.assign(stateDim(), StateInputDimMatrix::Zero(stateDim(), inputDim()));
   }
 
   virtual void calcRunningCostDeriv(double t,
@@ -174,14 +175,14 @@ TEST(TestDDPVerticalMotion, TestCase1)
   auto ddp_problem = std::make_shared<DDPProblemVerticalMotion>(dt, ref_pos_func);
 
   // Instantiate solver
-  auto ddp_solver = std::make_shared<NOC::DDPSolver<2, 1>>(ddp_problem);
+  auto ddp_solver = std::make_shared<NOC::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
 
   // Initialize MPC
   double current_t = 0;
   DDPProblemVerticalMotion::StateDimVector current_x = DDPProblemVerticalMotion::StateDimVector(0.5, 0);
   std::vector<DDPProblemVerticalMotion::InputDimVector> current_u_list;
-  current_u_list.assign(horizon_steps, DDPProblemVerticalMotion::InputDimVector::Zero());
+  current_u_list.assign(horizon_steps, DDPProblemVerticalMotion::InputDimVector::Zero(ddp_problem->inputDim()));
 
   // Run MPC loop
   bool first_iter = true;

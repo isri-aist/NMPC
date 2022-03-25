@@ -40,10 +40,16 @@ public:
 
   /** \brief Constructor.
       \param dt discretization timestep [sec]
-      \param state_dim state dimension
-      \param input_dim input dimension
+      \param state_dim state dimension (can be omitted for fixed-size)
+      \param input_dim input dimension (can be omitted for fixed-size)
    */
   DDPProblem(double dt, int state_dim = StateDim, int input_dim = InputDim);
+
+  /** \brief Whether state or input are dynamic-size. */
+  static inline constexpr bool isDynamicDim()
+  {
+    return StateDim == Eigen::Dynamic || InputDim == Eigen::Dynamic;
+  }
 
   /** \brief Gets the state dimension. */
   inline int stateDim() const
@@ -297,25 +303,23 @@ public:
   /*! \brief Derivatives of DDP problem. */
   struct Derivative
   {
-    /** \brief Constructor. */
-    Derivative() {}
-
     /** \brief Constructor.
         \param state_dim state dimension
-     */
-    Derivative(int state_dim)
+        \param input_dim input dimension
+        \param outer_dim outer dimension of tensor
+    */
+    Derivative(int state_dim, int input_dim, int outer_dim)
     {
-      setStateDim(state_dim);
-    }
-
-    /** \brief Set state dimension.
-        \param state_dim state dimension
-     */
-    void setStateDim(int state_dim)
-    {
-      Fxx.resize(state_dim);
-      Fuu.resize(state_dim);
-      Fxu.resize(state_dim);
+      Fx.resize(state_dim, state_dim);
+      Fu.resize(state_dim, input_dim);
+      Fxx.assign(outer_dim, StateStateDimMatrix(state_dim, state_dim));
+      Fuu.assign(outer_dim, InputInputDimMatrix(input_dim, input_dim));
+      Fxu.assign(outer_dim, StateInputDimMatrix(state_dim, input_dim));
+      Lx.resize(state_dim);
+      Lu.resize(input_dim);
+      Lxx.resize(state_dim, state_dim);
+      Luu.resize(input_dim, input_dim);
+      Lxu.resize(state_dim, input_dim);
     }
 
     //! First-order derivative of state equation w.r.t. state

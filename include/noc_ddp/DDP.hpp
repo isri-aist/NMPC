@@ -66,10 +66,18 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   candidate_control_data_.x_list.resize(config_.horizon_steps + 1);
   candidate_control_data_.u_list.resize(config_.horizon_steps);
   candidate_control_data_.cost_list.resize(config_.horizon_steps + 1);
-  derivative_list_.resize(config_.horizon_steps);
-  for(auto & derivative : derivative_list_)
+  int outer_dim = config_.use_state_eq_second_derivative ? problem_->stateDim() : 0;
+  if(problem_->isDynamicDim())
   {
-    derivative.setStateDim(config_.use_state_eq_second_derivative ? problem_->stateDim() : 0);
+    derivative_list_.clear();
+    for(int i = 0; i < config_.horizon_steps; i++)
+    {
+      derivative_list_.push_back(Derivative(problem_->stateDim(), problem_->inputDim(), outer_dim));
+    }
+  }
+  else
+  {
+    derivative_list_.resize(config_.horizon_steps, Derivative(problem_->stateDim(), problem_->inputDim(), outer_dim));
   }
   k_list_.resize(config_.horizon_steps);
   K_list_.resize(config_.horizon_steps);
@@ -393,7 +401,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     Vxx_reg = Vxx;
     if(config_.reg_type == 2)
     {
-      Vxx_reg += lambda_ * StateStateDimMatrix::Identity();
+      Vxx_reg += lambda_ * StateStateDimMatrix::Identity(problem_->stateDim(), problem_->stateDim());
     }
 
     Qux_reg = Lxu.transpose() + Fu.transpose() * Vxx_reg * Fx;
@@ -409,7 +417,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     }
     if(config_.reg_type == 1)
     {
-      Quu_F += lambda_ * InputInputDimMatrix::Identity();
+      Quu_F += lambda_ * InputInputDimMatrix::Identity(problem_->inputDim(), problem_->inputDim());
     }
 
     // Calculate gains
