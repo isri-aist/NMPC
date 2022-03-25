@@ -10,8 +10,8 @@
 namespace NOC
 {
 /** \brief DDP problem.
-    \tparam StateDim state dimension
-    \tparam InputDim input dimension
+    \tparam StateDim state dimension (fixed size only)
+    \tparam InputDim input dimension (fixed size or dynamic size (i.e., Eigen::Dynamic))
  */
 template<int StateDim, int InputDim>
 class DDPProblem
@@ -40,12 +40,12 @@ public:
 
   /** \brief Constructor.
       \param dt discretization timestep [sec]
-      \param state_dim state dimension (can be omitted for fixed-size)
-      \param input_dim input dimension (can be omitted for fixed-size)
+      \param state_dim state dimension (can be omitted for fixed size)
+      \param input_dim input dimension (can be omitted for fixed size)
    */
   DDPProblem(double dt, int state_dim = StateDim, int input_dim = InputDim);
 
-  /** \brief Whether state or input are dynamic-size. */
+  /** \brief Whether state or input are dynamic size. */
   static inline constexpr bool isDynamicDim()
   {
     return StateDim == Eigen::Dynamic || InputDim == Eigen::Dynamic;

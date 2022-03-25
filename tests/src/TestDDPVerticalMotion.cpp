@@ -21,7 +21,7 @@ public:
     CostWeight()
     {
       running_x << 1.0, 1e-3;
-      running_u.resize(1); // input is dynamic-size so resize is necessary
+      running_u.resize(1); // input is dynamic size so resize is necessary
       running_u << 1e-6;
       terminal_x << 1.0, 1e-3;
     }
