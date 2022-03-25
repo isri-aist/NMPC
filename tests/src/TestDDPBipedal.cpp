@@ -143,6 +143,22 @@ protected:
   CostWeight cost_weight_;
 };
 
+/** \brief Min-jerk function.
+
+    See https://courses.shadmehrlab.org/Shortcourse/minimumjerk.pdf
+    The function smoothly connects (0, 0) to (1, 1).
+    Velocity and acceleration at both ends are zero.
+ */
+double minJerk(double t)
+{
+  return 6 * std::pow(t, 5) + -15 * std::pow(t, 4) + 10 * std::pow(t, 3);
+}
+
+double minJerkSecondDeriv(double t)
+{
+  return 120 * std::pow(t, 3) + -180 * std::pow(t, 2) + 60 * t;
+}
+
 TEST(TestDDPBipedal, TestCase1)
 {
   double dt = 0.01; // [sec]
@@ -184,10 +200,9 @@ TEST(TestDDPBipedal, TestCase1)
     }
     else if(t < 8.0)
     {
-      double theta = M_PI * (t - 7.0) + M_PI;
-      double scale = (cog_pos_z_low - cog_pos_z_high) / 2.0;
-      cog_pos_z = scale * (std::cos(theta) + 1.0) + cog_pos_z_high;
-      cog_acc_z = -1 * std::pow(M_PI, 2) * scale * std::cos(theta);
+      double scale = cog_pos_z_low - cog_pos_z_high;
+      cog_pos_z = scale * minJerk(t - 7.0) + cog_pos_z_high;
+      cog_acc_z = scale * minJerkSecondDeriv(t - 7.0);
     }
     else if(t < 12.0)
     {
@@ -195,10 +210,9 @@ TEST(TestDDPBipedal, TestCase1)
     }
     else if(t < 13.0)
     {
-      double theta = M_PI * (t - 12.0) + M_PI;
-      double scale = (cog_pos_z_high - cog_pos_z_low) / 2.0;
-      cog_pos_z = scale * (std::cos(theta) + 1.0) + cog_pos_z_low;
-      cog_acc_z = -1 * std::pow(M_PI, 2) * scale * std::cos(theta);
+      double scale = cog_pos_z_high - cog_pos_z_low;
+      cog_pos_z = scale * minJerk(t - 12.0) + cog_pos_z_low;
+      cog_acc_z = scale * minJerkSecondDeriv(t - 12.0);
     }
     else
     {
@@ -223,7 +237,7 @@ TEST(TestDDPBipedal, TestCase1)
   bool first_iter = true;
   std::string file_path = "/tmp/TestDDPBipedalResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time com_pos com_vel planned_zmp ref_zmp omega2 iter" << std::endl;
+  ofs << "time com_pos com_vel planned_zmp ref_zmp omega^2 iter" << std::endl;
   while(current_t < end_t)
   {
     // Solve

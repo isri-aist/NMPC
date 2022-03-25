@@ -9,7 +9,7 @@
 
 /** \brief Smooth absolute function. (also known as Pseudo-Huber)
 
-    https://en.wikipedia.org/wiki/Huber_loss#Pseudo-Huber_loss_function
+    See https://en.wikipedia.org/wiki/Huber_loss#Pseudo-Huber_loss_function
 */
 Eigen::VectorXd smoothAbs(const Eigen::VectorXd & v, double scale_factor = 1.0)
 {
@@ -257,6 +257,7 @@ TEST(TestDDPVerticalMotion, TestCase1)
   // Instantiate solver
   auto ddp_solver = std::make_shared<NOC::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
+  ddp_solver->config().initial_lambda = 1e-6;
 
   // Initialize MPC
   double current_t = 0;
