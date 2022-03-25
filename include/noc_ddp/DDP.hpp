@@ -180,7 +180,8 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       {
         if(config_.print_level >= 1)
         {
-          std::cout << "[DDP] Failure due to large lambda. (iter: " << iter << ")" << std::endl;
+          std::cout << "[DDP/Backward] Failure due to large lambda. (time: " << current_t_ << ", iter: " << iter << ")"
+                    << std::endl;
         }
         return -1; // Failure
       }
@@ -207,7 +208,8 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
   {
     if(config_.print_level >= 2)
     {
-      std::cout << "[DDP] Terminate due to small gradient. (iter: " << iter << ")" << std::endl;
+      std::cout << "[DDP] Terminate due to small gradient. (time: " << current_t_ << ", iter: " << iter << ")"
+                << std::endl;
     }
     return 1; // Terminate
   }
@@ -232,7 +234,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       cost_update_ratio = cost_update_actual / cost_update_expected;
       if(cost_update_expected < 0)
       {
-        std::cout << "[DDP] Value is not expected to decrease." << std::endl;
+        std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
         cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
       }
       if(cost_update_ratio > config_.cost_update_ratio_thre)
@@ -270,7 +272,8 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     {
       if(config_.print_level >= 2)
       {
-        std::cout << "[DDP] Terminate due to small cost update. (iter: " << iter << ")" << std::endl;
+        std::cout << "[DDP] Terminate due to small cost update. (time: " << current_t_ << ", iter: " << iter << ")"
+                  << std::endl;
       }
       retval = 1; // Terminate
     }
@@ -299,7 +302,8 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     {
       if(config_.print_level >= 1)
       {
-        std::cout << "[DDP] Failure due to large lambda. (iter: " << iter << ")" << std::endl;
+        std::cout << "[DDP/Forward] Failure due to large lambda. (time: " << current_t_ << ", iter: " << iter << ")"
+                  << std::endl;
       }
       retval = -1; // Failure
     }
@@ -421,7 +425,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       {
         if(config_.print_level >= 1)
         {
-          std::cout << "[DDP] Quu_F is not positive definite in Cholesky decomposition (LLT)." << std::endl;
+          std::cout << "[DDP/Backward] Quu_F is not positive definite in Cholesky decomposition (LLT)." << std::endl;
         }
         return false;
       }
