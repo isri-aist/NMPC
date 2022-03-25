@@ -49,7 +49,10 @@ public:
     return StateDim;
   }
 
-  /** \brief Gets the input dimension. */
+  /** \brief Gets the input dimension.
+      \note If input dimension is dynamic, this must not be called. Instead, inputDim(t) must be called passing time as
+     a parameter.
+   */
   inline virtual int inputDim() const
   {
     if constexpr(InputDim == Eigen::Dynamic)
@@ -61,6 +64,7 @@ public:
 
   /** \brief Gets the input dimension.
       \param t time
+      \note If input dimension is dynamic, this must be overridden.
   */
   inline virtual int inputDim(double t) const
   {

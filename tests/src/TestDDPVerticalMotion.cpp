@@ -21,13 +21,12 @@ public:
     CostWeight()
     {
       running_x << 1.0, 1e-3;
-      running_u.resize(1); // input dimension is dynamic so resize is necessary
-      running_u << 1e-6;
+      running_u = 1e-6;
       terminal_x << 1.0, 1e-3;
     }
 
     StateDimVector running_x;
-    InputDimVector running_u;
+    double running_u;
     StateDimVector terminal_x;
   };
 
@@ -37,6 +36,13 @@ public:
                            const CostWeight & cost_weight = CostWeight())
   : DDPProblem(dt), ref_pos_func_(ref_pos_func), cost_weight_(cost_weight)
   {
+  }
+
+  using DDPProblem::inputDim;
+
+  virtual int inputDim(double t) const override
+  {
+    return 1;
   }
 
   virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u) const override
@@ -50,7 +56,7 @@ public:
   {
     StateDimVector ref_x;
     ref_x << ref_pos_func_(t), 0;
-    return 0.5 * cost_weight_.running_x.dot((x - ref_x).cwiseAbs2()) + 0.5 * cost_weight_.running_u.dot(u.cwiseAbs2());
+    return 0.5 * cost_weight_.running_x.dot((x - ref_x).cwiseAbs2()) + 0.5 * cost_weight_.running_u * u.squaredNorm();
   }
 
   virtual double terminalCost(double t, const StateDimVector & x) const override
@@ -109,7 +115,7 @@ public:
     ref_x << ref_pos_func_(t), 0;
 
     running_cost_deriv_x = cost_weight_.running_x.cwiseProduct(x - ref_x);
-    running_cost_deriv_u = cost_weight_.running_u.cwiseProduct(u);
+    running_cost_deriv_u = cost_weight_.running_u * u;
   }
 
   virtual void calcRunningCostDeriv(double t,
@@ -125,10 +131,11 @@ public:
     ref_x << ref_pos_func_(t), 0;
 
     running_cost_deriv_x = cost_weight_.running_x.cwiseProduct(x - ref_x);
-    running_cost_deriv_u = cost_weight_.running_u.cwiseProduct(u);
+    running_cost_deriv_u = cost_weight_.running_u * u;
 
     running_cost_deriv_xx = cost_weight_.running_x.asDiagonal();
-    running_cost_deriv_uu = cost_weight_.running_u.asDiagonal();
+    running_cost_deriv_uu.setIdentity();
+    running_cost_deriv_uu *= cost_weight_.running_u;
     running_cost_deriv_xu.setZero();
   }
 
@@ -192,7 +199,11 @@ TEST(TestDDPVerticalMotion, TestCase1)
   double current_t = 0;
   DDPProblemVerticalMotion::StateDimVector current_x = DDPProblemVerticalMotion::StateDimVector(0.5, 0);
   std::vector<DDPProblemVerticalMotion::InputDimVector> current_u_list;
-  current_u_list.assign(horizon_steps, DDPProblemVerticalMotion::InputDimVector::Zero(ddp_problem->inputDim()));
+  for(int i = 0; i < horizon_steps; i++)
+  {
+    double t = current_t + i * dt;
+    current_u_list.push_back(DDPProblemVerticalMotion::InputDimVector::Zero(ddp_problem->inputDim(t)));
+  }
 
   // Run MPC loop
   bool first_iter = true;
