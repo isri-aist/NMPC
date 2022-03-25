@@ -7,6 +7,21 @@
 
 #include <noc_ddp/DDP.h>
 
+/** \brief Smooth absolute function. (also known as Pseudo-Huber)
+
+    https://en.wikipedia.org/wiki/Huber_loss#Pseudo-Huber_loss_function
+*/
+Eigen::VectorXd smoothAbs(const Eigen::VectorXd & v, double scale_factor = 1.0)
+{
+  return (v.array().square() + std::pow(scale_factor, 2)).sqrt() - scale_factor;
+}
+
+/** \brief First-order derivative of smooth absolute function. */
+Eigen::VectorXd smoothAbsDeriv(const Eigen::VectorXd & v, double scale_factor = 1.0)
+{
+  return v.cwiseProduct((v.array().square() + std::pow(scale_factor, 2)).rsqrt().matrix());
+}
+
 /** \brief DDP problem for vertical motion.
 
     State is [pos_z, vel_z]. Input is [force_z].
@@ -20,9 +35,9 @@ public:
   {
     CostWeight()
     {
-      running_x << 1.0, 1e-1;
-      running_u = 1e-2;
-      terminal_x << 1.0, 1e-1;
+      running_x << 1.0, 1e-3;
+      running_u = 1e-4;
+      terminal_x << 1.0, 1e-3;
     }
 
     StateDimVector running_x;
@@ -45,7 +60,11 @@ public:
     // Add small values to avoid numerical instability at inequality bounds
     constexpr double epsilon_t = 1e-6;
     t += epsilon_t;
-    if(4.5 < t && t < 5.0)
+    if(2.0 < t && t < 3.0)
+    {
+      return 2;
+    }
+    else if(4.5 < t && t < 5.0)
     {
       return 0;
     }
@@ -66,7 +85,17 @@ public:
   {
     StateDimVector ref_x;
     ref_x << ref_pos_func_(t), 0;
-    return 0.5 * cost_weight_.running_x.dot((x - ref_x).cwiseAbs2()) + 0.5 * cost_weight_.running_u * u.squaredNorm();
+    double cost_x = 0.5 * cost_weight_.running_x.dot((x - ref_x).cwiseAbs2());
+    double cost_u;
+    if(use_smooth_abs_)
+    {
+      cost_u = 0.5 * cost_weight_.running_u * smoothAbs(u).squaredNorm();
+    }
+    else
+    {
+      cost_u = 0.5 * cost_weight_.running_u * u.squaredNorm();
+    }
+    return cost_x + cost_u;
   }
 
   virtual double terminalCost(double t, const StateDimVector & x) const override
@@ -126,7 +155,15 @@ public:
     ref_x << ref_pos_func_(t), 0;
 
     running_cost_deriv_x = cost_weight_.running_x.cwiseProduct(x - ref_x);
-    running_cost_deriv_u = cost_weight_.running_u * u;
+
+    if(use_smooth_abs_)
+    {
+      running_cost_deriv_u = cost_weight_.running_u * smoothAbsDeriv(u).cwiseProduct(smoothAbs(u));
+    }
+    else
+    {
+      running_cost_deriv_u = cost_weight_.running_u * u;
+    }
   }
 
   virtual void calcRunningCostDeriv(double t,
@@ -142,12 +179,22 @@ public:
     ref_x << ref_pos_func_(t), 0;
 
     running_cost_deriv_x = cost_weight_.running_x.cwiseProduct(x - ref_x);
-    running_cost_deriv_u = cost_weight_.running_u * u;
 
     running_cost_deriv_xx = cost_weight_.running_x.asDiagonal();
-    running_cost_deriv_uu.setIdentity();
-    running_cost_deriv_uu *= cost_weight_.running_u;
     running_cost_deriv_xu.setZero();
+
+    if(use_smooth_abs_)
+    {
+      Eigen::VectorXd smooth_abs_deriv = smoothAbsDeriv(u);
+      running_cost_deriv_u = cost_weight_.running_u * smooth_abs_deriv.cwiseProduct(smoothAbs(u));
+      running_cost_deriv_uu = cost_weight_.running_u * smooth_abs_deriv.cwiseAbs2().asDiagonal();
+    }
+    else
+    {
+      running_cost_deriv_u = cost_weight_.running_u * u;
+      running_cost_deriv_uu.setIdentity();
+      running_cost_deriv_uu *= cost_weight_.running_u;
+    }
   }
 
   virtual void calcTerminalCostDeriv(double t,
@@ -177,6 +224,11 @@ protected:
   std::function<double(double)> ref_pos_func_;
   CostWeight cost_weight_;
   double mass_ = 1.0; // [kg]
+
+  // I encountered a problem with fluctuating pos when the number of contact points went from one to more than one.
+  // Considering that this is due to the nonlinear (i.e., quadratic) term of force in running cost, I introduced
+  // a linear term of force instead of quadratic term as running cost. However, there was no improvement in this problem.
+  bool use_smooth_abs_ = false;
 };
 
 TEST(TestDDPVerticalMotion, TestCase1)
