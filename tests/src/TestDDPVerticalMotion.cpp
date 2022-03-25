@@ -20,9 +20,9 @@ public:
   {
     CostWeight()
     {
-      running_x << 1.0, 1e-3;
-      running_u = 1e-6;
-      terminal_x << 1.0, 1e-3;
+      running_x << 1.0, 1e-1;
+      running_u = 1e-2;
+      terminal_x << 1.0, 1e-1;
     }
 
     StateDimVector running_x;
@@ -45,11 +45,7 @@ public:
     // Add small values to avoid numerical instability at inequality bounds
     constexpr double epsilon_t = 1e-6;
     t += epsilon_t;
-    if(2.0 < t && t < 3.0)
-    {
-      return 2;
-    }
-    else if(4.0 < t && t < 5.0)
+    if(4.5 < t && t < 5.0)
     {
       return 0;
     }
@@ -212,7 +208,7 @@ TEST(TestDDPVerticalMotion, TestCase1)
 
   // Initialize MPC
   double current_t = 0;
-  DDPProblemVerticalMotion::StateDimVector current_x = DDPProblemVerticalMotion::StateDimVector(0.5, 0);
+  DDPProblemVerticalMotion::StateDimVector current_x = DDPProblemVerticalMotion::StateDimVector(1.2, 0);
   std::vector<DDPProblemVerticalMotion::InputDimVector> current_u_list;
   for(int i = 0; i < horizon_steps; i++)
   {
