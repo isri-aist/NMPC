@@ -273,7 +273,7 @@ TEST(TestDDPVerticalMotion, TestCase1)
   bool first_iter = true;
   std::string file_path = "/tmp/TestDDPVerticalMotionResult.txt";
   std::ofstream ofs(file_path);
-  ofs << "time pos vel force ref_pos iter" << std::endl;
+  ofs << "time pos vel force ref_pos num_contact iter" << std::endl;
   while(current_t < end_t)
   {
     // Solve
@@ -291,8 +291,8 @@ TEST(TestDDPVerticalMotion, TestCase1)
 
     // Dump
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
-        << ddp_solver->controlData().u_list[0].sum() << " " << ref_pos << " " << ddp_solver->traceDataList().back().iter
-        << std::endl;
+        << ddp_solver->controlData().u_list[0].sum() << " " << ref_pos << " "
+        << ddp_solver->controlData().u_list[0].size() << " " << ddp_solver->traceDataList().back().iter << std::endl;
 
     // Update to next step
     current_x = ddp_solver->controlData().x_list[1];
