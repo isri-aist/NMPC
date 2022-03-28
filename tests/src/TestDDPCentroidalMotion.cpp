@@ -202,6 +202,43 @@ protected:
   double mass_ = 1.0; // [kg]
 };
 
+void checkDerivatives(const std::shared_ptr<DDPProblemCentroidalMotion> & ddp_problem)
+{
+  double t = 0;
+  int state_dim = ddp_problem->stateDim();
+  int input_dim = ddp_problem->inputDim(t);
+
+  DDPProblemCentroidalMotion::StateDimVector x(state_dim);
+  x << 1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0;
+  DDPProblemCentroidalMotion::InputDimVector u(input_dim);
+  u << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0;
+
+  DDPProblemCentroidalMotion::StateStateDimMatrix state_eq_deriv_x_analytical(state_dim, state_dim);
+  DDPProblemCentroidalMotion::StateInputDimMatrix state_eq_deriv_u_analytical(state_dim, input_dim);
+  ddp_problem->calcStatEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+
+  DDPProblemCentroidalMotion::StateStateDimMatrix state_eq_deriv_x_numerical(state_dim, state_dim);
+  DDPProblemCentroidalMotion::StateInputDimMatrix state_eq_deriv_u_numerical(state_dim, input_dim);
+  constexpr double deriv_eps = 1e-6;
+  for(int i = 0; i < state_dim; i++)
+  {
+    state_eq_deriv_x_numerical.col(i) =
+        (ddp_problem->stateEq(t, x + deriv_eps * DDPProblemCentroidalMotion::StateDimVector::Unit(state_dim, i), u)
+         - ddp_problem->stateEq(t, x - deriv_eps * DDPProblemCentroidalMotion::StateDimVector::Unit(state_dim, i), u))
+        / (2 * deriv_eps);
+  }
+  for(int i = 0; i < input_dim; i++)
+  {
+    state_eq_deriv_u_numerical.col(i) =
+        (ddp_problem->stateEq(t, x, u + deriv_eps * DDPProblemCentroidalMotion::InputDimVector::Unit(input_dim, i))
+         - ddp_problem->stateEq(t, x, u - deriv_eps * DDPProblemCentroidalMotion::InputDimVector::Unit(input_dim, i)))
+        / (2 * deriv_eps);
+  }
+
+  EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
+  EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
+}
+
 DDPProblemCentroidalMotion::StanceData makeStanceDataFromRect(const std::array<Eigen::Vector2d, 2> & rect_min_max)
 {
   std::vector<Eigen::Vector3d> vertex_list(4);
@@ -276,6 +313,9 @@ TEST(TestDDPCentroidalMotion, TestCase1)
     }
   };
   auto ddp_problem = std::make_shared<DDPProblemCentroidalMotion>(dt, ref_stance_func, ref_pos_func);
+
+  // Check derivatives
+  checkDerivatives(ddp_problem);
 
   // Instantiate solver
   auto ddp_solver = std::make_shared<NOC::DDPSolver<9, Eigen::Dynamic>>(ddp_problem);
