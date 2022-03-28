@@ -3,6 +3,9 @@ project(noc_ddp)
 
 add_compile_options(-std=c++17)
 
+# Options
+option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   )
