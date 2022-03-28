@@ -41,7 +41,7 @@ public:
     CostWeight()
     {
       running_x << Eigen::Vector3d::Constant(1.0), Eigen::Vector3d::Constant(0.0), Eigen::Vector3d::Constant(1.0);
-      running_u = 1e-2;
+      running_u = 1e-6;
       terminal_x << Eigen::Vector3d::Constant(1.0), Eigen::Vector3d::Constant(0.0), Eigen::Vector3d::Constant(1.0);
     }
 
@@ -199,7 +199,7 @@ protected:
   std::function<StanceData(double)> ref_stance_func_;
   std::function<Eigen::Vector3d(double)> ref_pos_func_;
   CostWeight cost_weight_;
-  double mass_ = 1.0; // [kg]
+  double mass_ = 100.0; // [kg]
 };
 
 void checkDerivatives(const std::shared_ptr<DDPProblemCentroidalMotion> & ddp_problem)
@@ -346,6 +346,7 @@ TEST(TestDDPCentroidalMotion, TestCase1)
     if(first_iter)
     {
       first_iter = false;
+      ddp_solver->config().max_iter = 3;
       ddp_solver->dumpTraceDataList("/tmp/TestDDPCentroidalMotionTraceData.txt");
     }
 
@@ -380,7 +381,7 @@ TEST(TestDDPCentroidalMotion, TestCase1)
 
   // Check final state
   EXPECT_LT((current_x.head<3>() - ref_pos_func(current_t)).norm(), 1e-2);
-  EXPECT_LT(current_x.tail<6>().norm(), 1e-2);
+  EXPECT_LT(current_x.tail<6>().norm(), 1.0);
 
   std::cout << "Run the following commands in gnuplot:\n"
             << "  set key autotitle columnhead\n"
@@ -388,7 +389,9 @@ TEST(TestDDPCentroidalMotion, TestCase1)
             << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:14 w l lw 3 # pos_x\n"
             << "  plot \"" << file_path << "\" u 1:3 w lp, \"\" u 1:15 w l lw 3 # pos_y\n"
             << "  plot \"" << file_path << "\" u 1:4 w lp, \"\" u 1:16 w l lw 3 # pos_z\n"
-            << "  plot \"" << file_path << "\" u 1:13 w lp # force_z\n";
+            << "  plot \"" << file_path << "\" u 1:9 w lp # angular_momentum_y\n"
+            << "  plot \"" << file_path << "\" u 1:13 w lp # force_z\n"
+            << "  plot \"" << file_path << "\" u 1:17 w lp # iter\n";
 }
 
 int main(int argc, char ** argv)
