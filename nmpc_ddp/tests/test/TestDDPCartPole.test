@@ -1,7 +1,7 @@
 <launch>
   <arg name="no_exit" default="false" />
 
-  <arg name="time_limit" value="60.0" unless="$(arg no_exit)" />
+  <arg name="time_limit" value="300.0" unless="$(arg no_exit)" />
   <arg name="time_limit" value="6000.0" if="$(arg no_exit)" />
 
   <test test-name="test_ddp_cart_pole"
