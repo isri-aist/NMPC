@@ -11,4 +11,4 @@ else
 fi
 
 # Find all source files in the project minus those that are auto-generated or we do not maintain
-src_files=`find include src tests -name '*.cpp' -or -name '*.h' -or -name '*.hpp'`
+src_files=`find nmpc_ddp/include nmpc_ddp/src nmpc_ddp/tests -name '*.cpp' -or -name '*.h' -or -name '*.hpp'`
