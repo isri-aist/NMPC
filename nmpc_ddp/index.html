@@ -87,6 +87,12 @@ TestDDPCartPole</div></div>
 <li>Install dependent packages. <div class="fragment"><div class="line">$ source /opt/ros/${ROS_DISTRO}/setup.bash</div><div class="line">$ rosdep install -y -r --from-paths src --ignore-src</div></div><!-- fragment --></li>
 <li>Build a package. <div class="fragment"><div class="line">$ catkin build -DCMAKE_BUILD_TYPE=RelWithDebInfo --catkin-make-args all tests</div><div class="line"># For best performance</div><div class="line">$ catkin build -DOPTIMIZE_FOR_NATIVE=ON -DCMAKE_BUILD_TYPE=Release --catkin-make-args all tests</div></div><!-- fragment --></li>
 </ol>
+<h2>Control method</h2>
+<p>See the following for a detailed algorithm.</p><ul>
+<li>Y Tassa, T Erez, E Todorov. Synthesis and stabilization of complex behaviors through online trajectory optimization. IROS2012.</li>
+<li>Y Tassa, N Mansard, E Todorov. Control-limited differential dynamic programming. ICRA2014.</li>
+<li>iLQG/DDP trajectory optimization. <a href="https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization">https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization</a></li>
+</ul>
 <h2>Examples</h2>
 <p>Make sure that it is built with <code>--catkin-make-args tests</code> option.</p>
 <h3><a href="tests/src/TestDDPBipedal.cpp">Bipedal dynamics</a></h3>
