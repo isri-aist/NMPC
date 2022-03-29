@@ -37,3 +37,8 @@ endif()
 if(CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)
 endif()
+
+OPTION(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
+if(INSTALL_DOCUMENTATION)
+  add_subdirectory(doc)
+endif()
