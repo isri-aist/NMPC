@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <noc_ddp/DDP.h>
+#include <nmpc_ddp/DDP.h>
 
 /** \brief DDP problem for bipedal walking.
 
@@ -13,7 +13,7 @@
     Running cost is CoM_vel^2 + (ZMP - ZMP_ref)^2.
     Terminal cost is (CoM_pos - ZMP_ref)^2 + CoM_vel^2.
  */
-class DDPProblemBipedal : public NOC::DDPProblem<2, 1>
+class DDPProblemBipedal : public nmpc_ddp::DDPProblem<2, 1>
 {
 public:
   struct CostWeight
@@ -224,7 +224,7 @@ TEST(TestDDPBipedal, TestCase1)
   auto ddp_problem = std::make_shared<DDPProblemBipedal>(dt, ref_zmp_func, omega2_func);
 
   // Instantiate solver
-  auto ddp_solver = std::make_shared<NOC::DDPSolver<2, 1>>(ddp_problem);
+  auto ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<2, 1>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
 
   // Initialize MPC

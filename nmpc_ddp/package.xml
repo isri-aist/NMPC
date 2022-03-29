@@ -1,5 +1,5 @@
 <package format="2">
-  <name>noc_ddp</name>
+  <name>nmpc_ddp</name>
   <version>0.1.0</version>
   <description>
     Library for non-linear optimal control by differential dynamic programming
@@ -7,7 +7,7 @@
   <maintainer email="m-murooka@aist.go.jp">Masaki Murooka</maintainer>
   <license>GPL</license>
 
-  <url>http://ros.org/wiki/noc_ddp</url>
+  <url>http://ros.org/wiki/nmpc_ddp</url>
   <author>Masaki Murooka</author>
 
   <buildtool_depend>catkin</buildtool_depend>

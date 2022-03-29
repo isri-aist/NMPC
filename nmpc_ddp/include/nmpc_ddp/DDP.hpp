@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace NOC
+namespace nmpc_ddp
 {
 template<int StateDim, int InputDim>
 DDPProblem<StateDim, InputDim>::DDPProblem(double dt) : dt_(dt)
@@ -535,4 +535,4 @@ void DDPSolver<StateDim, InputDim>::dumpTraceDataList(const std::string & file_p
     // clang-format on
   }
 }
-} // namespace NOC
+} // namespace nmpc_ddp

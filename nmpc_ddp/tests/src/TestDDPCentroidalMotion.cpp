@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <noc_ddp/DDP.h>
+#include <nmpc_ddp/DDP.h>
 
 /** \brief Calculate a matrix corresponding to the cross product. */
 Eigen::Matrix3d crossMat(const Eigen::Vector3d & vec)
@@ -21,7 +21,7 @@ Eigen::Matrix3d crossMat(const Eigen::Vector3d & vec)
     Running cost is sum of the respective quadratic terms of state and input.
     Terminal cost is quadratic term of state.
  */
-class DDPProblemCentroidalMotion : public NOC::DDPProblem<9, Eigen::Dynamic>
+class DDPProblemCentroidalMotion : public nmpc_ddp::DDPProblem<9, Eigen::Dynamic>
 {
 public:
   struct StanceData
@@ -318,7 +318,7 @@ TEST(TestDDPCentroidalMotion, TestCase1)
   checkDerivatives(ddp_problem);
 
   // Instantiate solver
-  auto ddp_solver = std::make_shared<NOC::DDPSolver<9, Eigen::Dynamic>>(ddp_problem);
+  auto ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<9, Eigen::Dynamic>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
 
   // Initialize MPC

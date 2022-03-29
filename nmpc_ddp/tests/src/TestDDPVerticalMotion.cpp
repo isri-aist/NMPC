@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <noc_ddp/DDP.h>
+#include <nmpc_ddp/DDP.h>
 
 /** \brief Smooth absolute function. (also known as Pseudo-Huber)
 
@@ -28,7 +28,7 @@ Eigen::VectorXd smoothAbsDeriv(const Eigen::VectorXd & v, double scale_factor = 
     Running cost is sum of the respective quadratic terms of state and input.
     Terminal cost is quadratic term of state.
  */
-class DDPProblemVerticalMotion : public NOC::DDPProblem<2, Eigen::Dynamic>
+class DDPProblemVerticalMotion : public nmpc_ddp::DDPProblem<2, Eigen::Dynamic>
 {
 public:
   struct CostWeight
@@ -255,7 +255,7 @@ TEST(TestDDPVerticalMotion, TestCase1)
   auto ddp_problem = std::make_shared<DDPProblemVerticalMotion>(dt, ref_pos_func);
 
   // Instantiate solver
-  auto ddp_solver = std::make_shared<NOC::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
+  auto ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().initial_lambda = 1e-6;
 

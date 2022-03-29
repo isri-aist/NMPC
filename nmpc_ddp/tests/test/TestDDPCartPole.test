@@ -5,7 +5,7 @@
   <arg name="time_limit" value="6000.0" if="$(arg no_exit)" />
 
   <test test-name="test_ddp_cart_pole"
-        pkg="noc_ddp" type="TestDDPCartPole" name="test_ddp_cart_pole"
+        pkg="nmpc_ddp" type="TestDDPCartPole" name="test_ddp_cart_pole"
         time-limit="$(arg time_limit)">
     <rosparam subst_value="true">
       no_exit: $(arg no_exit)
@@ -26,7 +26,7 @@
   </test>
 
   <node pkg="rviz" type="rviz" name="rviz"
-        args="-d $(find noc_ddp)/tests/rviz/TestDDPCartPole.rviz" >
+        args="-d $(find nmpc_ddp)/tests/rviz/TestDDPCartPole.rviz" >
     <rosparam>
       rviz_service_call/buttons:
         - service_name: /dist_left_large

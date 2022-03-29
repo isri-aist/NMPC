@@ -12,7 +12,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_srvs/Empty.h>
 
-#include <noc_ddp/DDP.h>
+#include <nmpc_ddp/DDP.h>
 
 /** \brief DDP problem for cart-pole.
 
@@ -20,7 +20,7 @@
     Running cost is sum of the respective quadratic terms of state and input.
     Terminal cost is quadratic term of state.
  */
-class DDPProblemCartPole : public NOC::DDPProblem<4, 1>
+class DDPProblemCartPole : public nmpc_ddp::DDPProblem<4, 1>
 {
 public:
   struct Param
@@ -220,7 +220,7 @@ public:
 };
 
 // Global variables
-std::shared_ptr<NOC::DDPSolver<4, 1>> ddp_solver = nullptr;
+std::shared_ptr<nmpc_ddp::DDPSolver<4, 1>> ddp_solver = nullptr;
 double current_t = 0;
 DDPProblemCartPole::StateDimVector current_x = DDPProblemCartPole::StateDimVector::Zero();
 DDPProblemCartPole::InputDimVector current_u = DDPProblemCartPole::InputDimVector::Zero();
@@ -520,7 +520,7 @@ TEST(TestDDPCartPole, TestCase1)
   checkDerivatives(ddp_problem);
 
   // Instantiate solver
-  ddp_solver = std::make_shared<NOC::DDPSolver<4, 1>>(ddp_problem);
+  ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<4, 1>>(ddp_problem);
   int horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().max_iter = 3;

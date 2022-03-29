@@ -1,21 +1,21 @@
 find_package(rostest REQUIRED)
 
-set(NOCDDP_gtest_list
+set(nmpc_ddp_gtest_list
   TestDDPBipedal
   TestDDPVerticalMotion
   TestDDPCentroidalMotion
   )
 
-set(NOCDDP_rostest_list
+set(nmpc_ddp_rostest_list
   TestDDPCartPole
   )
 
-foreach(NAME IN LISTS NOCDDP_gtest_list)
+foreach(NAME IN LISTS nmpc_ddp_gtest_list)
   catkin_add_gtest(${NAME} src/${NAME}.cpp)
-  target_link_libraries(${NAME} NOCDDP)
+  target_link_libraries(${NAME} nmpc_ddp)
 endforeach()
 
-foreach(NAME IN LISTS NOCDDP_rostest_list)
+foreach(NAME IN LISTS nmpc_ddp_rostest_list)
   add_rostest_gtest(${NAME} test/${NAME}.test src/${NAME}.cpp)
-  target_link_libraries(${NAME} NOCDDP)
+  target_link_libraries(${NAME} nmpc_ddp)
 endforeach()

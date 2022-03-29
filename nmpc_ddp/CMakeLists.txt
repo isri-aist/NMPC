@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(noc_ddp)
+project(nmpc_ddp)
 
 add_compile_options(-std=c++17)
 
@@ -19,7 +19,7 @@ catkin_package(
   roscpp
   DEPENDS EIGEN3
   INCLUDE_DIRS include
-  LIBRARIES NOCDDP
+  LIBRARIES nmpc_ddp
   )
 
 include_directories(include ${catkin_INCLUDE_DIRS})

@@ -7,7 +7,7 @@
 
 #include <Eigen/Dense>
 
-namespace NOC
+namespace nmpc_ddp
 {
 /** \brief DDP problem.
     \tparam StateDim state dimension (fixed only)
@@ -507,6 +507,6 @@ protected:
   //! Expected update of value
   Eigen::Vector2d dV_;
 };
-} // namespace NOC
+} // namespace nmpc_ddp
 
-#include <noc_ddp/DDP.hpp>
+#include <nmpc_ddp/DDP.hpp>
