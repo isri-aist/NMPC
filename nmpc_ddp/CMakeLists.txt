@@ -22,9 +22,17 @@ catkin_package(
   LIBRARIES nmpc_ddp
   )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-add_subdirectory(src)
+add_library(nmpc_ddp INTERFACE)
+target_include_directories(nmpc_ddp INTERFACE
+  include
+  ${catkin_INCLUDE_DIRS}
+  )
+target_link_libraries(nmpc_ddp INTERFACE
+  ${catkin_LIBRARIES}
+  )
+if(OPTIMIZE_FOR_NATIVE)
+  target_compile_options(nmpc_ddp INTERFACE -march=native)
+endif()
 
 if(CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)
