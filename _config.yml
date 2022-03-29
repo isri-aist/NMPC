@@ -1,3 +1,4 @@
 name: NMPC documentation
 gems:
   - jekyll-redirect-from
+  - jekyll-sitemap
