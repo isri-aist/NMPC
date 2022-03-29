@@ -20,7 +20,7 @@
   <test_depend>rostest</test_depend>
   <test_depend>visualization_msgs</test_depend>
   <test_depend>std_srvs</test_depend>
-  <test_depend>jsk_rviz_plugin</test_depend>
+  <test_depend>jsk_rviz_plugins</test_depend>
 
   <doc_depend>doxygen</doc_depend>
 </package>
