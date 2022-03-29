@@ -42,6 +42,13 @@ $ catkin build -DCMAKE_BUILD_TYPE=RelWithDebInfo --catkin-make-args all tests
 $ catkin build -DOPTIMIZE_FOR_NATIVE=ON -DCMAKE_BUILD_TYPE=Release --catkin-make-args all tests
 ```
 
+## Control method
+See the following for a detailed algorithm.
+- Y Tassa, T Erez, E Todorov. Synthesis and stabilization of complex behaviors through online trajectory optimization. IROS2012.
+- Y Tassa, N Mansard, E Todorov. Control-limited differential dynamic programming. ICRA2014.
+- iLQG/DDP trajectory optimization.
+  https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization
+
 ## Examples
 Make sure that it is built with `--catkin-make-args tests` option.
 
