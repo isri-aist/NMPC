@@ -27,7 +27,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build-type: [Debug, RelWithDebInfo]
+        build-type: [Debug, RelWithDebInfo, Release]
+        include:
+          - build-type: Debug
+            optimize-for-native: OFF
+          - build-type: RelWithDebInfo
+            optimize-for-native: OFF
+          - build-type: Release
+            optimize-for-native: ON
     runs-on: ubuntu-18.04
     env:
       ROS_DISTRO: melodic
@@ -67,7 +74,8 @@ jobs:
           set -x
           cd ${GITHUB_WORKSPACE}/catkin_ws
           . devel/setup.bash
-          catkin build nmpc --limit-status-rate 0.1 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DINSTALL_DOCUMENTATION=ON
+          catkin build nmpc --limit-status-rate 0.1 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
+          -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=ON
       - name: Run tests
         run: |
           set -e
