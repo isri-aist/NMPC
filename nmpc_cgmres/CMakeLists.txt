@@ -34,7 +34,7 @@ target_link_libraries(nmpc_cgmres PUBLIC
   )
 if(OPTIMIZE_FOR_NATIVE)
   # TODO fix segmentation faults
-  message(WARNING The -march=native option is disabled for nmpc_cgmres because it causes segmentation faults in tests.)
+  message(WARNING "The -march=native option is disabled for nmpc_cgmres because it causes segmentation faults in tests.")
   # target_compile_options(nmpc_cgmres INTERFACE -march=native)
 endif()
 
