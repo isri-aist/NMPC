@@ -5,7 +5,7 @@ Non-linear model predictive control (NMPC) with continuation/GMRES method (C/GMR
 [![Documentation](https://img.shields.io/badge/doxygen-online-brightgreen?logo=read-the-docs&style=flat)](https://isri-aist.github.io/NMPC/nmpc_cgmres/index.html)
 
 ## Install
-See [here](../doc/Install.md).
+See [here](https://isri-aist.github.io/NMPC/doc/Install).
 
 ## Control method
 See the following for a detailed algorithm.

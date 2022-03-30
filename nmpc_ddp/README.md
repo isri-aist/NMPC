@@ -12,7 +12,7 @@ Non-linear model predictive control (NMPC) with differential dynamic drogramming
 - Supports time-varying control input dimensions
 
 ## Install
-See [here](../doc/Install.md).
+See [here](https://isri-aist.github.io/NMPC/doc/Install).
 
 ## Control method
 See the following for a detailed algorithm.
