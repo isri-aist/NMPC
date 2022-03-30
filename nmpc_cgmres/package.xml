@@ -1,13 +1,13 @@
 <package format="2">
-  <name>nmpc_ddp</name>
+  <name>nmpc_cgmres</name>
   <version>0.1.0</version>
   <description>
-    Non-linear model predictive control (NMPC) with differential dynamic drogramming (DDP)
+    Non-linear model predictive control (NMPC) with continuation/GMRES method (C/GMRES)
   </description>
   <maintainer email="m-murooka@aist.go.jp">Masaki Murooka</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/nmpc_ddp</url>
+  <url>http://ros.org/wiki/nmpc_cgmres</url>
   <author>Masaki Murooka</author>
 
   <buildtool_depend>catkin</buildtool_depend>
