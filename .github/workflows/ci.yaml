@@ -67,14 +67,14 @@ jobs:
           set -x
           cd ${GITHUB_WORKSPACE}/catkin_ws
           . devel/setup.bash
-          catkin build --limit-status-rate 0.1 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DINSTALL_DOCUMENTATION=ON
+          catkin build nmpc --limit-status-rate 0.1 -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DINSTALL_DOCUMENTATION=ON
       - name: Run tests
         run: |
           set -e
           set -x
           cd ${GITHUB_WORKSPACE}/catkin_ws
           . devel/setup.bash
-          catkin build --limit-status-rate 0.1 --catkin-make-args run_tests -- nmpc_ddp nmpc_cgmres --no-deps
+          catkin build --limit-status-rate 0.1 --catkin-make-args run_tests -- nmpc --no-deps
           catkin_test_results --verbose --all build
       - name: Upload documentation
         # Only run on master branch and for one configuration
