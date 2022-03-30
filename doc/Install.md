@@ -1,3 +1,5 @@
+# NMPC
+
 ## Install
 
 ### Requirements
