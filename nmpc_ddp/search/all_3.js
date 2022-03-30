@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['ddp_2eh',['DDP.h',['../DDP_8h.html',1,'']]],
-  ['ddp_2ehpp',['DDP.hpp',['../DDP_8hpp.html',1,'']]],
-  ['ddpproblem',['DDPProblem',['../classnmpc__ddp_1_1DDPProblem.html',1,'nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;'],['../classnmpc__ddp_1_1DDPProblem.html#ab17636758c03b79795ac612df9a8012c',1,'nmpc_ddp::DDPProblem::DDPProblem()']]],
+  ['ddpproblem',['DDPProblem',['../classnmpc__ddp_1_1DDPProblem.html',1,'nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;'],['../classnmpc__ddp_1_1DDPProblem.html#ae64dc3e293f31452cb344456ce5e2181',1,'nmpc_ddp::DDPProblem::DDPProblem()']]],
+  ['ddpproblem_2eh',['DDPProblem.h',['../DDPProblem_8h.html',1,'']]],
   ['ddpsolver',['DDPSolver',['../classnmpc__ddp_1_1DDPSolver.html',1,'nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;'],['../classnmpc__ddp_1_1DDPSolver.html#af99b907a20d3445048723c63e781e694',1,'nmpc_ddp::DDPSolver::DDPSolver()']]],
+  ['ddpsolver_2eh',['DDPSolver.h',['../DDPSolver_8h.html',1,'']]],
+  ['ddpsolver_2ehpp',['DDPSolver.hpp',['../DDPSolver_8hpp.html',1,'']]],
   ['derivative',['Derivative',['../structnmpc__ddp_1_1DDPSolver_1_1Derivative.html',1,'nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Derivative'],['../structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#ad28f43bfa3f08b7b88be7cf2d5bc1ea6',1,'nmpc_ddp::DDPSolver::Derivative::Derivative()']]],
   ['derivative_5flist_5f',['derivative_list_',['../classnmpc__ddp_1_1DDPSolver.html#a9f8717c14abcab6947020b0f8f2aed7e',1,'nmpc_ddp::DDPSolver']]],
   ['dlambda',['dlambda',['../structnmpc__ddp_1_1DDPSolver_1_1TraceData.html#acbc42b7edd17d7f9e1dec4341c503fc0',1,'nmpc_ddp::DDPSolver::TraceData']]],
