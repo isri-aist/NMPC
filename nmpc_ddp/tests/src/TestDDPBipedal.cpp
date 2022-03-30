@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <nmpc_ddp/DDP.h>
+#include <nmpc_ddp/DDPSolver.h>
 
 /** \brief DDP problem for bipedal walking.
 

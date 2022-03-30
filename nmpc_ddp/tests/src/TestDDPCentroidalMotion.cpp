@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <nmpc_ddp/DDP.h>
+#include <nmpc_ddp/DDPSolver.h>
 
 /** \brief Calculate a matrix corresponding to the cross product. */
 Eigen::Matrix3d crossMat(const Eigen::Vector3d & vec)

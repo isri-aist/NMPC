@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <nmpc_ddp/DDP.h>
+#include <nmpc_ddp/DDPSolver.h>
 
 /** \brief Smooth absolute function. (also known as Pseudo-Huber)
 

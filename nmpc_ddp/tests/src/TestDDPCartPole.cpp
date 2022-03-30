@@ -12,7 +12,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_srvs/Empty.h>
 
-#include <nmpc_ddp/DDP.h>
+#include <nmpc_ddp/DDPSolver.h>
 
 /** \brief DDP problem for cart-pole.
 

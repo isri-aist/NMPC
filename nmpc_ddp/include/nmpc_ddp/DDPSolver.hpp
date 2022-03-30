@@ -7,15 +7,6 @@
 namespace nmpc_ddp
 {
 template<int StateDim, int InputDim>
-DDPProblem<StateDim, InputDim>::DDPProblem(double dt) : dt_(dt)
-{
-  // Check dimension
-  static_assert(StateDim > 0, "[DDP] Template param StateDim should be positive.");
-  static_assert(InputDim >= 0 || InputDim == Eigen::Dynamic,
-                "[DDP] Template param InputDim should be non-negative or Eigen::Dynamic.");
-}
-
-template<int StateDim, int InputDim>
 DDPSolver<StateDim, InputDim>::DDPSolver(const std::shared_ptr<DDPProblem<StateDim, InputDim>> & problem)
 : problem_(problem)
 {
