@@ -14,7 +14,8 @@ namespace nmpc_cgmres
 /** \brief C/GMRES solver.
 
     See the following articles about the C/GMRES method:
-      - T Ohtsuka. Continuation/GMRES method for fast computation of nonlinear receding horizon control. Automatica. 2004.
+      - T Ohtsuka. Continuation/GMRES method for fast computation of nonlinear receding horizon control. Automatica.
+   2004.
       - https://www.coronasha.co.jp/np/isbn/9784339033182/
       - https://www.coronasha.co.jp/np/isbn/9784339032109/
  */
