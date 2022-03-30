@@ -14,6 +14,7 @@ See the following for a detailed algorithm.
 Make sure that it is built with `--catkin-make-args tests` option.
 
 ### Semiactive damper
+
 ```bash
 $ rosrun nmpc_cgmres TestCgmresSolver --gtest_filter=*SemiactiveDamperProblem
 $ rosrun nmpc_cgmres plotCgmresData.py
@@ -21,6 +22,7 @@ $ rosrun nmpc_cgmres plotCgmresData.py
 ![TestSemiactiveDamperProblem](doc/images/TestSemiactiveDamperProblem.png)
 
 ### Cart-pole
+
 ```bash
 $ rosrun nmpc_cgmres TestCgmresSolver --gtest_filter=*CartPoleProblem
 $ rosrun nmpc_cgmres plotCgmresData.py

@@ -11,7 +11,7 @@ This repository provides ROS packages for the following NMPC methods
 
 NMPC with differential dynamic drogramming (DDP)
 
-## WIP: [nmpc_cgmres](./nmpc_cgmres)
+## [nmpc_cgmres](./nmpc_cgmres)
 
 [![Documentation](https://img.shields.io/badge/doxygen-online-brightgreen?logo=read-the-docs&style=flat)](https://isri-aist.github.io/NMPC/nmpc_cgmres/index.html)
 
