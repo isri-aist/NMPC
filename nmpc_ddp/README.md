@@ -54,4 +54,5 @@ $ rostest nmpc_ddp TestDDPCartPole.test --text
 # Endless simulation
 $ rostest nmpc_ddp TestDDPCartPole.test no_exit:=true --text
 ```
-![TestDDPCartPole](doc/images/TestDDPCartPole.gif)
+![TestDDPCartPole](doc/images/TestDDPCartPole.gif)  
+You can interactively add disturbances and change the target position via the GUI. See the [video](https://www.dropbox.com/s/c3xf67wiffvoj6q/TestDDPCartPole-20220328.mp4?dl=0).
