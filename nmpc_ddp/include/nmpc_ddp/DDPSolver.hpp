@@ -17,6 +17,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
                                           const StateDimVector & current_x,
                                           const std::vector<InputDimVector> & initial_u_list)
 {
+  computation_duration_ = ComputationDuration();
+
   auto start_time = std::chrono::system_clock::now();
 
   // Initialize variables
@@ -96,6 +98,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
 
   auto setup_time = std::chrono::system_clock::now();
+  computation_duration_.setup =
+      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(setup_time - start_time).count();
 
   // Optimization loop
   int retval = 0;
@@ -114,6 +118,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
 
   auto end_time = std::chrono::system_clock::now();
+  computation_duration_.opt =
+      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - setup_time).count();
 
   if(config_.print_level >= 3)
   {
@@ -167,10 +173,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
     problem_->calcTerminalCostDeriv(terminal_t, control_data_.x_list[config_.horizon_steps], last_Vx_, last_Vxx_);
 
-    trace_data.duration_derivative =
+    double duration_derivative =
         1e3
         * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
               .count();
+    trace_data.duration_derivative = duration_derivative;
+    computation_duration_.derivative += duration_derivative;
   }
 
   // STEP 2: backward pass, compute optimal control law and cost-to-go
@@ -197,10 +205,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       }
     }
 
-    trace_data.duration_backward =
+    double duration_backward =
         1e3
         * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
               .count();
+    trace_data.duration_backward = duration_backward;
+    computation_duration_.backward += duration_backward;
   }
 
   // Check for termination due to small gradient
@@ -254,10 +264,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     trace_data.cost_update_expected = cost_update_expected;
     trace_data.cost_update_ratio = cost_update_ratio;
 
-    trace_data.duration_forward =
+    double duration_forward =
         1e3
         * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
               .count();
+    trace_data.duration_forward = duration_forward;
+    computation_duration_.forward += duration_forward;
   }
   if(!forward_pass_success && config_.print_level >= 3)
   {

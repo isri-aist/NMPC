@@ -337,7 +337,8 @@ TEST(TestDDPCentroidalMotion, TestCase1)
   std::string file_path = "/tmp/TestDDPCentroidalMotionResult.txt";
   std::ofstream ofs(file_path);
   ofs << "time pos_x pos_y pos_z linear_momentum_x linear_momentum_y linear_momentum_z angular_momentum_x "
-         "angular_momentum_y angular_momentum_z force_x force_y force_z ref_pos_x ref_pos_y ref_pos_z iter"
+         "angular_momentum_y angular_momentum_z force_x force_y force_z ref_pos_x ref_pos_y ref_pos_z iter "
+         "duration_setup duration_opt duration_derivative duration_backward duration_forward"
       << std::endl;
   while(current_t < end_t)
   {
@@ -357,10 +358,12 @@ TEST(TestDDPCentroidalMotion, TestCase1)
 
     // Dump
     const DDPProblemCentroidalMotion::StanceData & ref_stance = ref_stance_func(current_t);
-    ddp_solver->controlData().u_list[0];
+    const auto & computation_duration = ddp_solver->computationDuration();
     ofs << current_t << " " << ddp_solver->controlData().x_list[0].transpose() << " "
         << (ref_stance.ridges_mat * ddp_solver->controlData().u_list[0]).transpose() << " " << ref_pos.transpose()
-        << " " << ddp_solver->traceDataList().back().iter << std::endl;
+        << " " << ddp_solver->traceDataList().back().iter << " " << computation_duration.setup << " "
+        << computation_duration.opt << " " << computation_duration.derivative << " " << computation_duration.backward
+        << " " << computation_duration.forward << std::endl;
 
     // Update to next step
     current_x = ddp_solver->controlData().x_list[1];
@@ -387,11 +390,12 @@ TEST(TestDDPCentroidalMotion, TestCase1)
             << "  set key autotitle columnhead\n"
             << "  set key noenhanced\n"
             << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:14 w l lw 3 # pos_x\n"
-            << "  plot \"" << file_path << "\" u 1:3 w lp, \"\" u 1:15 w l lw 3 # pos_y\n"
             << "  plot \"" << file_path << "\" u 1:4 w lp, \"\" u 1:16 w l lw 3 # pos_z\n"
             << "  plot \"" << file_path << "\" u 1:9 w lp # angular_momentum_y\n"
             << "  plot \"" << file_path << "\" u 1:13 w lp # force_z\n"
-            << "  plot \"" << file_path << "\" u 1:17 w lp # iter\n";
+            << "  plot \"" << file_path << "\" u 1:17 w lp # iter\n"
+            << "  plot \"" << file_path
+            << "\" u 1:18 w lp, \"\" u 1:19 w lp, \"\" u 1:20 w lp, \"\" u 1:21 w lp, \"\" u 1:22 w lp # duration\n";
 }
 
 int main(int argc, char ** argv)

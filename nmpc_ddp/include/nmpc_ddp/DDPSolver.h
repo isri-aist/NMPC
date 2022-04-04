@@ -214,6 +214,25 @@ public:
     double duration_forward = 0;
   };
 
+  /*! \brief Data of computation duration. */
+  struct ComputationDuration
+  {
+    //! Duration to setup [msec]
+    double setup = 0;
+
+    //! Duration of optimization loop (including derivative, forward, backward) [msec]
+    double opt = 0;
+
+    //! Duration to calculate derivatives [msec]
+    double derivative = 0;
+
+    //! Duration to process backward pass [msec]
+    double backward = 0;
+
+    //! Duration to process forward pass [msec]
+    double forward = 0;
+  };
+
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -249,9 +268,15 @@ public:
   }
 
   /** \brief Const accessor to trace data list. */
-  const std::vector<TraceData> & traceDataList() const
+  inline const std::vector<TraceData> & traceDataList() const
   {
     return trace_data_list_;
+  }
+
+  /** \brief Const accessor to computation duration. */
+  inline const ComputationDuration & computationDuration() const
+  {
+    return computation_duration_;
   }
 
   /** \brief Dump trace data list.
@@ -285,6 +310,9 @@ protected:
 
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
+
+  //! Computation duration data
+  ComputationDuration computation_duration_;
 
   //! Current time [sec]
   double current_t_ = 0;
