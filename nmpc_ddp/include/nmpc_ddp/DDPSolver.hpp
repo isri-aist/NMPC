@@ -422,7 +422,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     Vxx_reg = Vxx;
     if(config_.reg_type == 2)
     {
-      Vxx_reg += lambda_ * StateStateDimMatrix::Identity(problem_->stateDim(), problem_->stateDim());
+      Vxx_reg.diagonal().array() += lambda_;
     }
 
     Qux_reg.noalias() = Lxu.transpose() + Fu.transpose() * Vxx_reg * Fx;
@@ -438,7 +438,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     }
     if(config_.reg_type == 1)
     {
-      Quu_F += lambda_ * InputInputDimMatrix::Identity(input_dim, input_dim);
+      Quu_F.diagonal().array() += lambda_;
     }
 
     computation_duration_.reg +=
