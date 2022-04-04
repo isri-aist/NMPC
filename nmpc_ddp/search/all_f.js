@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['u_5flist',['u_list',['../structnmpc__ddp_1_1DDPSolver_1_1ControlData.html#a061d712997d2b16ef258ebd38199d5d7',1,'nmpc_ddp::DDPSolver::ControlData']]],
-  ['use_5fstate_5feq_5fsecond_5fderivative',['use_state_eq_second_derivative',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a30db640b3ab25e693d9cc32e8595f9c0',1,'nmpc_ddp::DDPSolver::Configuration']]]
+  ['terminalcost',['terminalCost',['../classnmpc__ddp_1_1DDPProblem.html#a25b0c3e41ec7339d2c2443ed4cadc53b',1,'nmpc_ddp::DDPProblem']]],
+  ['trace_5fdata_5flist_5f',['trace_data_list_',['../classnmpc__ddp_1_1DDPSolver.html#afebac97f08475715f1ad9a01f462103c',1,'nmpc_ddp::DDPSolver']]],
+  ['tracedata',['TraceData',['../structnmpc__ddp_1_1DDPSolver_1_1TraceData.html',1,'nmpc_ddp::DDPSolver']]],
+  ['tracedatalist',['traceDataList',['../classnmpc__ddp_1_1DDPSolver.html#a2fb44b6a43a54b9e428fef18acfd27dd',1,'nmpc_ddp::DDPSolver']]]
 ];

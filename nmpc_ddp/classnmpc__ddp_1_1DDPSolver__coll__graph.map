@@ -1,4 +1,5 @@
 <map id="nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;" name="nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;">
-<area shape="rect" id="node2" href="$structnmpc__ddp_1_1DDPSolver_1_1Configuration.html" title="Configuration. " alt="" coords="5,5,172,61"/>
-<area shape="rect" id="node3" href="$structnmpc__ddp_1_1DDPSolver_1_1ControlData.html" title="Control data. " alt="" coords="5,85,172,141"/>
+<area shape="rect" id="node2" href="$structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html" title="Data of computation duration. " alt="" coords="5,5,191,61"/>
+<area shape="rect" id="node3" href="$structnmpc__ddp_1_1DDPSolver_1_1Configuration.html" title="Configuration. " alt="" coords="15,85,181,141"/>
+<area shape="rect" id="node4" href="$structnmpc__ddp_1_1DDPSolver_1_1ControlData.html" title="Control data. " alt="" coords="15,165,181,221"/>
 </map>
