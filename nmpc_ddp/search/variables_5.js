@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['horizon_5fsteps',['horizon_steps',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a9d1b2b8905c74a81cbb181c7d571f22e',1,'nmpc_ddp::DDPSolver::Configuration']]]
+  ['gain',['gain',['../structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aa7a4a7f15f38ee808b52b02ad40dc082',1,'nmpc_ddp::DDPSolver::ComputationDuration']]]
 ];

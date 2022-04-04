@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
-  ['reg_5ftype',['reg_type',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a3edfa02807ac08b4e628e3c39e46f2be',1,'nmpc_ddp::DDPSolver::Configuration']]],
-  ['runningcost',['runningCost',['../classnmpc__ddp_1_1DDPProblem.html#aa4680079c725b40706959ea3479a7d5a',1,'nmpc_ddp::DDPProblem']]]
+  ['print_5flevel',['print_level',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#abab0c77f5c295a47afea66bb8c5e9bb5',1,'nmpc_ddp::DDPSolver::Configuration']]],
+  ['problem_5f',['problem_',['../classnmpc__ddp_1_1DDPSolver.html#a02c64a0ecc50a56b99a13dd5ce6c4212',1,'nmpc_ddp::DDPSolver']]],
+  ['proconce',['procOnce',['../classnmpc__ddp_1_1DDPSolver.html#ae0dc69f86c36ac5e91e55e8acd5b3695',1,'nmpc_ddp::DDPSolver']]]
 ];

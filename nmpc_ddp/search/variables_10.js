@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['with_5finput_5fconstraint',['with_input_constraint',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a60ae1edef972c9691f9241b90ce94b55',1,'nmpc_ddp::DDPSolver::Configuration']]]
+  ['trace_5fdata_5flist_5f',['trace_data_list_',['../classnmpc__ddp_1_1DDPSolver.html#afebac97f08475715f1ad9a01f462103c',1,'nmpc_ddp::DDPSolver']]]
 ];

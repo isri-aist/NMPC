@@ -81,17 +81,26 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ad3129ab90da00d4928438059ecf44ed7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to setup [msec].  <a href="#ad3129ab90da00d4928438059ecf44ed7">More...</a><br /></td></tr>
 <tr class="separator:ad3129ab90da00d4928438059ecf44ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1927893ecd60f1051720999f2255a72"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ac1927893ecd60f1051720999f2255a72">opt</a> = 0</td></tr>
-<tr class="memdesc:ac1927893ecd60f1051720999f2255a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration of optimization loop (including derivative, forward, backward) [msec].  <a href="#ac1927893ecd60f1051720999f2255a72">More...</a><br /></td></tr>
+<tr class="memdesc:ac1927893ecd60f1051720999f2255a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration of optimization loop [msec].  <a href="#ac1927893ecd60f1051720999f2255a72">More...</a><br /></td></tr>
 <tr class="separator:ac1927893ecd60f1051720999f2255a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac72aa910b822189733ee8302667ff805"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ac72aa910b822189733ee8302667ff805">derivative</a> = 0</td></tr>
-<tr class="memdesc:ac72aa910b822189733ee8302667ff805"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to calculate derivatives [msec].  <a href="#ac72aa910b822189733ee8302667ff805">More...</a><br /></td></tr>
+<tr class="memdesc:ac72aa910b822189733ee8302667ff805"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to calculate derivatives (included in opt) [msec].  <a href="#ac72aa910b822189733ee8302667ff805">More...</a><br /></td></tr>
 <tr class="separator:ac72aa910b822189733ee8302667ff805"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee4687cb968478a922bf0d36b7cf4724"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aee4687cb968478a922bf0d36b7cf4724">backward</a> = 0</td></tr>
-<tr class="memdesc:aee4687cb968478a922bf0d36b7cf4724"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to process backward pass [msec].  <a href="#aee4687cb968478a922bf0d36b7cf4724">More...</a><br /></td></tr>
+<tr class="memdesc:aee4687cb968478a922bf0d36b7cf4724"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to process backward pass (included in opt) [msec].  <a href="#aee4687cb968478a922bf0d36b7cf4724">More...</a><br /></td></tr>
 <tr class="separator:aee4687cb968478a922bf0d36b7cf4724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af911c398452f9c573ecc12781390c6d2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#af911c398452f9c573ecc12781390c6d2">forward</a> = 0</td></tr>
-<tr class="memdesc:af911c398452f9c573ecc12781390c6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to process forward pass [msec].  <a href="#af911c398452f9c573ecc12781390c6d2">More...</a><br /></td></tr>
+<tr class="memdesc:af911c398452f9c573ecc12781390c6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to process forward pass (included in opt) [msec].  <a href="#af911c398452f9c573ecc12781390c6d2">More...</a><br /></td></tr>
 <tr class="separator:af911c398452f9c573ecc12781390c6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb141d8f7941b95e99721060b31c038d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aeb141d8f7941b95e99721060b31c038d">Q</a> = 0</td></tr>
+<tr class="memdesc:aeb141d8f7941b95e99721060b31c038d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to calculate Q (included in backward) [msec].  <a href="#aeb141d8f7941b95e99721060b31c038d">More...</a><br /></td></tr>
+<tr class="separator:aeb141d8f7941b95e99721060b31c038d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e2c16d036bcecbe1c3d7391abbc9204"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#a1e2c16d036bcecbe1c3d7391abbc9204">reg</a> = 0</td></tr>
+<tr class="memdesc:a1e2c16d036bcecbe1c3d7391abbc9204"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to calculate regularization (included in backward) [msec].  <a href="#a1e2c16d036bcecbe1c3d7391abbc9204">More...</a><br /></td></tr>
+<tr class="separator:a1e2c16d036bcecbe1c3d7391abbc9204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a4a7f15f38ee808b52b02ad40dc082"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aa7a4a7f15f38ee808b52b02ad40dc082">gain</a> = 0</td></tr>
+<tr class="memdesc:aa7a4a7f15f38ee808b52b02ad40dc082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to calculate gains (included in backward) [msec].  <a href="#aa7a4a7f15f38ee808b52b02ad40dc082">More...</a><br /></td></tr>
+<tr class="separator:aa7a4a7f15f38ee808b52b02ad40dc082"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;int StateDim, int InputDim&gt;<br />
@@ -115,7 +124,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Duration to process backward pass [msec]. </p>
+<p>Duration to process backward pass (included in opt) [msec]. </p>
 
 <p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00230">230</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
@@ -135,7 +144,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Duration to calculate derivatives [msec]. </p>
+<p>Duration to calculate derivatives (included in opt) [msec]. </p>
 
 <p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00227">227</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
@@ -155,9 +164,29 @@ template&lt;int StateDim, int InputDim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Duration to process forward pass [msec]. </p>
+<p>Duration to process forward pass (included in opt) [msec]. </p>
 
 <p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00233">233</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="aa7a4a7f15f38ee808b52b02ad40dc082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a4a7f15f38ee808b52b02ad40dc082">&#9670;&nbsp;</a></span>gain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__ddp_1_1DDPSolver.html">nmpc_ddp::DDPSolver</a>&lt; StateDim, InputDim &gt;::ComputationDuration::gain = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Duration to calculate gains (included in backward) [msec]. </p>
+
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00242">242</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -175,9 +204,49 @@ template&lt;int StateDim, int InputDim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Duration of optimization loop (including derivative, forward, backward) [msec]. </p>
+<p>Duration of optimization loop [msec]. </p>
 
 <p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00224">224</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="aeb141d8f7941b95e99721060b31c038d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb141d8f7941b95e99721060b31c038d">&#9670;&nbsp;</a></span>Q</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__ddp_1_1DDPSolver.html">nmpc_ddp::DDPSolver</a>&lt; StateDim, InputDim &gt;::ComputationDuration::Q = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Duration to calculate Q (included in backward) [msec]. </p>
+
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00236">236</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a1e2c16d036bcecbe1c3d7391abbc9204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e2c16d036bcecbe1c3d7391abbc9204">&#9670;&nbsp;</a></span>reg</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__ddp_1_1DDPSolver.html">nmpc_ddp::DDPSolver</a>&lt; StateDim, InputDim &gt;::ComputationDuration::reg = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Duration to calculate regularization (included in backward) [msec]. </p>
+
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00239">239</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nmpc_5fddp',['nmpc_ddp',['../index.html',1,'']]],
-  ['nmpc_5fddp',['nmpc_ddp',['../namespacenmpc__ddp.html',1,'']]]
+  ['max_5fiter',['max_iter',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a10c715141f93bd3b74e8c3b5b7829c20',1,'nmpc_ddp::DDPSolver::Configuration']]]
 ];

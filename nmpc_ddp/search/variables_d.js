@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['setup',['setup',['../structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ad3129ab90da00d4928438059ecf44ed7',1,'nmpc_ddp::DDPSolver::ComputationDuration']]]
+  ['q',['Q',['../structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aeb141d8f7941b95e99721060b31c038d',1,'nmpc_ddp::DDPSolver::ComputationDuration']]]
 ];
