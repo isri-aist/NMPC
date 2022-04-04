@@ -379,11 +379,11 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     int input_dim = Fu.cols();
 
     // Calculate Q
-    Qu = Lu + Fu.transpose() * Vx;
+    Qu.noalias() = Lu + Fu.transpose() * Vx;
 
-    Qx = Lx + Fx.transpose() * Vx;
+    Qx.noalias() = Lx + Fx.transpose() * Vx;
 
-    Qux = Lxu.transpose() + Fu.transpose() * Vxx * Fx;
+    Qux.noalias() = Lxu.transpose() + Fu.transpose() * Vxx * Fx;
     if(config_.use_state_eq_second_derivative)
     {
       throw std::runtime_error("Vector-tensor product is not implemented yet.");
@@ -392,7 +392,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       // Qux += VxFux
     }
 
-    Quu = Luu + Fu.transpose() * Vxx * Fu;
+    Quu.noalias() = Luu + Fu.transpose() * Vxx * Fu;
     if(config_.use_state_eq_second_derivative)
     {
       throw std::runtime_error("Vector-tensor product is not implemented yet.");
@@ -401,7 +401,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       // Quu += VxFuu;
     }
 
-    Qxx = Lxx + Fx.transpose() * Vxx * Fx;
+    Qxx.noalias() = Lxx + Fx.transpose() * Vxx * Fx;
     if(config_.use_state_eq_second_derivative)
     {
       throw std::runtime_error("Vector-tensor product is not implemented yet.");
@@ -416,13 +416,13 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       Vxx_reg += lambda_ * StateStateDimMatrix::Identity(problem_->stateDim(), problem_->stateDim());
     }
 
-    Qux_reg = Lxu.transpose() + Fu.transpose() * Vxx_reg * Fx;
+    Qux_reg.noalias() = Lxu.transpose() + Fu.transpose() * Vxx_reg * Fx;
     if(config_.use_state_eq_second_derivative)
     {
       Qux_reg += VxFux;
     }
 
-    Quu_F = Luu + Fu.transpose() * Vxx_reg * Fu;
+    Quu_F.noalias() = Luu + Fu.transpose() * Vxx_reg * Fu;
     if(config_.use_state_eq_second_derivative)
     {
       Quu_F += VxFuu;
@@ -463,8 +463,8 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
 
     // Update cost-to-go approximation
     dV_ += Eigen::Vector2d(k.dot(Qu), 0.5 * k.dot(Quu * k));
-    Vx = Qx + K.transpose() * Quu * k + K.transpose() * Qu + Qux.transpose() * k;
-    Vxx = Qxx + K.transpose() * Quu * K + K.transpose() * Qux + Qux.transpose() * K;
+    Vx.noalias() = Qx + K.transpose() * Quu * k + K.transpose() * Qu + Qux.transpose() * k;
+    Vxx.noalias() = Qxx + K.transpose() * Quu * K + K.transpose() * Qux + Qux.transpose() * K;
     Vxx = 0.5 * (Vxx + Vxx.transpose());
 
     // Save gains
