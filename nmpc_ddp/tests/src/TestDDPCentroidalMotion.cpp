@@ -338,7 +338,8 @@ TEST(TestDDPCentroidalMotion, TestCase1)
   std::ofstream ofs(file_path);
   ofs << "time pos_x pos_y pos_z linear_momentum_x linear_momentum_y linear_momentum_z angular_momentum_x "
          "angular_momentum_y angular_momentum_z force_x force_y force_z ref_pos_x ref_pos_y ref_pos_z iter "
-         "duration_setup duration_opt duration_derivative duration_backward duration_forward"
+         "duration_setup duration_opt duration_derivative duration_backward duration_forward duration_Q duration_reg "
+         "duration_gain"
       << std::endl;
   while(current_t < end_t)
   {
@@ -363,7 +364,8 @@ TEST(TestDDPCentroidalMotion, TestCase1)
         << (ref_stance.ridges_mat * ddp_solver->controlData().u_list[0]).transpose() << " " << ref_pos.transpose()
         << " " << ddp_solver->traceDataList().back().iter << " " << computation_duration.setup << " "
         << computation_duration.opt << " " << computation_duration.derivative << " " << computation_duration.backward
-        << " " << computation_duration.forward << std::endl;
+        << " " << computation_duration.forward << " " << computation_duration.Q << " " << computation_duration.reg
+        << " " << computation_duration.gain << std::endl;
 
     // Update to next step
     current_x = ddp_solver->controlData().x_list[1];
@@ -395,7 +397,8 @@ TEST(TestDDPCentroidalMotion, TestCase1)
             << "  plot \"" << file_path << "\" u 1:13 w lp # force_z\n"
             << "  plot \"" << file_path << "\" u 1:17 w lp # iter\n"
             << "  plot \"" << file_path
-            << "\" u 1:18 w lp, \"\" u 1:19 w lp, \"\" u 1:20 w lp, \"\" u 1:21 w lp, \"\" u 1:22 w lp # duration\n";
+            << "\" u 1:18 w lp, \"\" u 1:19 w lp, \"\" u 1:20 w lp, \"\" u 1:21 w lp, \"\" u 1:22 w lp, \"\" u 1:23 w "
+               "lp, \"\" u 1:24 w lp, \"\" u 1:25 w lp # duration\n";
 }
 
 int main(int argc, char ** argv)

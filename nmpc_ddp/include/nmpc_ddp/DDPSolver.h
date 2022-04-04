@@ -220,17 +220,26 @@ public:
     //! Duration to setup [msec]
     double setup = 0;
 
-    //! Duration of optimization loop (including derivative, forward, backward) [msec]
+    //! Duration of optimization loop [msec]
     double opt = 0;
 
-    //! Duration to calculate derivatives [msec]
+    //! Duration to calculate derivatives (included in opt) [msec]
     double derivative = 0;
 
-    //! Duration to process backward pass [msec]
+    //! Duration to process backward pass (included in opt) [msec]
     double backward = 0;
 
-    //! Duration to process forward pass [msec]
+    //! Duration to process forward pass (included in opt) [msec]
     double forward = 0;
+
+    //! Duration to calculate Q (included in backward) [msec]
+    double Q = 0;
+
+    //! Duration to calculate regularization (included in backward) [msec]
+    double reg = 0;
+
+    //! Duration to calculate gains (included in backward) [msec]
+    double gain = 0;
   };
 
 public:

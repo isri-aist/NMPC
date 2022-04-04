@@ -379,6 +379,8 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     int input_dim = Fu.cols();
 
     // Calculate Q
+    auto start_time_Q = std::chrono::system_clock::now();
+
     Qu.noalias() = Lu + Fu.transpose() * Vx;
 
     Qx.noalias() = Lx + Fx.transpose() * Vx;
@@ -409,7 +411,14 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       // Qxx += Vx * Fxx;
     }
 
+    computation_duration_.Q +=
+        1e3
+        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_Q)
+              .count();
+
     // Calculate regularization
+    auto start_time_reg = std::chrono::system_clock::now();
+
     Vxx_reg = Vxx;
     if(config_.reg_type == 2)
     {
@@ -432,7 +441,14 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       Quu_F += lambda_ * InputInputDimMatrix::Identity(input_dim, input_dim);
     }
 
+    computation_duration_.reg +=
+        1e3
+        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_reg)
+              .count();
+
     // Calculate gains
+    auto start_time_gain = std::chrono::system_clock::now();
+
     if(input_dim > 0)
     {
       if(config_.with_input_constraint)
@@ -460,6 +476,11 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       k.setZero(0);
       K.setZero(0, problem_->stateDim());
     }
+
+    computation_duration_.gain +=
+        1e3
+        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_gain)
+              .count();
 
     // Update cost-to-go approximation
     dV_ += Eigen::Vector2d(k.dot(Qu), 0.5 * k.dot(Quu * k));
