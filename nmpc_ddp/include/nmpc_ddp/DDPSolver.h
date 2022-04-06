@@ -14,8 +14,8 @@ namespace nmpc_ddp
 
     See the following for a detailed algorithm.
       - Y Tassa, T Erez, E Todorov. Synthesis and stabilization of complex behaviors through online trajectory
-   optimization. IROS2012.
-      - Y Tassa, N Mansard, E Todorov. Control-limited differential dynamic programming. ICRA2014.
+   optimization. IROS, 2012.
+      - Y Tassa, N Mansard, E Todorov. Control-limited differential dynamic programming. ICRA, 2014.
       - https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization
  */
 template<int StateDim, int InputDim>
