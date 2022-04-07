@@ -19,7 +19,7 @@ catkin_package(
   roscpp
   DEPENDS EIGEN3
   INCLUDE_DIRS include
-  LIBRARIES nmpc_ddp
+  LIBRARIES
   )
 
 add_library(nmpc_ddp INTERFACE)
