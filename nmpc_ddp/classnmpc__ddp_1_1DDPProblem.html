@@ -122,12 +122,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a25b0c3e41ec7339d2c2443ed4cadc53b"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a25b0c3e41ec7339d2c2443ed4cadc53b">terminalCost</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x) const =0</td></tr>
 <tr class="memdesc:a25b0c3e41ec7339d2c2443ed4cadc53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate terminal cost.  <a href="#a25b0c3e41ec7339d2c2443ed4cadc53b">More...</a><br /></td></tr>
 <tr class="separator:a25b0c3e41ec7339d2c2443ed4cadc53b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0beda883a8a23302bbbff8597c3540aa"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a0beda883a8a23302bbbff8597c3540aa">calcStatEqDeriv</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &amp;u, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; state_eq_deriv_x, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; state_eq_deriv_u) const =0</td></tr>
-<tr class="memdesc:a0beda883a8a23302bbbff8597c3540aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate first-order derivatives of discrete state equation.  <a href="#a0beda883a8a23302bbbff8597c3540aa">More...</a><br /></td></tr>
-<tr class="separator:a0beda883a8a23302bbbff8597c3540aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a836331ce5ff4f7b2aaffef0a90539975"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a836331ce5ff4f7b2aaffef0a90539975">calcStatEqDeriv</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &amp;u, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; state_eq_deriv_x, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; state_eq_deriv_u, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; &amp;state_eq_deriv_xx, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a4184a2840d1f6bc8d434ecb184c7d32b">InputInputDimMatrix</a> &gt; &amp;state_eq_deriv_uu, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; &amp;state_eq_deriv_xu) const =0</td></tr>
-<tr class="memdesc:a836331ce5ff4f7b2aaffef0a90539975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate first-order and second-order derivatives of discrete state equation.  <a href="#a836331ce5ff4f7b2aaffef0a90539975">More...</a><br /></td></tr>
-<tr class="separator:a836331ce5ff4f7b2aaffef0a90539975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae408574ee53938a7ab2a9000b619dab9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ae408574ee53938a7ab2a9000b619dab9">calcStateEqDeriv</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &amp;u, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; state_eq_deriv_x, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; state_eq_deriv_u) const =0</td></tr>
+<tr class="memdesc:ae408574ee53938a7ab2a9000b619dab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate first-order derivatives of discrete state equation.  <a href="#ae408574ee53938a7ab2a9000b619dab9">More...</a><br /></td></tr>
+<tr class="separator:ae408574ee53938a7ab2a9000b619dab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae25ae011f0fb081099279ab700c7413c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ae25ae011f0fb081099279ab700c7413c">calcStateEqDeriv</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &amp;u, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; state_eq_deriv_x, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; state_eq_deriv_u, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ac7b8958b59188ea83ccc82c56dab2cdf">StateStateDimMatrix</a> &gt; &amp;state_eq_deriv_xx, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a4184a2840d1f6bc8d434ecb184c7d32b">InputInputDimMatrix</a> &gt; &amp;state_eq_deriv_uu, std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#af94ddae45fb6f627cc1d734712113366">StateInputDimMatrix</a> &gt; &amp;state_eq_deriv_xu) const =0</td></tr>
+<tr class="memdesc:ae25ae011f0fb081099279ab700c7413c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate first-order and second-order derivatives of discrete state equation.  <a href="#ae25ae011f0fb081099279ab700c7413c">More...</a><br /></td></tr>
+<tr class="separator:ae25ae011f0fb081099279ab700c7413c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0107b6dc73e447a0ebe9ecc88b85eaee"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a0107b6dc73e447a0ebe9ecc88b85eaee">calcRunningCostDeriv</a> (double t, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &amp;x, const <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &amp;u, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a89ac4b4a17980219ec2ba0e2fc9454f4">StateDimVector</a> &gt; running_cost_deriv_x, Eigen::Ref&lt; <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">InputDimVector</a> &gt; running_cost_deriv_u) const =0</td></tr>
 <tr class="memdesc:a0107b6dc73e447a0ebe9ecc88b85eaee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate first-order derivatives of running cost.  <a href="#a0107b6dc73e447a0ebe9ecc88b85eaee">More...</a><br /></td></tr>
 <tr class="separator:a0107b6dc73e447a0ebe9ecc88b85eaee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -485,8 +485,8 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 </div>
 </div>
-<a id="a0beda883a8a23302bbbff8597c3540aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0beda883a8a23302bbbff8597c3540aa">&#9670;&nbsp;</a></span>calcStatEqDeriv() <span class="overload">[1/2]</span></h2>
+<a id="ae408574ee53938a7ab2a9000b619dab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae408574ee53938a7ab2a9000b619dab9">&#9670;&nbsp;</a></span>calcStateEqDeriv() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -497,7 +497,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classnmpc__ddp_1_1DDPProblem.html">nmpc_ddp::DDPProblem</a>&lt; StateDim, InputDim &gt;::calcStatEqDeriv </td>
+          <td class="memname">virtual void <a class="el" href="classnmpc__ddp_1_1DDPProblem.html">nmpc_ddp::DDPProblem</a>&lt; StateDim, InputDim &gt;::calcStateEqDeriv </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
@@ -553,8 +553,8 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 </div>
 </div>
-<a id="a836331ce5ff4f7b2aaffef0a90539975"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a836331ce5ff4f7b2aaffef0a90539975">&#9670;&nbsp;</a></span>calcStatEqDeriv() <span class="overload">[2/2]</span></h2>
+<a id="ae25ae011f0fb081099279ab700c7413c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae25ae011f0fb081099279ab700c7413c">&#9670;&nbsp;</a></span>calcStateEqDeriv() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -565,7 +565,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classnmpc__ddp_1_1DDPProblem.html">nmpc_ddp::DDPProblem</a>&lt; StateDim, InputDim &gt;::calcStatEqDeriv </td>
+          <td class="memname">virtual void <a class="el" href="classnmpc__ddp_1_1DDPProblem.html">nmpc_ddp::DDPProblem</a>&lt; StateDim, InputDim &gt;::calcStateEqDeriv </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em>, </td>
