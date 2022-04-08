@@ -105,11 +105,11 @@ public:
     return 0.5 * cost_weight_.terminal_x.dot((x - ref_x).cwiseAbs2());
   }
 
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {
     state_eq_deriv_x << 0, 1, 0, 0;
     state_eq_deriv_x *= dt_;
@@ -120,16 +120,16 @@ public:
     state_eq_deriv_u *= dt_;
   }
 
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                               std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                               std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                               std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
+                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
+                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
+                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
   {
-    calcStatEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
+    calcStateEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
 
     if(state_eq_deriv_xx.size() != stateDim() || state_eq_deriv_uu.size() != stateDim()
        || state_eq_deriv_xu.size() != stateDim())

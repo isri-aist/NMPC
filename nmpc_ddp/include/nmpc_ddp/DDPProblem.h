@@ -119,11 +119,11 @@ public:
       \param state_eq_deriv_x first-order derivative of state equation w.r.t. state
       \param state_eq_deriv_u first-order derivative of state equation w.r.t. input
   */
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const = 0;
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const = 0;
 
   /** \brief Calculate first-order and second-order derivatives of discrete state equation.
       \param t time [sec]
@@ -135,14 +135,14 @@ public:
       \param state_eq_deriv_uu second-order derivative of state equation w.r.t. input
       \param state_eq_deriv_xu second-order derivative of state equation w.r.t. state and input
   */
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                               std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                               std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                               std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const = 0;
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
+                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
+                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
+                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const = 0;
 
   /** \brief Calculate first-order derivatives of running cost.
       \param t time [sec]

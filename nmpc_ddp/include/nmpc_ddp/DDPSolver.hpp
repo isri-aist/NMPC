@@ -160,12 +160,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       const InputDimVector & u = control_data_.u_list[i];
       if(config_.use_state_eq_second_derivative)
       {
-        problem_->calcStatEqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
-                                  derivative.Fxu);
+        problem_->calcStateEqDeriv(t, x, u, derivative.Fx, derivative.Fu, derivative.Fxx, derivative.Fuu,
+                                   derivative.Fxu);
       }
       else
       {
-        problem_->calcStatEqDeriv(t, x, u, derivative.Fx, derivative.Fu);
+        problem_->calcStateEqDeriv(t, x, u, derivative.Fx, derivative.Fu);
       }
       problem_->calcRunningCostDeriv(t, x, u, derivative.Lx, derivative.Lu, derivative.Lxx, derivative.Luu,
                                      derivative.Lxu);

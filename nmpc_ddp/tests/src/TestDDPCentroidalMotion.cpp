@@ -106,11 +106,11 @@ public:
     return 0.5 * cost_weight_.terminal_x.dot(x_diff.cwiseAbs2());
   }
 
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {
     const StanceData & stance_data = ref_stance_func_(t);
     const Eigen::Matrix3Xd & vertices_mat = stance_data.vertices_mat;
@@ -135,14 +135,14 @@ public:
     state_eq_deriv_u *= dt_;
   }
 
-  virtual void calcStatEqDeriv(double t,
-                               const StateDimVector & x,
-                               const InputDimVector & u,
-                               Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                               Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                               std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                               std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                               std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
+  virtual void calcStateEqDeriv(double t,
+                                const StateDimVector & x,
+                                const InputDimVector & u,
+                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
+                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
+                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
+                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
+                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
   {
     throw std::runtime_error("Second-order derivatives of state equation are not implemented.");
   }
@@ -215,7 +215,7 @@ void checkDerivatives(const std::shared_ptr<DDPProblemCentroidalMotion> & ddp_pr
 
   DDPProblemCentroidalMotion::StateStateDimMatrix state_eq_deriv_x_analytical(state_dim, state_dim);
   DDPProblemCentroidalMotion::StateInputDimMatrix state_eq_deriv_u_analytical(state_dim, input_dim);
-  ddp_problem->calcStatEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+  ddp_problem->calcStateEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
 
   DDPProblemCentroidalMotion::StateStateDimMatrix state_eq_deriv_x_numerical(state_dim, state_dim);
   DDPProblemCentroidalMotion::StateInputDimMatrix state_eq_deriv_u_numerical(state_dim, input_dim);
