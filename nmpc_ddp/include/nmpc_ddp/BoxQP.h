@@ -98,7 +98,7 @@ public:
                             const VarDimVector & g,
                             const VarDimVector & lower,
                             const VarDimVector & upper,
-                            const VarDimVector & initial_x)
+                            const VarDimVector & initial_x = VarDimVector::Zero())
   {
     // Initialize objective value
     VarDimVector x = initial_x.cwiseMin(upper).cwiseMax(lower);
@@ -266,8 +266,8 @@ public:
       // Print
       if(config_.print_level >= 3)
       {
-        std::cout << "iter: " << iter << ", obj: " << obj << ", grad_norm: " << grad_norm
-                  << ", : " << old_obj - obj_candidate << ", step_num: " << step_num
+        std::cout << "[BoxQP] iter: " << iter << ", obj: " << obj << ", grad_norm: " << grad_norm
+                  << ", obj_update, : " << old_obj - obj_candidate << ", step: " << step
                   << ", clamped_flag_num: " << clamped_idxs.size() << std::endl;
       }
 
@@ -305,7 +305,7 @@ public:
     // Print
     if(config_.print_level >= 2)
     {
-      std::cout << "[BoxQP] result: " << retval << ", iter: " << iter << ", obj: " << obj
+      std::cout << "[BoxQP] result: " << retval << " (" << retstr.at(retval) << "), iter: " << iter << ", obj: " << obj
                 << ", factorization_num: " << factorization_num << std::endl;
     }
 

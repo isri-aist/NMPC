@@ -1,6 +1,7 @@
 find_package(rostest REQUIRED)
 
 set(nmpc_ddp_gtest_list
+  TestBoxQP
   TestDDPBipedal
   TestDDPVerticalMotion
   TestDDPCentroidalMotion
