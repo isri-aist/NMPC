@@ -51,7 +51,7 @@ public:
     double min_step = 1e-22;
 
     //! Armijo parameter (fraction of linear improvement required)
-    double armijo_param = 0.1
+    double armijo_param = 0.1;
   };
 
   /*! \brief Data to trace optimization loop. */
@@ -119,7 +119,8 @@ public:
     VarDimVector grad = VarDimVector::Zero();
     VarDimArray clamped_flag = VarDimArray::Zero();
     VarDimArray old_clamped_flag = clamped_flag;
-    for(int iter = 1;; iter++)
+    int iter = 1;
+    for(;; iter++)
     {
       // Append trace data
       trace_data_list_.push_back(TraceData());
@@ -140,7 +141,9 @@ public:
       // Find clamped dimensions
       old_clamped_flag = clamped_flag;
       clamped_flag.setConstant(false);
-      clamped_flag = ((x == lower && grad > 0) || (x == upper && grad < 0)).select(true, clamped_flag);
+      clamped_flag =
+          ((x.array() == lower.array() && grad.array() > 0) || (x.array() == upper.array() && grad.array() < 0))
+              .select(true, clamped_flag);
 
       // Set clamped and free indices
       std::vector<int> clamped_idxs;
@@ -165,7 +168,7 @@ public:
       }
 
       // Factorize if clamped has changed
-      if(iter == 1 || clamped_flag != old_clamped_flag)
+      if(iter == 1 || (clamped_flag != old_clamped_flag).any())
       {
         // Set H_free
         Eigen::MatrixXd H_free(free_idxs.size(), free_idxs.size());
@@ -256,15 +259,15 @@ public:
         if(step < config_.min_step)
         {
           retval = 2;
-          break
+          break;
         }
       }
 
       // Print
       if(config_.print_level >= 3)
       {
-        std::cout << "iter: " << iter << ", obj: " << obj
-                  << ", grad_norm: " << grad_norm ", : " << old_obj - obj_candidate << ", step_num: " << step_num
+        std::cout << "iter: " << iter << ", obj: " << obj << ", grad_norm: " << grad_norm
+                  << ", : " << old_obj - obj_candidate << ", step_num: " << step_num
                   << ", clamped_flag_num: " << clamped_idxs.size() << std::endl;
       }
 
@@ -337,4 +340,5 @@ protected:
 
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
-}
+};
+} // namespace nmpc_ddp
