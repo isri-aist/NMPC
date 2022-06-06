@@ -67,6 +67,9 @@ $(function() {
 <li>alpha_list
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#ada545b2f685f78606d2ce065b0ae77b7">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
 </li>
+<li>armijo_param
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a80f2aaa2a7f2993f918aacc93fd91ed4">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+</li>
 </ul>
 
 
@@ -81,11 +84,15 @@ $(function() {
 <li>candidate_control_data_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a6c07538955e4d7a558fe3167ed1c5c63">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
+<li>clamped_flag
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a9d89dd32f532451b563885f1ea28841a">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+</li>
 <li>computation_duration_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a1ab9b9614211b569ddfa5a79455a21c1">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
 <li>config_
-: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#abd45339b0b7200df3f7cb7dc6c8f4b11">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a5e6e0af565d48f8e6277aecb6ad75843">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+, <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#abd45339b0b7200df3f7cb7dc6c8f4b11">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
 <li>control_data_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a3d002af615b79db0911f92f485fb1e2a">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
@@ -149,6 +156,9 @@ $(function() {
 
 
 <h3><a id="index_f"></a>- f -</h3><ul>
+<li>factorization_num
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a14af2be3d7fb05939bb90bc08b3717f3">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+</li>
 <li>forward
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#af911c398452f9c573ecc12781390c6d2">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ComputationDuration</a>
 </li>
@@ -174,6 +184,9 @@ $(function() {
 <li>gain
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#aa7a4a7f15f38ee808b52b02ad40dc082">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ComputationDuration</a>
 </li>
+<li>grad_thre
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a7feeb61446868b350682be009824a3fc">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+</li>
 </ul>
 
 
@@ -192,7 +205,8 @@ $(function() {
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a9f376917f7a31399b7bdcd3b7be4e9ad">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
 </li>
 <li>iter
-: <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1TraceData.html#a7bafeb59bd5f8dc9e01dd331f6b485e0">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::TraceData</a>
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a00fd4f00dcd527a7929b4d2fa3f89165">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+, <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1TraceData.html#a7bafeb59bd5f8dc9e01dd331f6b485e0">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::TraceData</a>
 </li>
 </ul>
 
@@ -238,6 +252,9 @@ $(function() {
 <li>last_Vxx_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a4ab852265f2b8631ec4a2749fa406f28">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
+<li>llt_
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a4553525ae79cdf8fe89375eec13106d2">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+</li>
 <li>Lu
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#a26579763dbcfc2f2214629d47edf491e">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Derivative</a>
 </li>
@@ -258,12 +275,19 @@ $(function() {
 
 <h3><a id="index_m"></a>- m -</h3><ul>
 <li>max_iter
-: <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a10c715141f93bd3b74e8c3b5b7829c20">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a9c44fdd267e522e2d06fda3995be87c1">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+, <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a10c715141f93bd3b74e8c3b5b7829c20">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
+</li>
+<li>min_step
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a157fe156711aedfa5b4aca90c593ceaa">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
 </li>
 </ul>
 
 
 <h3><a id="index_o"></a>- o -</h3><ul>
+<li>obj
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#ab6f558d95f74868e9a1c10c059d1fb7a">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+</li>
 <li>opt
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ac1927893ecd60f1051720999f2255a72">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ComputationDuration</a>
 </li>
@@ -272,7 +296,8 @@ $(function() {
 
 <h3><a id="index_p"></a>- p -</h3><ul>
 <li>print_level
-: <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#abab0c77f5c295a47afea66bb8c5e9bb5">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a8da742af2f6e784403a667689213d173">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+, <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#abab0c77f5c295a47afea66bb8c5e9bb5">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
 </li>
 <li>problem_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a02c64a0ecc50a56b99a13dd5ce6c4212">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
@@ -294,19 +319,32 @@ $(function() {
 <li>reg_type
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a3edfa02807ac08b4e628e3c39e46f2be">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
 </li>
+<li>rel_improve_thre
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a95099c64816bdaec04383221b53d45b8">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+</li>
 </ul>
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
+<li>search_dir
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a2f2a1bcf0071bc31717b485b650b4fe5">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+</li>
 <li>setup
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ad3129ab90da00d4928438059ecf44ed7">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ComputationDuration</a>
+</li>
+<li>step_factor
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#af94dc5dcab80f37c5fc21345a58edeb0">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
+</li>
+<li>step_num
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#ad5891a318e15897546f96d351a8bc88a">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
 </li>
 </ul>
 
 
 <h3><a id="index_t"></a>- t -</h3><ul>
 <li>trace_data_list_
-: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#afebac97f08475715f1ad9a01f462103c">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#add607252db94bdf680a9d662cc7716d7">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+, <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#afebac97f08475715f1ad9a01f462103c">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
 </ul>
 
@@ -329,6 +367,9 @@ $(function() {
 
 
 <h3><a id="index_x"></a>- x -</h3><ul>
+<li>x
+: <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a4f9d3487e1c5a4b14726c3349f3c207b">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
+</li>
 <li>x_list
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ControlData.html#a0ab6a68b6c32e46424c73413b8ab4930">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ControlData</a>
 </li>

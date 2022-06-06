@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['factorization_5fnum',['factorization_num',['../structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a14af2be3d7fb05939bb90bc08b3717f3',1,'nmpc_ddp::BoxQP::TraceData']]],
   ['forward',['forward',['../structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#af911c398452f9c573ecc12781390c6d2',1,'nmpc_ddp::DDPSolver::ComputationDuration']]],
   ['fu',['Fu',['../structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#aedac9a8954e707354e21c5081f37d116',1,'nmpc_ddp::DDPSolver::Derivative']]],
   ['fuu',['Fuu',['../structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#a57fdf2cfae883be85b15796a7108f610',1,'nmpc_ddp::DDPSolver::Derivative']]],
