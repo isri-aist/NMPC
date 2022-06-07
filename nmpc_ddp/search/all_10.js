@@ -1,6 +1,7 @@
 var searchData=
 [
   ['search_5fdir',['search_dir',['../structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a2f2a1bcf0071bc31717b485b650b4fe5',1,'nmpc_ddp::BoxQP::TraceData']]],
+  ['setinputlimitsfunc',['setInputLimitsFunc',['../classnmpc__ddp_1_1DDPSolver.html#a4b202e0c70a2a3c652a4e3f2a41d6f4b',1,'nmpc_ddp::DDPSolver']]],
   ['setup',['setup',['../structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ad3129ab90da00d4928438059ecf44ed7',1,'nmpc_ddp::DDPSolver::ComputationDuration']]],
   ['solve',['solve',['../classnmpc__ddp_1_1BoxQP.html#addc83ea5c520a4ce0bdb8b295d156920',1,'nmpc_ddp::BoxQP::solve(const VarVarDimMatrix &amp;H, const VarDimVector &amp;g, const VarDimVector &amp;lower, const VarDimVector &amp;upper)'],['../classnmpc__ddp_1_1BoxQP.html#a020caad455a3169e9b00d7ddd4fde77c',1,'nmpc_ddp::BoxQP::solve(const VarVarDimMatrix &amp;H, const VarDimVector &amp;g, const VarDimVector &amp;lower, const VarDimVector &amp;upper, const VarDimVector &amp;initial_x)'],['../classnmpc__ddp_1_1DDPSolver.html#af13b182013e57518dceaaf0ecf21ddb7',1,'nmpc_ddp::DDPSolver::solve()']]],
   ['statedim',['stateDim',['../classnmpc__ddp_1_1DDPProblem.html#acc2495aeeb98308adc98ecbd0ea338aa',1,'nmpc_ddp::DDPProblem']]],

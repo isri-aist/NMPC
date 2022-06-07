@@ -208,6 +208,9 @@ $(function() {
 <li>forwardPass()
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a210f9d738bead3de1352f6077f9aa56d">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
+<li>free_idxs_
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+</li>
 <li>Fu
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#aedac9a8954e707354e21c5081f37d116">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Derivative</a>
 </li>
@@ -250,8 +253,11 @@ $(function() {
 <li>initial_lambda
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a9f376917f7a31399b7bdcd3b7be4e9ad">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Configuration</a>
 </li>
+<li>input_limits_func_
+: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aeac601b336749483fe7c276e78a372ee">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
+</li>
 <li>inputDim()
-: <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a3038347a19ebebb6dbb402e89db6a771">nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;</a>
+: <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#ae1fc7765f4aa1ff22b8f91e0a07a2acb">nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;</a>
 </li>
 <li>InputDimVector
 : <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#a12440af87fb4b8ff40aa188d3157cddb">nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;</a>
@@ -273,11 +279,11 @@ $(function() {
 
 
 <h3><a id="index_k"></a>- k -</h3><ul>
-<li>K_list_
-: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a5d0ec84bf60197275841a8194cfc4600">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
-</li>
 <li>k_list_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a78ad80f9a58907fec4eabe05dc0fc430">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
+</li>
+<li>K_list_
+: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a5d0ec84bf60197275841a8194cfc4600">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
 <li>k_rel_norm
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1TraceData.html#a2453ded4fd9165f76f4546108aa51ef8">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::TraceData</a>
@@ -313,8 +319,8 @@ $(function() {
 <li>last_Vxx_
 : <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a4ab852265f2b8631ec4a2749fa406f28">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
-<li>llt_
-: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a4553525ae79cdf8fe89375eec13106d2">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+<li>llt_free_
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a2669d6543b4219f3a9ccc8557a78eb15">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
 </li>
 <li>Lu
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Derivative.html#a26579763dbcfc2f2214629d47edf491e">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::Derivative</a>
@@ -386,6 +392,12 @@ $(function() {
 <li>rel_improve_thre
 : <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html#a95099c64816bdaec04383221b53d45b8">nmpc_ddp::BoxQP&lt; VarDim &gt;::Configuration</a>
 </li>
+<li>retstr_
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a328a3efddf69015e6378bcd62003af5a">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+</li>
+<li>retval_
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a89095d85e3fcb3a016bf0716898bcb8e">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+</li>
 <li>runningCost()
 : <a class="el" href="classnmpc__ddp_1_1DDPProblem.html#aa4680079c725b40706959ea3479a7d5a">nmpc_ddp::DDPProblem&lt; StateDim, InputDim &gt;</a>
 </li>
@@ -396,11 +408,14 @@ $(function() {
 <li>search_dir
 : <a class="el" href="structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a2f2a1bcf0071bc31717b485b650b4fe5">nmpc_ddp::BoxQP&lt; VarDim &gt;::TraceData</a>
 </li>
+<li>setInputLimitsFunc()
+: <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a4b202e0c70a2a3c652a4e3f2a41d6f4b">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
+</li>
 <li>setup
 : <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html#ad3129ab90da00d4928438059ecf44ed7">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;::ComputationDuration</a>
 </li>
 <li>solve()
-: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#a020caad455a3169e9b00d7ddd4fde77c">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
+: <a class="el" href="classnmpc__ddp_1_1BoxQP.html#addc83ea5c520a4ce0bdb8b295d156920">nmpc_ddp::BoxQP&lt; VarDim &gt;</a>
 , <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#af13b182013e57518dceaaf0ecf21ddb7">nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</a>
 </li>
 <li>stateDim()

@@ -142,6 +142,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af13b182013e57518dceaaf0ecf21ddb7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#af13b182013e57518dceaaf0ecf21ddb7">solve</a> (double current_t, const <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a51712b3eb8645578d61f1c59a48bf571">StateDimVector</a> &amp;current_x, const std::vector&lt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a> &gt; &amp;initial_u_list)</td></tr>
 <tr class="memdesc:af13b182013e57518dceaaf0ecf21ddb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve optimization.  <a href="#af13b182013e57518dceaaf0ecf21ddb7">More...</a><br /></td></tr>
 <tr class="separator:af13b182013e57518dceaaf0ecf21ddb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b202e0c70a2a3c652a4e3f2a41d6f4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a4b202e0c70a2a3c652a4e3f2a41d6f4b">setInputLimitsFunc</a> (const std::function&lt; std::array&lt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a>, 2 &gt;(double)&gt; &amp;input_limits_func)</td></tr>
+<tr class="memdesc:a4b202e0c70a2a3c652a4e3f2a41d6f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set function to return input limits.  <a href="#a4b202e0c70a2a3c652a4e3f2a41d6f4b">More...</a><br /></td></tr>
+<tr class="separator:a4b202e0c70a2a3c652a4e3f2a41d6f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e306683dd82d840cc8f9ba7a9eb1db0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ControlData.html">ControlData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a2e306683dd82d840cc8f9ba7a9eb1db0">controlData</a> () const</td></tr>
 <tr class="memdesc:a2e306683dd82d840cc8f9ba7a9eb1db0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const accessor to control data calculated by <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#af13b182013e57518dceaaf0ecf21ddb7" title="Solve optimization. ">solve()</a>.  <a href="#a2e306683dd82d840cc8f9ba7a9eb1db0">More...</a><br /></td></tr>
 <tr class="separator:a2e306683dd82d840cc8f9ba7a9eb1db0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,6 +181,9 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:afebac97f08475715f1ad9a01f462103c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1TraceData.html">TraceData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#afebac97f08475715f1ad9a01f462103c">trace_data_list_</a></td></tr>
 <tr class="memdesc:afebac97f08475715f1ad9a01f462103c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of trace data.  <a href="#afebac97f08475715f1ad9a01f462103c">More...</a><br /></td></tr>
 <tr class="separator:afebac97f08475715f1ad9a01f462103c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac601b336749483fe7c276e78a372ee"><td class="memItemLeft" align="right" valign="top">std::function&lt; std::array&lt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a>, 2 &gt;double)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aeac601b336749483fe7c276e78a372ee">input_limits_func_</a></td></tr>
+<tr class="memdesc:aeac601b336749483fe7c276e78a372ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to return input limits.  <a href="#aeac601b336749483fe7c276e78a372ee">More...</a><br /></td></tr>
+<tr class="separator:aeac601b336749483fe7c276e78a372ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab9b9614211b569ddfa5a79455a21c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html">ComputationDuration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a1ab9b9614211b569ddfa5a79455a21c1">computation_duration_</a></td></tr>
 <tr class="memdesc:a1ab9b9614211b569ddfa5a79455a21c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation duration data.  <a href="#a1ab9b9614211b569ddfa5a79455a21c1">More...</a><br /></td></tr>
 <tr class="separator:a1ab9b9614211b569ddfa5a79455a21c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -233,7 +239,7 @@ class nmpc_ddp::DDPSolver&lt; StateDim, InputDim &gt;</h3>
 <li><a href="https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization">https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization</a> </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00022">22</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00024">24</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="aefaba6eacc1e58037806506c0a93dbe6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefaba6eacc1e58037806506c0a93dbe6">&#9670;&nbsp;</a></span>InputDimVector</h2>
@@ -251,7 +257,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of vector of input dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00029">29</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00031">31</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -271,7 +277,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of matrix of input x input dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00035">35</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00037">37</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -291,7 +297,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of matrix of input x state dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00041">41</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00043">43</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -311,7 +317,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of vector of state dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00026">26</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00028">28</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -331,7 +337,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of matrix of state x input dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00038">38</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00040">40</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -351,7 +357,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Type of matrix of state x state dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00032">32</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00034">34</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -382,7 +388,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00010">10</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00012">12</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -415,7 +421,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 <p>Process backward pass. </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the process is finished successfully </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00342">342</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00344">344</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -446,7 +452,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Const accessor to computation duration. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00286">286</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00295">295</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -477,7 +483,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00254">254</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00255">255</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -508,7 +514,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Const accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00260">260</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00261">261</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -539,7 +545,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Const accessor to control data calculated by <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#af13b182013e57518dceaaf0ecf21ddb7" title="Solve optimization. ">solve()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00274">274</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00283">283</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -569,7 +575,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00526">526</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00571">571</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -607,7 +613,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00500">500</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00545">545</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -646,7 +652,45 @@ template&lt;int StateDim, int InputDim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 for continue, 1 for terminate, -1 for failure </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00138">138</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00140">140</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a4b202e0c70a2a3c652a4e3f2a41d6f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b202e0c70a2a3c652a4e3f2a41d6f4b">&#9670;&nbsp;</a></span>setInputLimitsFunc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classnmpc__ddp_1_1DDPSolver.html">nmpc_ddp::DDPSolver</a>&lt; StateDim, InputDim &gt;::setInputLimitsFunc </td>
+          <td>(</td>
+          <td class="paramtype">const std::function&lt; std::array&lt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a>, 2 &gt;(double)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>input_limits_func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set function to return input limits. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input_limits_func</td><td>function to return input limits </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00277">277</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -695,7 +739,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>whether the process is finished successfully </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00016">16</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8hpp_source.html#l00018">18</a> of file <a class="el" href="DDPSolver_8hpp_source.html">DDPSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -726,7 +770,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Const accessor to trace data list. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00280">280</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00289">289</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -755,7 +799,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Candidate control data (sequence of state, input, and cost) </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00339">339</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00351">351</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -783,7 +827,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Computation duration data. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00324">324</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00336">336</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -811,7 +855,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1Configuration.html" title="Configuration. ">Configuration</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00315">315</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00324">324</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -839,7 +883,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Control data (sequence of state, input, and cost) </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00336">336</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00348">348</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -867,7 +911,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Current time [sec]. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00327">327</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00339">339</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -895,7 +939,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Sequence of derivatives. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00348">348</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00360">360</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -923,7 +967,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Scaling factor of regularization coefficient. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00333">333</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00345">345</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -951,7 +995,35 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Expected update of value. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00357">357</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00369">369</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="aeac601b336749483fe7c276e78a372ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeac601b336749483fe7c276e78a372ee">&#9670;&nbsp;</a></span>input_limits_func_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;std::array&lt;<a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a>, 2&gt;double)&gt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html">nmpc_ddp::DDPSolver</a>&lt; StateDim, InputDim &gt;::input_limits_func_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Function to return input limits. </p>
+
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00333">333</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -979,7 +1051,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Sequence of feedforward term for input (k[0], ..., k[N-1]) </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00342">342</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00354">354</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1007,7 +1079,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Sequence of feedback gain for input w.r.t. state error (K[0], ..., K[N-1]) </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00345">345</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00357">357</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1035,7 +1107,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Regularization coefficient. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00330">330</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00342">342</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1063,7 +1135,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>First-order derivative of value in last step of horizon. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00351">351</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00363">363</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1091,7 +1163,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Second-order derivative of value in last step of horizon. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00354">354</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00366">366</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1119,7 +1191,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>DDP problem. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00318">318</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00327">327</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1147,7 +1219,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 
 <p>Sequence of trace data. </p>
 
-<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00321">321</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00330">330</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
 </div>
 </div>

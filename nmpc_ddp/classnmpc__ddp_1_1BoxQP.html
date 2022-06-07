@@ -134,9 +134,18 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aa3450e9534edaa3719b343570ef8d010"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#aa3450e9534edaa3719b343570ef8d010">var_dim_</a> = 0</td></tr>
 <tr class="memdesc:aa3450e9534edaa3719b343570ef8d010"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dimension of decision variables.  <a href="#aa3450e9534edaa3719b343570ef8d010">More...</a><br /></td></tr>
 <tr class="separator:aa3450e9534edaa3719b343570ef8d010"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4553525ae79cdf8fe89375eec13106d2"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; Eigen::LLT&lt; Eigen::MatrixXd &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#a4553525ae79cdf8fe89375eec13106d2">llt_</a></td></tr>
-<tr class="memdesc:a4553525ae79cdf8fe89375eec13106d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cholesky decomposition (LLT) of free block of objective Hessian matrix.  <a href="#a4553525ae79cdf8fe89375eec13106d2">More...</a><br /></td></tr>
-<tr class="separator:a4553525ae79cdf8fe89375eec13106d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89095d85e3fcb3a016bf0716898bcb8e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#a89095d85e3fcb3a016bf0716898bcb8e">retval_</a> = 0</td></tr>
+<tr class="memdesc:a89095d85e3fcb3a016bf0716898bcb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return value.  <a href="#a89095d85e3fcb3a016bf0716898bcb8e">More...</a><br /></td></tr>
+<tr class="separator:a89095d85e3fcb3a016bf0716898bcb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a328a3efddf69015e6378bcd62003af5a"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; int, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#a328a3efddf69015e6378bcd62003af5a">retstr_</a></td></tr>
+<tr class="memdesc:a328a3efddf69015e6378bcd62003af5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return string.  <a href="#a328a3efddf69015e6378bcd62003af5a">More...</a><br /></td></tr>
+<tr class="separator:a328a3efddf69015e6378bcd62003af5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2669d6543b4219f3a9ccc8557a78eb15"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; Eigen::LLT&lt; Eigen::MatrixXd &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#a2669d6543b4219f3a9ccc8557a78eb15">llt_free_</a></td></tr>
+<tr class="memdesc:a2669d6543b4219f3a9ccc8557a78eb15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cholesky decomposition (LLT) of free block of objective Hessian matrix.  <a href="#a2669d6543b4219f3a9ccc8557a78eb15">More...</a><br /></td></tr>
+<tr class="separator:a2669d6543b4219f3a9ccc8557a78eb15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac7d73d7fa9c1fcb5bc1fb19c079c6b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a></td></tr>
+<tr class="memdesc:a6ac7d73d7fa9c1fcb5bc1fb19c079c6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indices of free dimensions in decision variables.  <a href="#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">More...</a><br /></td></tr>
+<tr class="separator:a6ac7d73d7fa9c1fcb5bc1fb19c079c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -293,7 +302,7 @@ template&lt;int VarDim&gt; </div>
 
 <p>Accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00360">360</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00350">350</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
@@ -324,7 +333,7 @@ template&lt;int VarDim&gt; </div>
 
 <p>Const accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00366">366</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00356">356</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
@@ -488,7 +497,7 @@ template&lt;int VarDim&gt; </div>
 
 <p>Const accessor to trace data list. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00372">372</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00362">362</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
@@ -517,12 +526,12 @@ template&lt;int VarDim&gt; </div>
 
 <p><a class="el" href="structnmpc__ddp_1_1BoxQP_1_1Configuration.html" title="Configuration. ">Configuration</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00386">386</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00393">393</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
-<a id="a4553525ae79cdf8fe89375eec13106d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4553525ae79cdf8fe89375eec13106d2">&#9670;&nbsp;</a></span>llt_</h2>
+<a id="a6ac7d73d7fa9c1fcb5bc1fb19c079c6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">&#9670;&nbsp;</a></span>free_idxs_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -530,14 +539,74 @@ template&lt;int VarDim&gt; </div>
 template&lt;int VarDim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;Eigen::LLT&lt;Eigen::MatrixXd&gt; &gt; <a class="el" href="classnmpc__ddp_1_1BoxQP.html">nmpc_ddp::BoxQP</a>&lt; VarDim &gt;::llt_</td>
+          <td class="memname">std::vector&lt;int&gt; <a class="el" href="classnmpc__ddp_1_1BoxQP.html">nmpc_ddp::BoxQP</a>&lt; VarDim &gt;::free_idxs_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indices of free dimensions in decision variables. </p>
+
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00389">389</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+
+</div>
+</div>
+<a id="a2669d6543b4219f3a9ccc8557a78eb15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2669d6543b4219f3a9ccc8557a78eb15">&#9670;&nbsp;</a></span>llt_free_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int VarDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;Eigen::LLT&lt;Eigen::MatrixXd&gt; &gt; <a class="el" href="classnmpc__ddp_1_1BoxQP.html">nmpc_ddp::BoxQP</a>&lt; VarDim &gt;::llt_free_</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Cholesky decomposition (LLT) of free block of objective Hessian matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00382">382</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00386">386</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+
+</div>
+</div>
+<a id="a328a3efddf69015e6378bcd62003af5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a328a3efddf69015e6378bcd62003af5a">&#9670;&nbsp;</a></span>retstr_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int VarDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt;int, std::string&gt; <a class="el" href="classnmpc__ddp_1_1BoxQP.html">nmpc_ddp::BoxQP</a>&lt; VarDim &gt;::retstr_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {{-2, <span class="stringliteral">&quot;Gradient of search direction is negative&quot;</span>},</div><div class="line">                                                        {-1, <span class="stringliteral">&quot;Hessian is not positive definite&quot;</span>},</div><div class="line">                                                        {0, <span class="stringliteral">&quot;Computation is not finished&quot;</span>},</div><div class="line">                                                        {1, <span class="stringliteral">&quot;Maximum main iterations exceeded&quot;</span>},</div><div class="line">                                                        {2, <span class="stringliteral">&quot;Maximum line-search iterations exceeded&quot;</span>},</div><div class="line">                                                        {3, <span class="stringliteral">&quot;No bounds, returning Newton point&quot;</span>},</div><div class="line">                                                        {4, <span class="stringliteral">&quot;Improvement smaller than tolerance&quot;</span>},</div><div class="line">                                                        {5, <span class="stringliteral">&quot;Gradient norm smaller than tolerance&quot;</span>},</div><div class="line">                                                        {6, <span class="stringliteral">&quot;All dimensions are clamped&quot;</span>}}</div></div><!-- fragment -->
+<p>Return string. </p>
+
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00375">375</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+
+</div>
+</div>
+<a id="a89095d85e3fcb3a016bf0716898bcb8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89095d85e3fcb3a016bf0716898bcb8e">&#9670;&nbsp;</a></span>retval_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int VarDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classnmpc__ddp_1_1BoxQP.html">nmpc_ddp::BoxQP</a>&lt; VarDim &gt;::retval_ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return value. </p>
+
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00372">372</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
@@ -565,7 +634,7 @@ template&lt;int VarDim&gt; </div>
 
 <p>Sequence of trace data. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00389">389</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00396">396</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
@@ -585,7 +654,7 @@ template&lt;int VarDim&gt; </div>
 
 <p>Dimension of decision variables. </p>
 
-<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00379">379</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="BoxQP_8h_source.html#l00369">369</a> of file <a class="el" href="BoxQP_8h_source.html">BoxQP.h</a>.</p>
 
 </div>
 </div>
