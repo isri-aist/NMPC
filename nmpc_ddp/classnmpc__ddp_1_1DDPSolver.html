@@ -182,7 +182,7 @@ Protected Attributes</h2></td></tr>
 <tr class="memdesc:afebac97f08475715f1ad9a01f462103c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequence of trace data.  <a href="#afebac97f08475715f1ad9a01f462103c">More...</a><br /></td></tr>
 <tr class="separator:afebac97f08475715f1ad9a01f462103c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeac601b336749483fe7c276e78a372ee"><td class="memItemLeft" align="right" valign="top">std::function&lt; std::array&lt; <a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a>, 2 &gt;double)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#aeac601b336749483fe7c276e78a372ee">input_limits_func_</a></td></tr>
-<tr class="memdesc:aeac601b336749483fe7c276e78a372ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to return input limits.  <a href="#aeac601b336749483fe7c276e78a372ee">More...</a><br /></td></tr>
+<tr class="memdesc:aeac601b336749483fe7c276e78a372ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to return input limits (in the order of lower, upper)  <a href="#aeac601b336749483fe7c276e78a372ee">More...</a><br /></td></tr>
 <tr class="separator:aeac601b336749483fe7c276e78a372ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab9b9614211b569ddfa5a79455a21c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structnmpc__ddp_1_1DDPSolver_1_1ComputationDuration.html">ComputationDuration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__ddp_1_1DDPSolver.html#a1ab9b9614211b569ddfa5a79455a21c1">computation_duration_</a></td></tr>
 <tr class="memdesc:a1ab9b9614211b569ddfa5a79455a21c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation duration data.  <a href="#a1ab9b9614211b569ddfa5a79455a21c1">More...</a><br /></td></tr>
@@ -685,7 +685,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 <p>Set function to return input limits. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">input_limits_func</td><td>function to return input limits </td></tr>
+    <tr><td class="paramname">input_limits_func</td><td>function to return input limits (in the order of lower, upper) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1021,7 +1021,7 @@ template&lt;int StateDim, int InputDim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Function to return input limits. </p>
+<p>Function to return input limits (in the order of lower, upper) </p>
 
 <p class="definition">Definition at line <a class="el" href="DDPSolver_8h_source.html#l00333">333</a> of file <a class="el" href="DDPSolver_8h_source.html">DDPSolver.h</a>.</p>
 
