@@ -158,12 +158,13 @@ public:
     trace_data_list_.push_back(initial_trace_data);
 
     // Main loop
-    int retval = 0;
+    retval_ = 0;
     int factorization_num = 0;
     VarDimVector grad = VarDimVector::Zero(var_dim_);
     VarDimArray clamped_flag = VarDimArray::Zero(var_dim_);
     VarDimArray old_clamped_flag = clamped_flag;
     int iter = 1;
+    free_idxs_.clear();
     for(;; iter++)
     {
       // Append trace data
@@ -174,7 +175,7 @@ public:
       // Check relative improvement
       if(iter > 1 && (old_obj - obj) < config_.rel_improve_thre * std::abs(old_obj))
       {
-        retval = 4;
+        retval_ = 4;
         break;
       }
       old_obj = obj;
@@ -191,7 +192,7 @@ public:
 
       // Set clamped and free indices
       std::vector<int> clamped_idxs;
-      std::vector<int> free_idxs;
+      free_idxs_.clear();
       for(int i = 0; i < clamped_flag.size(); i++)
       {
         if(clamped_flag[i])
@@ -200,14 +201,14 @@ public:
         }
         else
         {
-          free_idxs.push_back(i);
+          free_idxs_.push_back(i);
         }
       }
 
       // Check for all clamped
       if(clamped_flag.all())
       {
-        retval = 6;
+        retval_ = 6;
         break;
       }
 
@@ -215,24 +216,24 @@ public:
       if(iter == 1 || (clamped_flag != old_clamped_flag).any())
       {
         // Set H_free
-        Eigen::MatrixXd H_free(free_idxs.size(), free_idxs.size());
-        for(int i = 0; i < free_idxs.size(); i++)
+        Eigen::MatrixXd H_free(free_idxs_.size(), free_idxs_.size());
+        for(int i = 0; i < free_idxs_.size(); i++)
         {
-          for(int j = 0; j < free_idxs.size(); j++)
+          for(int j = 0; j < free_idxs_.size(); j++)
           {
-            H_free(i, j) = H(free_idxs[i], free_idxs[j]);
+            H_free(i, j) = H(free_idxs_[i], free_idxs_[j]);
           }
         }
 
         // Cholesky decomposition
-        llt_ = std::make_unique<Eigen::LLT<Eigen::MatrixXd>>(H_free);
-        if(llt_->info() == Eigen::NumericalIssue)
+        llt_free_ = std::make_unique<Eigen::LLT<Eigen::MatrixXd>>(H_free);
+        if(llt_free_->info() == Eigen::NumericalIssue)
         {
           if(config_.print_level >= 1)
           {
             std::cout << "[BoxQP] H_free is not positive definite in Cholesky decomposition (LLT)." << std::endl;
           }
-          retval = -1;
+          retval_ = -1;
           break;
         }
 
@@ -241,40 +242,40 @@ public:
 
       // Check gradient norm
       double grad_norm = 0;
-      for(int i = 0; i < free_idxs.size(); i++)
+      for(int i = 0; i < free_idxs_.size(); i++)
       {
-        grad_norm += std::pow(grad[free_idxs[i]], 2);
+        grad_norm += std::pow(grad[free_idxs_[i]], 2);
       }
       if(grad_norm < std::pow(config_.grad_thre, 2))
       {
-        retval = 5;
+        retval_ = 5;
         break;
       }
 
       // Calculate search direction
       Eigen::VectorXd x_clamped(clamped_idxs.size());
-      Eigen::VectorXd x_free(free_idxs.size());
-      Eigen::VectorXd g_free(free_idxs.size());
-      Eigen::MatrixXd H_free_clamped(free_idxs.size(), clamped_idxs.size());
+      Eigen::VectorXd x_free(free_idxs_.size());
+      Eigen::VectorXd g_free(free_idxs_.size());
+      Eigen::MatrixXd H_free_clamped(free_idxs_.size(), clamped_idxs.size());
       for(int i = 0; i < clamped_idxs.size(); i++)
       {
         x_clamped[i] = x[clamped_idxs[i]];
       }
-      for(int i = 0; i < free_idxs.size(); i++)
+      for(int i = 0; i < free_idxs_.size(); i++)
       {
-        x_free[i] = x[free_idxs[i]];
-        g_free[i] = g[free_idxs[i]];
+        x_free[i] = x[free_idxs_[i]];
+        g_free[i] = g[free_idxs_[i]];
         for(int j = 0; j < clamped_idxs.size(); j++)
         {
-          H_free_clamped(i, j) = H(free_idxs[i], clamped_idxs[j]);
+          H_free_clamped(i, j) = H(free_idxs_[i], clamped_idxs[j]);
         }
       }
       Eigen::VectorXd grad_free_clamped = g_free + H_free_clamped * x_clamped;
-      Eigen::VectorXd search_dir_free = -1 * llt_->solve(grad_free_clamped) - x_free;
+      Eigen::VectorXd search_dir_free = -1 * llt_free_->solve(grad_free_clamped) - x_free;
       VarDimVector search_dir = VarDimVector::Zero(var_dim_);
-      for(int i = 0; i < free_idxs.size(); i++)
+      for(int i = 0; i < free_idxs_.size(); i++)
       {
-        search_dir[free_idxs[i]] = search_dir_free[i];
+        search_dir[free_idxs_[i]] = search_dir_free[i];
       }
 
       // Check for descent direction
@@ -285,7 +286,7 @@ public:
         {
           std::cout << "[BoxQP] search_dir_grad is negative: " << search_dir_grad << std::endl;
         }
-        retval = -2;
+        retval_ = -2;
         break;
       }
 
@@ -302,7 +303,7 @@ public:
         obj_candidate = x_candidate.dot(g) + 0.5 * x_candidate.dot(H * x_candidate);
         if(step < config_.min_step)
         {
-          retval = 2;
+          retval_ = 2;
           break;
         }
       }
@@ -330,27 +331,16 @@ public:
       // Check loop termination
       if(iter == config_.max_iter)
       {
-        retval = 1;
+        retval_ = 1;
         break;
       }
     }
 
     // Print
-    std::unordered_map<int, std::string> retstr = {{-2, "Gradient of search direction is negative"},
-                                                   {-1, "Hessian is not positive definite"},
-                                                   {0, "No descent direction found"},
-                                                   {1, "Maximum main iterations exceeded"},
-                                                   {2, "Maximum line-search iterations exceeded"},
-                                                   {3, "No bounds, returning Newton point"},
-                                                   {4, "Improvement smaller than tolerance"},
-                                                   {5, "Gradient norm smaller than tolerance"},
-                                                   {6, "All dimensions are clamped"}};
-
-    // Print
     if(config_.print_level >= 2)
     {
-      std::cout << "[BoxQP] result: " << retval << " (" << retstr.at(retval) << "), iter: " << iter << ", obj: " << obj
-                << ", factorization_num: " << factorization_num << std::endl;
+      std::cout << "[BoxQP] result: " << retval_ << " (" << retstr_.at(retval_) << "), iter: " << iter
+                << ", obj: " << obj << ", factorization_num: " << factorization_num << std::endl;
     }
 
     return x;
@@ -378,8 +368,25 @@ public:
   //! Dimension of decision variables
   const int var_dim_ = 0;
 
+  //! Return value
+  int retval_ = 0;
+
+  //! Return string
+  const std::unordered_map<int, std::string> retstr_ = {{-2, "Gradient of search direction is negative"},
+                                                        {-1, "Hessian is not positive definite"},
+                                                        {0, "Computation is not finished"},
+                                                        {1, "Maximum main iterations exceeded"},
+                                                        {2, "Maximum line-search iterations exceeded"},
+                                                        {3, "No bounds, returning Newton point"},
+                                                        {4, "Improvement smaller than tolerance"},
+                                                        {5, "Gradient norm smaller than tolerance"},
+                                                        {6, "All dimensions are clamped"}};
+
   //! Cholesky decomposition (LLT) of free block of objective Hessian matrix
-  std::unique_ptr<Eigen::LLT<Eigen::MatrixXd>> llt_;
+  std::unique_ptr<Eigen::LLT<Eigen::MatrixXd>> llt_free_;
+
+  //! Indices of free dimensions in decision variables
+  std::vector<int> free_idxs_;
 
 protected:
   //! Configuration

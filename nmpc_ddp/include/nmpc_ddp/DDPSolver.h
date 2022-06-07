@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <array>
+#include <functional>
 #include <memory>
 
 #include <nmpc_ddp/DDPProblem.h>
@@ -64,7 +66,6 @@ public:
     //! Whether to use second-order derivatives of state equation
     bool use_state_eq_second_derivative = false;
 
-    // \todo Support with_input_constraint
     //! Whether input has constraints
     bool with_input_constraint = false;
 
@@ -270,6 +271,14 @@ public:
   */
   bool solve(double current_t, const StateDimVector & current_x, const std::vector<InputDimVector> & initial_u_list);
 
+  /** \brief Set function to return input limits.
+      \param input_limits_func function to return input limits
+  */
+  inline void setInputLimitsFunc(const std::function<std::array<InputDimVector, 2>(double)> & input_limits_func)
+  {
+    input_limits_func_ = input_limits_func;
+  }
+
   /** \brief Const accessor to control data calculated by solve(). */
   inline const ControlData & controlData() const
   {
@@ -319,6 +328,9 @@ protected:
 
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
+
+  //! Function to return input limits
+  std::function<std::array<InputDimVector, 2>(double)> input_limits_func_;
 
   //! Computation duration data
   ComputationDuration computation_duration_;

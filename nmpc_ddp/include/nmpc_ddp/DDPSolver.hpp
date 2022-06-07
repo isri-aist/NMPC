@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <nmpc_ddp/BoxQP.h>
+
 namespace nmpc_ddp
 {
 template<int StateDim, int InputDim>
@@ -453,8 +455,51 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     {
       if(config_.with_input_constraint)
       {
-        // \todo Calculate gains with considering constraints
-        throw std::runtime_error("Input constraint is not supported yet.");
+        InputDimVector initial_k;
+        if(i == config_.horizon_steps - 1)
+        {
+          initial_k.setZero(input_dim);
+        }
+        else
+        {
+          if(k_list_[i + 1].size() == input_dim)
+          {
+            initial_k = k_list_[i + 1];
+          }
+          else
+          {
+            initial_k.setZero(input_dim);
+          }
+        }
+
+        BoxQP<Eigen::Dynamic> qp(Quu_F.cols());
+        const auto & u_limits = input_limits_func_(t);
+        k = qp.solve(Quu_F, Qu, u_limits[0] - control_data_.u_list[i], u_limits[1] - control_data_.u_list[i],
+                     initial_k);
+        if(qp.retval_ < 0)
+        {
+          if(config_.print_level >= 1)
+          {
+            std::cout << "[DDP/Backward] Failed BoxQP: " << qp.retstr_.at(qp.retval_) << std::endl;
+          }
+          return false;
+        }
+
+        const auto & free_idxs = qp.free_idxs_;
+        K.setZero(input_dim, problem_->stateDim());
+        if(free_idxs.size() > 0)
+        {
+          Eigen::MatrixXd Qux_reg_free(free_idxs.size(), problem_->stateDim());
+          for(int j = 0; j < free_idxs.size(); j++)
+          {
+            Qux_reg_free.row(j) = Qux_reg.row(free_idxs[j]);
+          }
+          Eigen::MatrixXd K_free = -1 * qp.llt_free_->solve(Qux_reg_free);
+          for(int j = 0; j < free_idxs.size(); j++)
+          {
+            K.row(free_idxs[j]) = K_free.row(j);
+          }
+        }
       }
       else
       {
