@@ -41,7 +41,7 @@ class PlotTestDDPVerticalMotion(object):
         ax.set_xlabel("time [s]")
         ax.set_ylabel("pos [m]")
         ax.grid()
-        ax.legend(loc="upper left")
+        ax.legend(loc="lower left")
 
         ax = fig.add_subplot(212)
         ax.plot(self.result_data_list["time"], self.result_data_list["force"],

@@ -231,7 +231,7 @@ protected:
   bool use_smooth_abs_ = false;
 };
 
-TEST(TestDDPVerticalMotion, TestCase1)
+void test(bool with_constraint)
 {
   double dt = 0.01; // [sec]
   double horizon_duration = 3.0; // [sec]
@@ -249,13 +249,21 @@ TEST(TestDDPVerticalMotion, TestCase1)
     }
     else
     {
-      return 1.5; // [m]
+      return 0.0; // [m]
     }
   };
   auto ddp_problem = std::make_shared<DDPProblemVerticalMotion>(dt, ref_pos_func);
 
   // Instantiate solver
   auto ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
+  ddp_solver->setInputLimitsFunc([&](double t) -> std::array<Eigen::VectorXd, 2> {
+    std::array<Eigen::VectorXd, 2> limits;
+    int input_dim = ddp_problem->inputDim(t);
+    limits[0].setConstant(input_dim, 0.0);
+    limits[1].setConstant(input_dim, 30.0);
+    return limits;
+  });
+  ddp_solver->config().with_input_constraint = with_constraint;
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().initial_lambda = 1e-6;
 
@@ -283,6 +291,7 @@ TEST(TestDDPVerticalMotion, TestCase1)
       first_iter = false;
       ddp_solver->dumpTraceDataList("/tmp/TestDDPVerticalMotionTraceData.txt");
     }
+    ddp_solver->config().max_iter = 3; // Set max_iter from second loop iteration
 
     // Check pos
     double planned_pos = ddp_solver->controlData().x_list[0][0];
@@ -320,6 +329,16 @@ TEST(TestDDPVerticalMotion, TestCase1)
             << "  set key autotitle columnhead\n"
             << "  set key noenhanced\n"
             << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:5 w l lw 3\n";
+}
+
+TEST(TestDDPVerticalMotion, WithConstraint)
+{
+  test(true);
+}
+
+TEST(TestDDPVerticalMotion, WithoutConstraint)
+{
+  test(false);
 }
 
 int main(int argc, char ** argv)

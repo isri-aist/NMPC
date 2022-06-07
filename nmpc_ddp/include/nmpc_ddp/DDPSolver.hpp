@@ -252,7 +252,11 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       cost_update_ratio = cost_update_actual / cost_update_expected;
       if(cost_update_expected < 0)
       {
-        std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+        if((!config_.with_input_constraint && config_.print_level >= 0)
+           || (config_.with_input_constraint && config_.print_level >= 2))
+        {
+          std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+        }
         cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
       }
       if(cost_update_ratio > config_.cost_update_ratio_thre)

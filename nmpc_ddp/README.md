@@ -10,6 +10,7 @@ Non-linear model predictive control (NMPC) with differential dynamic drogramming
 - C++ header-only library
 - Treats state and control input dimensions as template parameters
 - Supports time-varying control input dimensions
+- Supports constrained control input
 
 ## Install
 See [here](https://isri-aist.github.io/NMPC/doc/Install).
@@ -38,8 +39,9 @@ $ rosrun nmpc_ddp plotTestDDPBipedal.py
 Controlling vertical motion with time-variant number of contacts (including floating phase).
 System is linear and time-variant.
 The dimension of the control input changes (there are even time steps with an empty control input).
+The upper and lower limits are imposed on the control input.
 ```bash
-$ rosrun nmpc_ddp TestDDPVerticalMotion
+$ rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithConstraint
 $ rosrun nmpc_ddp plotTestDDPVerticalMotion.py
 ```
 ![TestDDPVerticalMotion](doc/images/TestDDPVerticalMotion.png)
