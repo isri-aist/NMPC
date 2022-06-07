@@ -42,6 +42,7 @@ The dimension of the control input changes (there are even time steps with an em
 The upper and lower limits are imposed on the control input.
 ```bash
 $ rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithConstraint
+$ # rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithoutConstraint # Try the unconstrained case
 $ rosrun nmpc_ddp plotTestDDPVerticalMotion.py
 ```
 ![TestDDPVerticalMotion](doc/images/TestDDPVerticalMotion.png)
