@@ -93,7 +93,7 @@ TestDDPCartPole</div></div>
 <div class="caption">
 TestDDPBipedal</div></div>
  <h3><a href="tests/src/TestDDPVerticalMotion.cpp">Vertical motion</a></h3>
-<p>Controlling vertical motion with time-variant number of contacts (including floating phase). System is linear and time-variant. The dimension of the control input changes (there are even time steps with an empty control input). The upper and lower limits are imposed on the control input. </p><div class="fragment"><div class="line">$ rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithConstraint</div><div class="line">$ rosrun nmpc_ddp plotTestDDPVerticalMotion.py</div></div><!-- fragment --> <div class="image">
+<p>Controlling vertical motion with time-variant number of contacts (including floating phase). System is linear and time-variant. The dimension of the control input changes (there are even time steps with an empty control input). The upper and lower limits are imposed on the control input. </p><div class="fragment"><div class="line">$ rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithConstraint</div><div class="line">$ # rosrun nmpc_ddp TestDDPVerticalMotion --gtest_filter=*.WithoutConstraint # Try the unconstrained case</div><div class="line">$ rosrun nmpc_ddp plotTestDDPVerticalMotion.py</div></div><!-- fragment --> <div class="image">
 <img src="TestDDPVerticalMotion.png" alt="TestDDPVerticalMotion.png"/>
 <div class="caption">
 TestDDPVerticalMotion</div></div>
