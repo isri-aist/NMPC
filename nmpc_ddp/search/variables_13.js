@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['x',['x',['../structnmpc__ddp_1_1BoxQP_1_1TraceData.html#a4f9d3487e1c5a4b14726c3349f3c207b',1,'nmpc_ddp::BoxQP::TraceData']]],
-  ['x_5flist',['x_list',['../structnmpc__ddp_1_1DDPSolver_1_1ControlData.html#a0ab6a68b6c32e46424c73413b8ab4930',1,'nmpc_ddp::DDPSolver::ControlData']]]
+  ['with_5finput_5fconstraint',['with_input_constraint',['../structnmpc__ddp_1_1DDPSolver_1_1Configuration.html#a60ae1edef972c9691f9241b90ce94b55',1,'nmpc_ddp::DDPSolver::Configuration']]]
 ];
