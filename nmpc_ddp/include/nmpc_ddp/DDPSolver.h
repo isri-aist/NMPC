@@ -272,7 +272,7 @@ public:
   bool solve(double current_t, const StateDimVector & current_x, const std::vector<InputDimVector> & initial_u_list);
 
   /** \brief Set function to return input limits.
-      \param input_limits_func function to return input limits
+      \param input_limits_func function to return input limits (in the order of lower, upper)
   */
   inline void setInputLimitsFunc(const std::function<std::array<InputDimVector, 2>(double)> & input_limits_func)
   {
@@ -329,7 +329,7 @@ protected:
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
 
-  //! Function to return input limits
+  //! Function to return input limits (in the order of lower, upper)
   std::function<std::array<InputDimVector, 2>(double)> input_limits_func_;
 
   //! Computation duration data
