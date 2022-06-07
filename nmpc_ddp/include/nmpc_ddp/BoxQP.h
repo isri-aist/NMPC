@@ -63,29 +63,73 @@ public:
     int iter = 0;
 
     //! Decision variables
-    VarDimVector x = VarDimVector::Zero();
+    VarDimVector x;
 
     //! Objective value
     double obj = 0;
 
     //! Search direction
-    VarDimVector search_dir = VarDimVector::Zero();
+    VarDimVector search_dir;
 
     //! Flag of clamped variables dimensions
-    VarDimArray clamped_flag = VarDimArray::Zero();
+    VarDimArray clamped_flag;
 
     //! Number of factorization
     int factorization_num = 0;
 
     //! Number of linesearch step
     int step_num = 0;
+
+    /** \brief Constructor.
+        \param var_dim dimension of decision variables
+     */
+    TraceData(int var_dim)
+    {
+      x.setZero(var_dim);
+      search_dir.setZero(var_dim);
+      clamped_flag.setZero(var_dim);
+    }
   };
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  /** \brief Constructor. */
-  BoxQP() {}
+  /** \brief Constructor.
+      \param var_dim dimension of decision variables
+      \note dimensions in parameter can be omitted if a fixed value is given in the template value.
+   */
+  BoxQP(int var_dim = VarDim) : var_dim_(var_dim)
+  {
+    // Check dimension is positive
+    if(var_dim_ <= 0)
+    {
+      throw std::runtime_error("var_dim must be positive: " + std::to_string(var_dim_) + " <= 0");
+    }
+
+    // Check dimension consistency
+    if constexpr(VarDim != Eigen::Dynamic)
+    {
+      if(var_dim_ != VarDim)
+      {
+        throw std::runtime_error("var_dim is inconsistent with template parameter: " + std::to_string(var_dim_)
+                                 + " != " + std::to_string(VarDim));
+      }
+    }
+  }
+
+  /** \brief Solve optimization.
+      \param H Hessian matrix of objective function
+      \param g gradient vector of objective function
+      \param lower lower limit of decision variables
+      \param upper upper limit of decision variables
+   */
+  inline VarDimVector solve(const VarVarDimMatrix & H,
+                            const VarDimVector & g,
+                            const VarDimVector & lower,
+                            const VarDimVector & upper)
+  {
+    return solve(H, g, lower, upper, VarDimVector::Zero(var_dim_));
+  }
 
   /** \brief Solve optimization.
       \param H Hessian matrix of objective function
@@ -98,7 +142,7 @@ public:
                             const VarDimVector & g,
                             const VarDimVector & lower,
                             const VarDimVector & upper,
-                            const VarDimVector & initial_x = VarDimVector::Zero())
+                            const VarDimVector & initial_x)
   {
     // Initialize objective value
     VarDimVector x = initial_x.cwiseMin(upper).cwiseMax(lower);
@@ -107,7 +151,7 @@ public:
 
     // Initialize trace data
     trace_data_list_.clear();
-    TraceData initial_trace_data;
+    TraceData initial_trace_data(var_dim_);
     initial_trace_data.iter = 0;
     initial_trace_data.x = x;
     initial_trace_data.obj = obj;
@@ -116,14 +160,14 @@ public:
     // Main loop
     int retval = 0;
     int factorization_num = 0;
-    VarDimVector grad = VarDimVector::Zero();
-    VarDimArray clamped_flag = VarDimArray::Zero();
+    VarDimVector grad = VarDimVector::Zero(var_dim_);
+    VarDimArray clamped_flag = VarDimArray::Zero(var_dim_);
     VarDimArray old_clamped_flag = clamped_flag;
     int iter = 1;
     for(;; iter++)
     {
       // Append trace data
-      trace_data_list_.push_back(TraceData());
+      trace_data_list_.push_back(TraceData(var_dim_));
       auto & trace_data = trace_data_list_.back();
       trace_data.iter = iter;
 
@@ -227,7 +271,7 @@ public:
       }
       Eigen::VectorXd grad_free_clamped = g_free + H_free_clamped * x_clamped;
       Eigen::VectorXd search_dir_free = -1 * llt_->solve(grad_free_clamped) - x_free;
-      VarDimVector search_dir = VarDimVector::Zero();
+      VarDimVector search_dir = VarDimVector::Zero(var_dim_);
       for(int i = 0; i < free_idxs.size(); i++)
       {
         search_dir[free_idxs[i]] = search_dir_free[i];
@@ -331,6 +375,9 @@ public:
   }
 
 public:
+  //! Dimension of decision variables
+  const int var_dim_ = 0;
+
   //! Cholesky decomposition (LLT) of free block of objective Hessian matrix
   std::unique_ptr<Eigen::LLT<Eigen::MatrixXd>> llt_;
 
