@@ -113,7 +113,7 @@ public:
   {
     state_eq_deriv_x << 0, 1, 0, 0;
     state_eq_deriv_x *= dt_;
-    state_eq_deriv_x += StateStateDimMatrix::Identity();
+    state_eq_deriv_x.diagonal().array() += 1.0;
 
     state_eq_deriv_u.row(0).setZero();
     state_eq_deriv_u.row(1).setConstant(1.0 / mass_);

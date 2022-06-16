@@ -137,7 +137,7 @@ public:
     state_eq_deriv_x(3, 3) = (-2 * m2 * l * omega * sin_theta * cos_theta) / (l * denom);
     // clang-format on
     state_eq_deriv_x *= dt_;
-    state_eq_deriv_x += StateStateDimMatrix::Identity();
+    state_eq_deriv_x.diagonal().array() += 1.0;
 
     state_eq_deriv_u.setZero();
     state_eq_deriv_u[2] = 1 / denom;
