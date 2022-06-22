@@ -280,11 +280,11 @@ public:
 
       // Check for descent direction
       double search_dir_grad = search_dir.dot(grad);
-      if(search_dir_grad > 0) // This should not happen
+      if(search_dir_grad > 1e-10) // This should not happen
       {
         if(config_.print_level >= 1)
         {
-          std::cout << "[BoxQP] search_dir_grad is negative: " << search_dir_grad << std::endl;
+          std::cout << "[BoxQP] search_dir_grad is positive: " << search_dir_grad << std::endl;
         }
         retval_ = -2;
         break;
@@ -372,7 +372,7 @@ public:
   int retval_ = 0;
 
   //! Return string
-  const std::unordered_map<int, std::string> retstr_ = {{-2, "Gradient of search direction is negative"},
+  const std::unordered_map<int, std::string> retstr_ = {{-2, "Gradient of search direction is positive"},
                                                         {-1, "Hessian is not positive definite"},
                                                         {0, "Computation is not finished"},
                                                         {1, "Maximum main iterations exceeded"},
