@@ -218,10 +218,13 @@ public:
   /*! \brief Data of computation duration. */
   struct ComputationDuration
   {
-    //! Duration to setup [msec]
+    //! Duration to solve [msec]
+    double solve = 0;
+
+    //! Duration to setup (included in solve) [msec]
     double setup = 0;
 
-    //! Duration of optimization loop [msec]
+    //! Duration of optimization loop (included in solve) [msec]
     double opt = 0;
 
     //! Duration to calculate derivatives (included in opt) [msec]

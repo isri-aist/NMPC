@@ -122,6 +122,8 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   auto end_time = std::chrono::system_clock::now();
   computation_duration_.opt =
       1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - setup_time).count();
+  computation_duration_.solve =
+      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time).count();
 
   if(config_.print_level >= 3)
   {
