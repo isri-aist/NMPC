@@ -276,6 +276,8 @@ public:
 
   /** \brief Set function to return input limits.
       \param input_limits_func function to return input limits (in the order of lower, upper)
+
+      \note The input limits are only considered when with_input_constraint in configuration is true.
   */
   inline void setInputLimitsFunc(const std::function<std::array<InputDimVector, 2>(double)> & input_limits_func)
   {

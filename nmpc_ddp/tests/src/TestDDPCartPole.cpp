@@ -14,6 +14,11 @@
 
 #include <nmpc_ddp/DDPSolver.h>
 
+namespace Eigen
+{
+using Vector1d = Eigen::Matrix<double, 1, 1>;
+}
+
 /** \brief DDP problem for cart-pole.
 
     State is [pos, theta, vel, omega]. Input is [force].
@@ -229,12 +234,19 @@ double dist_t = 0;
 DDPProblemCartPole::InputDimVector dist_u = DDPProblemCartPole::InputDimVector::Zero();
 double target_pos = std::numeric_limits<double>::quiet_NaN();
 bool first_iter = true;
+auto input_limits_func = [&](double t) -> std::array<Eigen::Vector1d, 2> {
+  std::array<Eigen::Vector1d, 2> limits;
+  limits[0].setConstant(-12.5);
+  limits[1].setConstant(12.5);
+  return limits;
+};
 
 void mpcTimerCallback(const ros::TimerEvent & event)
 {
   // Solve
   ddp_solver->solve(current_t, current_x, initial_u_list);
-  current_u = ddp_solver->controlData().u_list[0];
+  const auto & input_limits = input_limits_func(current_t);
+  current_u = ddp_solver->controlData().u_list[0].cwiseMax(input_limits[0]).cwiseMin(input_limits[1]);
   initial_u_list = ddp_solver->controlData().u_list;
 
   // Dump
@@ -450,12 +462,12 @@ TEST(TestDDPCartPole, TestCase1)
   ros::NodeHandle nh;
   ros::NodeHandle pnh("~");
   ros::Publisher marker_arr_pub = nh.advertise<visualization_msgs::MarkerArray>("marker_arr", 1);
-  constexpr double dist_force_small = 30; // [N]
+  constexpr double dist_force_small = 10; // [N]
   ros::ServiceServer dist_left_small_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
       "/dist_left_small", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, -1 * dist_force_small));
   ros::ServiceServer dist_right_small_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
       "/dist_right_small", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, dist_force_small));
-  constexpr double dist_force_large = 100; // [N]
+  constexpr double dist_force_large = 30; // [N]
   ros::ServiceServer dist_left_large_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
       "/dist_left_large", std::bind(distCallback, std::placeholders::_1, std::placeholders::_2, -1 * dist_force_large));
   ros::ServiceServer dist_right_large_srv = nh.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
@@ -484,14 +496,7 @@ TEST(TestDDPCartPole, TestCase1)
     t += epsilon_t;
     if(std::isnan(target_pos))
     {
-      if(t <= 6.0)
-      {
-        return 0.0; // [m]
-      }
-      else
-      {
-        return 1.0; // [m]
-      }
+      return 0.0; // [m]
     }
     else
     {
@@ -521,6 +526,8 @@ TEST(TestDDPCartPole, TestCase1)
 
   // Instantiate solver
   ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<4, 1>>(ddp_problem);
+  ddp_solver->setInputLimitsFunc(input_limits_func);
+  ddp_solver->config().with_input_constraint = true;
   int horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().max_iter = 3;
@@ -583,7 +590,8 @@ TEST(TestDDPCartPole, TestCase1)
   std::cout << "Run the following commands in gnuplot:\n"
             << "  set key autotitle columnhead\n"
             << "  set key noenhanced\n"
-            << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:3 w lp, \"\" u 1:7 w l lw 3\n";
+            << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:3 w lp, \"\" u 1:7 w l lw 3 # State\n"
+            << "  plot \"" << file_path << "\" u 1:6 w l lw 3 # Input\n";
 }
 
 int main(int argc, char ** argv)
