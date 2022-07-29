@@ -236,8 +236,8 @@ double target_pos = std::numeric_limits<double>::quiet_NaN();
 bool first_iter = true;
 auto input_limits_func = [&](double t) -> std::array<Eigen::Vector1d, 2> {
   std::array<Eigen::Vector1d, 2> limits;
-  limits[0].setConstant(-12.5);
-  limits[1].setConstant(12.5);
+  limits[0].setConstant(-15.0);
+  limits[1].setConstant(15.0);
   return limits;
 };
 
