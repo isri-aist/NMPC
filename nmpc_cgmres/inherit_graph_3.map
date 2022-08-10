@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation. " alt="" coords="5,35,193,61"/>
-<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1EulerOdeSolver.html" title="Class to solve Ordinaly Diferential Equation by Euler method. " alt="" coords="242,5,463,32"/>
-<area shape="rect" id="node3" href="$classnmpc__cgmres_1_1RungeKuttaOdeSolver.html" title="Class to solve Ordinaly Diferential Equation by Runge&#45;Kutta method. " alt="" coords="241,57,464,98"/>
+<area shape="rect" id="node1" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation." alt="" coords="5,35,193,61"/>
+<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1EulerOdeSolver.html" title="Class to solve Ordinaly Diferential Equation by Euler method." alt="" coords="242,5,463,32"/>
+<area shape="rect" id="node3" href="$classnmpc__cgmres_1_1RungeKuttaOdeSolver.html" title="Class to solve Ordinaly Diferential Equation by Runge&#45;Kutta method." alt="" coords="241,57,464,98"/>
 </map>
