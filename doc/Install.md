@@ -2,7 +2,7 @@
 
 ### Requirements
 - Compiler supporting C++17
-- Tested with Ubuntu 18.04 / ROS Melodic
+- Tested on `Ubuntu 20.04 / ROS Noetic` and `Ubuntu 18.04 / ROS Melodic`
 
 ### Installation procedure
 It is assumed that ROS is installed.
