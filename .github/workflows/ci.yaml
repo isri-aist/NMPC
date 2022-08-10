@@ -29,6 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
         build-type: [Debug, RelWithDebInfo, Release]
         include:
           - build-type: Debug
@@ -37,10 +38,18 @@ jobs:
             optimize-for-native: OFF
           - build-type: Release
             optimize-for-native: ON
-    runs-on: ubuntu-18.04
-    env:
-      ROS_DISTRO: melodic
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Set ROS version
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-20.04" ]
+          then
+            echo "ROS_DISTRO=noetic" >> $GITHUB_ENV
+            echo "PYTHON_PACKAGE_PREFIX=python3" >> $GITHUB_ENV
+          else
+            echo "ROS_DISTRO=melodic" >> $GITHUB_ENV
+            echo "PYTHON_PACKAGE_PREFIX=python" >> $GITHUB_ENV
+          fi
       - name: Install ROS
         run: |
           set -e
@@ -48,7 +57,7 @@ jobs:
           sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
           wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
           sudo apt-get update -qq
-          sudo apt-get install -qq ros-${ROS_DISTRO}-ros-base python-catkin-tools python-rosdep doxygen
+          sudo apt-get install -qq ros-${ROS_DISTRO}-ros-base ${PYTHON_PACKAGE_PREFIX}-catkin-tools ${PYTHON_PACKAGE_PREFIX}-rosdep doxygen
       - name: Setup catkin workspace
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/catkin_ws/src/
@@ -87,8 +96,8 @@ jobs:
           catkin build --limit-status-rate 0.1 --catkin-make-args run_tests -- nmpc --no-deps
           catkin_test_results --verbose --all build
       - name: Upload documentation
-        # Only run on master branch and for one configuration
-        if: matrix.build-type == 'RelWithDebInfo' && github.ref == 'refs/heads/master'
+        # Only run for one configuration and on master branch
+        if: matrix.os == 'ubuntu-20.04' && matrix.build-type == 'RelWithDebInfo' && github.ref == 'refs/heads/master'
         run: |
           set -e
           set -x
