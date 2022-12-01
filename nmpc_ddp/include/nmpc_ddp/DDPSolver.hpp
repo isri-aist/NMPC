@@ -185,7 +185,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     computation_duration_.derivative += duration_derivative;
   }
 
-  // STEP 2: backward pass, compute optimal control law and cost-to-go
+  // Step 2: backward pass, compute optimal control law and cost-to-go
   {
     auto start_time = std::chrono::system_clock::now();
 
@@ -234,7 +234,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     return 1; // Terminate
   }
 
-  // STEP 3: forward pass, line-search to find new control sequence, trajectory, cost
+  // Step 3: forward pass, line-search to find new control sequence, trajectory, cost
   bool forward_pass_success = false;
   double cost_update_actual = 0;
   {
@@ -284,7 +284,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     std::cout << "[DDP] Forward pass failed." << std::endl;
   }
 
-  // STEP 4: accept step (or not)
+  // Step 4: accept step (or not)
   int retval = 0; // Continue
   if(forward_pass_success)
   {
