@@ -1,0 +1,23 @@
+<package format="2">
+  <name>nmpc_fmpc</name>
+  <version>0.1.0</version>
+  <description>
+    Fast non-linear model predictive control (NMPC) combining the direct multiple shooting (DMS) method, the primal-dual interior point (PDIP) method, and Riccati recursion (RR)
+  </description>
+  <maintainer email="m-murooka@aist.go.jp">Masaki Murooka</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/nmpc_fmpc</url>
+  <author>Masaki Murooka</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>nmpc_ddp</depend>
+
+  <build_depend>eigen</build_depend>
+
+  <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
+
+  <doc_depend>doxygen</doc_depend>
+</package>
