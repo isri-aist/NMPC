@@ -18,7 +18,7 @@ if(NMPC_STANDALONE)
 else()
   function(add_nmpc_cgmres_test NAME)
     catkin_add_gtest(${NAME} src/${NAME}.cpp)
-    target_link_libraries(${NAME} PUBLIC nmpc_cgmres)
+    target_link_libraries(${NAME} nmpc_cgmres)
   endfunction()
 endif()
 

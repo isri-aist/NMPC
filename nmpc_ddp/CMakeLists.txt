@@ -48,17 +48,16 @@ else()
 endif()
 
 add_library(nmpc_ddp INTERFACE)
+target_compile_features(nmpc_ddp INTERFACE cxx_std_17)
 if(NOT NMPC_STANDALONE)
   target_include_directories(nmpc_ddp INTERFACE
-    include
     ${catkin_INCLUDE_DIRS}
     )
   target_link_libraries(nmpc_ddp INTERFACE
     ${catkin_LIBRARIES}
     )
-else()
-  target_include_directories(nmpc_ddp INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 endif()
+target_include_directories(nmpc_ddp INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_ddp INTERFACE -march=native)
 endif()

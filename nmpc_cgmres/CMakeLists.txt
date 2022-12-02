@@ -53,15 +53,13 @@ add_library(nmpc_cgmres
 target_compile_features(nmpc_cgmres PUBLIC cxx_std_17)
 if(NOT NMPC_STANDALONE)
   target_include_directories(nmpc_cgmres PUBLIC
-    include
     ${catkin_INCLUDE_DIRS}
     )
   target_link_libraries(nmpc_cgmres PUBLIC
     ${catkin_LIBRARIES}
     )
-else()
-  target_include_directories(nmpc_cgmres PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 endif()
+target_include_directories(nmpc_cgmres PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 
 if(TARGET Eigen3::Eigen)
   target_link_libraries(nmpc_cgmres PUBLIC Eigen3::Eigen)
