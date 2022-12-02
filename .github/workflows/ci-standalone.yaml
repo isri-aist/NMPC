@@ -1,0 +1,44 @@
+name: CI of NMPC
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+        build-type: [Debug, RelWithDebInfo, Release]
+        compiler: [gcc, clang]
+        include:
+          - build-type: Debug
+            optimize-for-native: OFF
+          - build-type: RelWithDebInfo
+            optimize-for-native: OFF
+          - build-type: Release
+            optimize-for-native: ON
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      uses: jrl-umi3218/github-actions/install-dependencies@master
+      with:
+        compiler: ${{ matrix.compiler }}
+        build-type: ${{ matrix.build-type }}
+        ubuntu: |
+          apt: cmake libeigen3-dev
+    - name: Build and test
+      uses: jrl-umi3218/github-actions/build-cmake-project@master
+      with:
+        compiler: ${{ matrix.compiler }}
+        build-type: ${{ matrix.build-type }}
