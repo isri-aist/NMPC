@@ -2,7 +2,7 @@
   <name>nmpc_fmpc</name>
   <version>0.1.0</version>
   <description>
-    Fast non-linear model predictive control (NMPC) combining the direct multiple shooting (DMS) method, the primal-dual interior point (PDIP) method, and Riccati recursion (RR)
+    FMPC: Fast non-linear model predictive control (NMPC) combining the direct multiple shooting (DMS) method, the primal-dual interior point (PDIP) method, and Riccati recursion (RR)
   </description>
   <maintainer email="m-murooka@aist.go.jp">Masaki Murooka</maintainer>
   <license>BSD</license>
