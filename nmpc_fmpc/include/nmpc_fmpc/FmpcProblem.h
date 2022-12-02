@@ -105,6 +105,8 @@ public:
                                   Eigen::Ref<IneqStateDimMatrix> ineq_const_deriv_x,
                                   Eigen::Ref<IneqInputDimMatrix> ineq_const_deriv_u) const = 0;
 
+  using DDPProblem<StateDim, InputDim>::calcStateEqDeriv;
+
 private:
   /** \brief Calculate first-order and second-order derivatives of discrete state equation.
       \param t time [sec]

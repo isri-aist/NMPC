@@ -16,33 +16,39 @@ namespace nmpc_fmpc
     \tparam IneqDim inequality dimension
 
     See the following for a detailed algorithm.
-      - S Katayama. Fast model predictive control of robotic systems with rigid contacts. Ph.D. thesis, Kyoto
-   University, 2022.
+      - S Katayama. Fast model predictive control of robotic systems with rigid contacts. Ph.D. thesis (section 2.2),
+   Kyoto University, 2022.
  */
 template<int StateDim, int InputDim, int IneqDim>
 class FmpcSolver
 {
 public:
   /** \brief Type of vector of state dimension. */
-  using StateDimVector = typename FmpcProblem<StateDim, InputDim>::StateDimVector;
+  using StateDimVector = typename FmpcProblem<StateDim, InputDim, IneqDim>::StateDimVector;
 
   /** \brief Type of vector of input dimension. */
-  using InputDimVector = typename FmpcProblem<StateDim, InputDim>::InputDimVector;
+  using InputDimVector = typename FmpcProblem<StateDim, InputDim, IneqDim>::InputDimVector;
 
   /** \brief Type of vector of inequality dimension. */
   using IneqDimVector = typename FmpcProblem<StateDim, IneqDim>::IneqDimVector;
 
   /** \brief Type of matrix of state x state dimension. */
-  using StateStateDimMatrix = typename FmpcProblem<StateDim, InputDim>::StateStateDimMatrix;
+  using StateStateDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::StateStateDimMatrix;
 
   /** \brief Type of matrix of input x input dimension. */
-  using InputInputDimMatrix = typename FmpcProblem<StateDim, InputDim>::InputInputDimMatrix;
+  using InputInputDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::InputInputDimMatrix;
 
   /** \brief Type of matrix of state x input dimension. */
-  using StateInputDimMatrix = typename FmpcProblem<StateDim, InputDim>::StateInputDimMatrix;
+  using StateInputDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::StateInputDimMatrix;
 
   /** \brief Type of matrix of input x state dimension. */
-  using InputStateDimMatrix = typename FmpcProblem<StateDim, InputDim>::InputStateDimMatrix;
+  using InputStateDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::InputStateDimMatrix;
+
+  /** \brief Type of matrix of inequality x state dimension. */
+  using IneqStateDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::IneqStateDimMatrix;
+
+  /** \brief Type of matrix of inequality x input dimension. */
+  using IneqInputDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::IneqInputDimMatrix;
 
 public:
   /*! \brief Configuration. */
@@ -51,14 +57,14 @@ public:
     //! Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose)
     int print_level = 1;
 
-    //! Whether input has constraints
-    bool with_input_constraint = false;
-
-    //! Maximum iteration of optimization loop
-    int max_iter = 500;
-
     //! Number of steps in horizon
     int horizon_steps = 100;
+
+    //! Maximum iteration of optimization loop
+    int max_iter = 10;
+
+    //! Threshold of KKT condition error
+    double kkt_error_thre = 0.01; // \todo tune the value
   };
 
   /*! \brief Optimization variables. */
@@ -120,6 +126,11 @@ public:
       g_bar.resize(ineq_dim);
       Lx_bar.resize(state_dim);
       lu_bar.resize(input_dim);
+
+      k.resize(input_dim);
+      K.resize(input_dim, state_dim);
+      s.resize(state_dim);
+      P.resize(state_dim, state_dim);
     }
 
     /** \brief Constructor for terminal coefficient.
@@ -129,6 +140,9 @@ public:
     {
       Lxx.resize(state_dim, state_dim);
       Lx_bar.resize(state_dim);
+
+      s.resize(state_dim);
+      P.resize(state_dim, state_dim);
     }
 
     //! First-order derivative of state equation w.r.t. state
@@ -165,6 +179,18 @@ public:
     StateDimVector Lx_bar;
     InputDimVector Lu_bar;
     //! @}
+
+    //! Feedforward term for input
+    InputDimVector k;
+
+    //! Feedback gain for input w.r.t. state error
+    InputStateDimMatrix K;
+
+    //! Offset vector for lambda calculation
+    StateDimVector s;
+
+    //! Coefficient matrix for lambda calculation
+    StateStateDimMatrix P;
   };
 
   /*! \brief Data to trace optimization loop. */
@@ -172,6 +198,9 @@ public:
   {
     //! Iteration of optimization loop
     int iter = 0;
+
+    //! KKT condition error
+    double kkt_error = 0;
 
     //! Duration to calculate coefficients [msec]
     double duration_coeff = 0;
@@ -229,7 +258,7 @@ public:
   /** \brief Constructor.
       \param problem FMPC problem
   */
-  FmpcSolver(const std::shared_ptr<FmpcProblem<StateDim, InputDim>> & problem);
+  FmpcSolver(const std::shared_ptr<FmpcProblem<StateDim, InputDim, IneqDim>> & problem) : problem_(problem) {}
 
   /** \brief Accessor to configuration. */
   inline Configuration & config()
@@ -251,7 +280,7 @@ public:
   */
   bool solve(double current_t, const StateDimVector & current_x, const Variable & initial_variable);
 
-  /** \brief Const accessor to optimization variables calculated by solve(). */
+  /** \brief Const accessor to optimization variables. */
   inline const Variable & variable() const
   {
     return variable_;
@@ -284,6 +313,9 @@ protected:
   */
   int procOnce(int iter);
 
+  /** \brief Calculate KKT condition error. */
+  double calcKktError() const;
+
   /** \brief Process backward pass a.k.a backward Riccati recursion.
       \return whether the process is finished successfully
   */
@@ -300,7 +332,16 @@ protected:
   Configuration config_;
 
   //! FMPC problem
-  std::shared_ptr<FmpcProblem<StateDim, InputDim>> problem_;
+  std::shared_ptr<FmpcProblem<StateDim, InputDim, IneqDim>> problem_;
+
+  //! Optimization variables
+  Variable variable_;
+
+  //! Update amount of optimization variables
+  Variable delta_variable_;
+
+  //! Sequence of coefficients of linearized KKT condition
+  std::vector<Coefficient> coeff_list_;
 
   //! Sequence of trace data
   std::vector<TraceData> trace_data_list_;
@@ -314,29 +355,8 @@ protected:
   //! Current state
   StateDimVector current_x_ = StateDimVector::Zero();
 
-  //! Optimization variables
-  Variable variable_;
-
-  //! Update amount of optimization variables
-  Variable delta_variable_;
-
-  //! Sequence of feedforward term for input (k[0], ..., k[N-1])
-  std::vector<InputDimVector> k_list_;
-
-  //! Sequence of feedback gain for input w.r.t. state error (K[0], ..., K[N-1])
-  std::vector<InputStateDimMatrix> K_list_;
-
-  //! Sequence of offset vector for lambda calculation (s[0], ..., s[N-1])
-  std::vector<StateDimVector> s_list_;
-
-  //! Sequence of coefficient matrix for lambda calculation (P[0], ..., P[N-1])
-  std::vector<StateStateDimMatrix> P_list_;
-
-  //! Sequence of coefficients of linearized KKT condition
-  std::vector<Coefficient> coeff_list_;
-
   //! Barrier parameter for inequality constraints
-  double barrier_eps_ = 0.01;
+  double barrier_eps_ = 0.01; // \todo reduce gradually
 };
 } // namespace nmpc_fmpc
 

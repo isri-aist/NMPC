@@ -16,18 +16,10 @@ double calcDuration(const std::chrono::time_point<Clock> & start_time, const std
 namespace nmpc_fmpc
 {
 template<int StateDim, int InputDim, int IneqDim>
-FmpcSolver<StateDim, InputDim, IneqDim>::FmpcSolver(const std::shared_ptr<FmpcProblem<StateDim, InputDim>> & problem)
-: problem_(problem)
-{
-}
-
-template<int StateDim, int InputDim, int IneqDim>
 bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
                                                     const StateDimVector & current_x,
                                                     const Variable & initial_variable)
 {
-  computation_duration_ = ComputationDuration();
-
   auto start_time = std::chrono::system_clock::now();
 
   // Initialize variables
@@ -35,14 +27,16 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
   current_x_ = current_x;
   variable_ = initial_variable;
 
-  // Check optimization variables
+  // Check variable_
   checkVariable();
 
-  // Resize list
+  // Setup delta_variable_
   if(delta_variable_.horizon_steps != config_.horizon_steps)
   {
     delta_variable_ = Variable(config_.horizon_steps);
   }
+
+  // Setup coeff_list_
   if constexpr(InputDim == Eigen::Dynamic || IneqDim == Eigen::Dynamic)
   {
     coeff_list_.clear();
@@ -59,16 +53,12 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
                        Coefficient(problem_->stateDim(), problem_->inputDim(), problem_->ineqDim()));
   }
   coeff_list_.emplace_back(problem_->stateDim());
-  k_list_.resize(config_.horizon_steps);
-  K_list_.resize(config_.horizon_steps);
-  s_list_.resize(config_.horizon_steps + 1);
-  P_list_.resize(config_.horizon_steps + 1);
 
-  // Initialize trace data
+  // Clear trace_data_list_
   trace_data_list_.clear();
-  TraceData initial_trace_data;
-  initial_trace_data.iter = 0;
-  trace_data_list_.push_back(initial_trace_data);
+
+  // Setup computation_duration_
+  computation_duration_ = ComputationDuration();
 
   auto setup_time = std::chrono::system_clock::now();
   computation_duration_.setup = calcDuration(start_time, setup_time);
@@ -127,6 +117,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
                                 + std::to_string(variable_.nu_list.size()) + ".");
   }
 
+  // Check element dimension
   for(int i = 0; i < config_.horizon_steps; i++)
   {
     double t = current_t_ + i * problem_->dt();
@@ -157,6 +148,21 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
       }
     }
   }
+
+  // Check non-negative
+  for(int i = 0; i < config_.horizon_steps; i++)
+  {
+    if((variable_.s_list[i].array() < 0).any())
+    {
+      throw std::runtime_error("[FMPC] s_list[i] must be non-negative. i: " + std::to_string(i)
+                               + ", time: " + std::to_string(t));
+    }
+    if((variable_.nu_list[i].array() < 0).any())
+    {
+      throw std::runtime_error("[FMPC] nu_list[i] must be non-negative. i: " + std::to_string(i)
+                               + ", time: " + std::to_string(t));
+    }
+  }
 }
 
 template<int StateDim, int InputDim, int IneqDim>
@@ -168,7 +174,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
   }
 
   // Append trace data
-  trace_data_list_.push_back(TraceData());
+  trace_data_list_.emplace_back();
   auto & trace_data = trace_data_list_.back();
   trace_data.iter = iter;
 
@@ -176,15 +182,17 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
   {
     auto start_time = std::chrono::system_clock::now();
 
+    double dt = problem_->dt();
+
     for(int i = 0; i < config_.horizon_steps; i++)
     {
       auto & coeff = coeff_list_[i];
-      double dt = problem_->dt();
       double t = current_t_ + i * dt;
       const StateDimVector & x = variable_.x_list[i];
       const StateDimVector & next_x = variable_.x_list[i + 1];
       const InputDimVector & u = variable_.u_list[i];
       const StateDimVector & lambda = variable_.lambda_list[i];
+      const StateDimVector & next_lambda = variable_.lambda_list[i + 1];
       const IneqDimVector & s = variable_.s_list[i];
       const IneqDimVector & nu = variable_.nu_list[i];
 
@@ -211,7 +219,13 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
     computation_duration_.coeff += duration;
   }
 
-  // TODO check terminal
+  // Check KKT error
+  double kkt_error = calcKktError();
+  trace_data.kkt_error = kkt_error;
+  if(kkt_error <= config_.kkt_error_thre)
+  {
+    return 1;
+  }
 
   // Step 2: backward pass, compute optimal control law and cost-to-go
   {
@@ -253,6 +267,34 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
 }
 
 template<int StateDim, int InputDim, int IneqDim>
+bool FmpcSolver<StateDim, InputDim, IneqDim>::calcKktError() const
+{
+  double kkt_error = 0;
+
+  {
+    kkt_error += (current_x_ - variable_.x_list[0]).squaredNorm();
+  }
+  for(int i = 0; i < config_.horizon_steps; i++)
+  {
+    const auto & coeff = coeff_list_[i];
+    kkt_error += coeff.x_bar.squaredNorm();
+    kkt_error += coeff.g_bar.squaredNorm();
+    kkt_error += coeff.Lx_bar.squaredNorm();
+    kkt_error += coeff.Lu_bar.squaredNorm();
+    kkt_error +=
+        (variable_.s_list[i].array() * variable_.nu_list[i].array() - barrier_eps_).max(0).matrix().squaredNorm();
+  }
+  {
+    const auto & terminal_coeff = coeff_list_[config_.horizon_steps];
+    kkt_error += terminal_coeff.Lx_bar.squaredNorm();
+  }
+
+  kkt_error = std::sqrt(kkt_error);
+
+  return kkt_error;
+}
+
+template<int StateDim, int InputDim, int IneqDim>
 bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 {
   // To avoid repetitive memory allocation, the vector and matrix variables are created outside of loop
@@ -266,31 +308,36 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
   StateInputDimMatrix H;
   InputInputDimMatrix G;
 
-  const auto & terminal_coeff = coeff_list_[config_.horizon_steps];
   InputDimVector k;
   InputStateDimMatrix K;
-  StateDimVector s = -1 * terminal_coeff.Lx_bar;
-  StateStateDimMatrix P = terminal_coeff.Lxx;
+  StateDimVector s;
+  StateStateDimMatrix P;
 
-  s_list_[config_.horizon_steps] = s;
-  P_list_[config_.horizon_steps] = P;
+  {
+    auto & terminal_coeff = coeff_list_[config_.horizon_steps];
+    s = -1 * terminal_coeff.Lx_bar;
+    P = terminal_coeff.Lxx;
+    terminal_coeff.s = s;
+    terminal_coeff.P = P;
+  }
 
   for(int i = config_.horizon_steps - 1; i >= 0; i--)
   {
     // Get coefficients
     double dt = problem_->dt();
     double t = current_t_ + i * dt;
-    const StateStateDimMatrix & A = coeff_list_[i].A;
-    const StateInputDimMatrix & B = coeff_list_[i].B;
-    const IneqStateDimMatrix & C = coeff_list_[i].C;
-    const IneqInputDimMatrix & D = coeff_list_[i].D;
-    const StateStateDimMatrix & Lxx = coeff_list_[i].Lxx;
-    const InputInputDimMatrix & Luu = coeff_list_[i].Luu;
-    const StateInputDimMatrix & Lxu = coeff_list_[i].Lxu;
-    const StateDimVector & x_bar = coeff_list_[i].x_bar;
-    const IneqDimVector & g_bar = coeff_list_[i].g_bar;
-    const StateDimVector & Lx_bar = coeff_list_[i].Lx_bar;
-    const InputDimVector & Lu_bar = coeff_list_[i].Lu_bar;
+    auto & coeff = coeff_list_[i];
+    const StateStateDimMatrix & A = coeff.A;
+    const StateInputDimMatrix & B = coeff.B;
+    const IneqStateDimMatrix & C = coeff.C;
+    const IneqInputDimMatrix & D = coeff.D;
+    const StateStateDimMatrix & Lxx = coeff.Lxx;
+    const InputInputDimMatrix & Luu = coeff.Luu;
+    const StateInputDimMatrix & Lxu = coeff.Lxu;
+    const StateDimVector & x_bar = coeff.x_bar;
+    const IneqDimVector & g_bar = coeff.g_bar;
+    const StateDimVector & Lx_bar = coeff.Lx_bar;
+    const InputDimVector & Lu_bar = coeff.Lu_bar;
 
     // Pre-process for gain calculation
     {
@@ -351,10 +398,10 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
     }
 
     // Save gains
-    k_list_[i] = k;
-    K_list_[i] = K;
-    s_list_[i] = s;
-    P_list_[i] = P;
+    coeff.k = k;
+    coeff.K = K;
+    coeff.s = s;
+    coeff.P = P;
   }
 
   return true;
@@ -363,19 +410,20 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 template<int StateDim, int InputDim, int IneqDim>
 void FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
 {
-  // Set initial state
   delta_variable_.x_list[0] = current_x_ - variable_.x_list[0];
 
   for(int i = 0; i < config_.horizon_steps + 1; i++)
   {
-    delta_variable_.lambda_list[i].noalias() = P_list_[i] * delta_variable_.x_list[i] - s_list_[i];
-    if(i == config_.horizon_steps)
+    const auto & coeff = coeff_list_[i];
+
+    delta_variable_.lambda_list[i].noalias() = coeff.P * delta_variable_.x_list[i] - coeff.s;
+
+    if(i < config_.horizon_steps)
     {
-      break;
+      delta_variable_.u_list[i].noalias() = coeff.K * delta_variable_.x_list[i] + coeff.k;
+      delta_variable_.x_list[i + 1].noalias() =
+          coeff_list_[i].A * delta_variable_.x_list[i] + coeff_list_[i].B * delta_variable_.u_list[i] + x_bar;
     }
-    delta_variable_.u_list[i].noalias() = K_list_[i] * delta_variable_.x_list[i] + k_list_[i];
-    delta_variable_.x_list[i + 1].noalias() =
-        coeff_list_[i].A * delta_variable_.x_list[i] + coeff_list_[i].B * delta_variable_.u_list[i] + x_bar;
   }
 
   for(int i = 0; i < config_.horizon_steps; i++)
@@ -422,13 +470,20 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
     computation_duration_.fraction += calcDuration(start_time_fraction, std::chrono::system_clock::now());
   }
 
-  for(int i = 0; i < config_.horizon_steps; i++)
+  for(int i = 0; i < config_.horizon_steps + 1; i++)
   {
     variable_.x_list[i] += alpha * delta_variable_.x_list[i];
-    variable_.u_list[i] += alpha * delta_variable_.u_list[i];
     variable_.lambda_list[i] += alpha * delta_variable_.lambda_list[i];
-    variable_.s_list[i] += alpha * delta_variable_.s_list[i];
-    variable_.nu_list[i] += alpha * delta_variable_.nu_list[i];
+
+    if(i < config_.horizon_steps)
+    {
+      variable_.u_list[i] += alpha * delta_variable_.u_list[i];
+      variable_.s_list[i] += alpha * delta_variable_.s_list[i];
+      variable_.nu_list[i] += alpha * delta_variable_.nu_list[i];
+
+      assert((variable_.s_list[i].array() >= 0).all());
+      assert((variable_.nu_list[i].array() >= 0).all());
+    }
   }
 }
 
@@ -438,6 +493,7 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::dumpTraceDataList(const std::strin
   std::ofstream ofs(file_path);
   // clang-format off
   ofs << "iter "
+      << "kkt_error "
       << "duration_coeff "
       << "duration_backward "
       << "duration_forward"
@@ -447,6 +503,7 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::dumpTraceDataList(const std::strin
   {
     // clang-format off
     ofs << trace_data.iter << " "
+        << trace_data.kkt_error << " "
         << trace_data.duration_coeff << " "
         << trace_data.duration_backward << " "
         << trace_data.duration_forward << " "
