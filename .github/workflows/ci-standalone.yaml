@@ -36,7 +36,15 @@ jobs:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
         ubuntu: |
-          apt: cmake libeigen3-dev
+          apt: cmake libeigen3-dev libgtest-dev
+    - name: Install GTest
+      if: matrix.os == 'ubuntu-18.04'
+      uses: jrl-umi3218/github-actions/install-dependencies@master
+      with:
+        build-type: ${{ matrix.build-type }}
+        github: |
+          - path: google/googletest
+            ref: release-1.12.1
     - name: Build and test
       uses: jrl-umi3218/github-actions/build-cmake-project@master
       with:
