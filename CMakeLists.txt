@@ -1,6 +1,7 @@
 # >=3.14 required for CMP0087
 cmake_minimum_required(VERSION 3.14)
 
+set(PROJECT_VERSION 0.1.0)
 project(NMPC)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
