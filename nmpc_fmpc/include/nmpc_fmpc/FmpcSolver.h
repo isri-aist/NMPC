@@ -67,8 +67,7 @@ public:
     /** \brief Constructor.
         \param horizon_steps number of steps in horizon
     */
-    Variable(int _horizon_steps = 0):
-        horizon_steps(_horizon_steps)
+    Variable(int _horizon_steps = 0) : horizon_steps(_horizon_steps)
     {
       x_list.resize(horizon_steps + 1);
       u_list.resize(horizon_steps);
@@ -250,9 +249,7 @@ public:
       \param initial_variable initial guess of optimization variables
       \return whether the process is finished successfully
   */
-  bool solve(double current_t,
-             const StateDimVector & current_x,
-             const Variable & initial_variable);
+  bool solve(double current_t, const StateDimVector & current_x, const Variable & initial_variable);
 
   /** \brief Const accessor to optimization variables calculated by solve(). */
   inline const Variable & variable() const
