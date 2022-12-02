@@ -1,0 +1,346 @@
+/* Author: Masaki Murooka */
+
+#pragma once
+
+#include <array>
+#include <functional>
+#include <memory>
+
+#include <nmpc_fmpc/FmpcProblem.h>
+
+namespace nmpc_fmpc
+{
+/** \brief FMPC solver.
+    \tparam StateDim state dimension
+    \tparam InputDim input dimension
+    \tparam IneqDim inequality dimension
+
+    See the following for a detailed algorithm.
+      - S Katayama. Fast model predictive control of robotic systems with rigid contacts. Ph.D. thesis, Kyoto
+   University, 2022.
+ */
+template<int StateDim, int InputDim, int IneqDim>
+class FmpcSolver
+{
+public:
+  /** \brief Type of vector of state dimension. */
+  using StateDimVector = typename FmpcProblem<StateDim, InputDim>::StateDimVector;
+
+  /** \brief Type of vector of input dimension. */
+  using InputDimVector = typename FmpcProblem<StateDim, InputDim>::InputDimVector;
+
+  /** \brief Type of vector of inequality dimension. */
+  using IneqDimVector = typename FmpcProblem<StateDim, IneqDim>::IneqDimVector;
+
+  /** \brief Type of matrix of state x state dimension. */
+  using StateStateDimMatrix = typename FmpcProblem<StateDim, InputDim>::StateStateDimMatrix;
+
+  /** \brief Type of matrix of input x input dimension. */
+  using InputInputDimMatrix = typename FmpcProblem<StateDim, InputDim>::InputInputDimMatrix;
+
+  /** \brief Type of matrix of state x input dimension. */
+  using StateInputDimMatrix = typename FmpcProblem<StateDim, InputDim>::StateInputDimMatrix;
+
+  /** \brief Type of matrix of input x state dimension. */
+  using InputStateDimMatrix = typename FmpcProblem<StateDim, InputDim>::InputStateDimMatrix;
+
+public:
+  /*! \brief Configuration. */
+  struct Configuration
+  {
+    //! Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose)
+    int print_level = 1;
+
+    //! Whether input has constraints
+    bool with_input_constraint = false;
+
+    //! Maximum iteration of optimization loop
+    int max_iter = 500;
+
+    //! Number of steps in horizon
+    int horizon_steps = 100;
+  };
+
+  /*! \brief Optimization variables. */
+  struct Variable
+  {
+    /** \brief Constructor.
+        \param horizon_steps number of steps in horizon
+    */
+    Variable(int _horizon_steps = 0):
+        horizon_steps(_horizon_steps)
+    {
+      x_list.resize(horizon_steps + 1);
+      u_list.resize(horizon_steps);
+      lambda_list.resize(horizon_steps + 1);
+      s_list.resize(horizon_steps);
+      nu_list.resize(horizon_steps);
+    }
+
+    //! Number of steps in horizon
+    int horizon_steps;
+
+    //! Sequence of state (x[0], ..., x[N-1], x[N])
+    std::vector<StateDimVector> x_list;
+
+    //! Sequence of input (u[0], ..., u[N-1])
+    std::vector<InputDimVector> u_list;
+
+    //! Sequence of Lagrange multipliers of equality constraints (lambda[0], ..., lambda[N-1], lambda[N])
+    std::vector<StateDimVector> lambda_list;
+
+    //! Sequence of slack variables of inequality constraints (s[0], ..., s[N-1])
+    std::vector<IneqDimVector> s_list;
+
+    //! Sequence of Lagrange multipliers of inequality constraints (nu[0], ..., nu[N-1])
+    std::vector<IneqDimVector> nu_list;
+  };
+
+  /*! \brief Coefficients of linearized KKT condition. */
+  struct Coefficient
+  {
+    /** \brief Constructor.
+        \param state_dim state dimension
+        \param input_dim input dimension
+        \param ineq_dim inequality dimension
+    */
+    Coefficient(int state_dim, int input_dim, int ineq_dim)
+    {
+      A.resize(state_dim, state_dim);
+      B.resize(state_dim, input_dim);
+      C.resize(ineq_dim, state_dim);
+      D.resize(ineq_dim, input_dim);
+
+      Lx.resize(state_dim);
+      Lu.resize(input_dim);
+      Lxx.resize(state_dim, state_dim);
+      Luu.resize(input_dim, input_dim);
+      Lxu.resize(state_dim, input_dim);
+
+      x_bar.resize(state_dim);
+      g_bar.resize(ineq_dim);
+      Lx_bar.resize(state_dim);
+      lu_bar.resize(input_dim);
+    }
+
+    /** \brief Constructor for terminal coefficient.
+        \param state_dim state dimension
+    */
+    Coefficient(int state_dim)
+    {
+      Lxx.resize(state_dim, state_dim);
+      Lx_bar.resize(state_dim);
+    }
+
+    //! First-order derivative of state equation w.r.t. state
+    StateStateDimMatrix A;
+
+    //! First-order derivative of state equation w.r.t. input
+    StateInputDimMatrix B;
+
+    //! First-order derivative of inequality constraints w.r.t. state
+    IneqStateDimMatrix C;
+
+    //! First-order derivative of inequality constraints w.r.t. input
+    IneqInputDimMatrix D;
+
+    //! First-order derivative of running cost w.r.t. state
+    StateDimVector Lx;
+
+    //! First-order derivative of running cost w.r.t. input
+    InputDimVector Lu;
+
+    //! Second-order derivative of running cost w.r.t. state
+    StateStateDimMatrix Lxx;
+
+    //! Second-order derivative of running cost w.r.t. input
+    InputInputDimMatrix Luu;
+
+    //! Second-order derivative of running cost w.r.t. state and input
+    StateInputDimMatrix Lxu;
+
+    //! Linearization offsets
+    //! @{
+    StateDimVector x_bar;
+    IneqDimVector g_bar;
+    StateDimVector Lx_bar;
+    InputDimVector Lu_bar;
+    //! @}
+  };
+
+  /*! \brief Data to trace optimization loop. */
+  struct TraceData
+  {
+    //! Iteration of optimization loop
+    int iter = 0;
+
+    //! Duration to calculate coefficients [msec]
+    double duration_coeff = 0;
+
+    //! Duration to process backward pass [msec]
+    double duration_backward = 0;
+
+    //! Duration to process forward pass [msec]
+    double duration_forward = 0;
+
+    //! Duration to update variables [msec]
+    double duration_update = 0;
+  };
+
+  /*! \brief Data of computation duration. */
+  struct ComputationDuration
+  {
+    //! Duration to solve [msec]
+    double solve = 0;
+
+    //! Duration to setup (included in solve) [msec]
+    double setup = 0;
+
+    //! Duration of optimization loop (included in solve) [msec]
+    double opt = 0;
+
+    //! Duration to calculate coefficients (included in opt) [msec]
+    double coeff = 0;
+
+    //! Duration to process backward pass (included in opt) [msec]
+    double backward = 0;
+
+    //! Duration to process forward pass (included in opt) [msec]
+    double forward = 0;
+
+    //! Duration to update variables (included in opt) [msec]
+    double update = 0;
+
+    //! Duration of pre-process for gain calculation (included in backward) [msec]
+    double gain_pre = 0;
+
+    //! Duration to solve linear equation for gain calculation (included in backward) [msec]
+    double gain_solve = 0;
+
+    //! Duration of post-process for gain calculation (included in backward) [msec]
+    double gain_post = 0;
+
+    //! Duration to calculate fraction-to-boundary rule (included in update) [msec]
+    double fraction = 0;
+  };
+
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  /** \brief Constructor.
+      \param problem FMPC problem
+  */
+  FmpcSolver(const std::shared_ptr<FmpcProblem<StateDim, InputDim>> & problem);
+
+  /** \brief Accessor to configuration. */
+  inline Configuration & config()
+  {
+    return config_;
+  }
+
+  /** \brief Const accessor to configuration. */
+  inline const Configuration & config() const
+  {
+    return config_;
+  }
+
+  /** \brief Solve optimization.
+      \param current_t current time [sec]
+      \param current_x current state
+      \param initial_variable initial guess of optimization variables
+      \return whether the process is finished successfully
+  */
+  bool solve(double current_t,
+             const StateDimVector & current_x,
+             const Variable & initial_variable);
+
+  /** \brief Const accessor to optimization variables calculated by solve(). */
+  inline const Variable & variable() const
+  {
+    return variable_;
+  }
+
+  /** \brief Const accessor to trace data list. */
+  inline const std::vector<TraceData> & traceDataList() const
+  {
+    return trace_data_list_;
+  }
+
+  /** \brief Const accessor to computation duration. */
+  inline const ComputationDuration & computationDuration() const
+  {
+    return computation_duration_;
+  }
+
+  /** \brief Dump trace data list.
+      \param file_path path to output file
+  */
+  void dumpTraceDataList(const std::string & file_path) const;
+
+protected:
+  /** \brief Check optimization variables. */
+  void checkVariable() const;
+
+  /** \brief Process one iteration.
+      \param iter current iteration
+      \return 0 for continue, 1 for terminate, -1 for failure
+  */
+  int procOnce(int iter);
+
+  /** \brief Process backward pass a.k.a backward Riccati recursion.
+      \return whether the process is finished successfully
+  */
+  bool backwardPass();
+
+  /** \brief Process forward pass a.k.a forward Riccati recursion. */
+  void forwardPass();
+
+  /** \brief Update optimization variables given Newton-step direction. */
+  void updateVariables();
+
+protected:
+  //! Configuration
+  Configuration config_;
+
+  //! FMPC problem
+  std::shared_ptr<FmpcProblem<StateDim, InputDim>> problem_;
+
+  //! Sequence of trace data
+  std::vector<TraceData> trace_data_list_;
+
+  //! Computation duration data
+  ComputationDuration computation_duration_;
+
+  //! Current time [sec]
+  double current_t_ = 0;
+
+  //! Current state
+  StateDimVector current_x_ = StateDimVector::Zero();
+
+  //! Optimization variables
+  Variable variable_;
+
+  //! Update amount of optimization variables
+  Variable delta_variable_;
+
+  //! Sequence of feedforward term for input (k[0], ..., k[N-1])
+  std::vector<InputDimVector> k_list_;
+
+  //! Sequence of feedback gain for input w.r.t. state error (K[0], ..., K[N-1])
+  std::vector<InputStateDimMatrix> K_list_;
+
+  //! Sequence of offset vector for lambda calculation (s[0], ..., s[N-1])
+  std::vector<StateDimVector> s_list_;
+
+  //! Sequence of coefficient matrix for lambda calculation (P[0], ..., P[N-1])
+  std::vector<StateStateDimMatrix> P_list_;
+
+  //! Sequence of coefficients of linearized KKT condition
+  std::vector<Coefficient> coeff_list_;
+
+  //! Barrier parameter for inequality constraints
+  double barrier_eps_ = 0.01;
+};
+} // namespace nmpc_fmpc
+
+#include <nmpc_fmpc/FmpcSolver.hpp>
