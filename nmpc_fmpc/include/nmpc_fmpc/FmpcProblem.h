@@ -16,25 +16,25 @@ class FmpcProblem : public nmpc_ddp::DDPProblem<StateDim, InputDim>
 {
 public:
   /** \brief Type of vector of state dimension. */
-  using StateDimVector = typename DDPProblem<StateDim, InputDim>::StateDimVector;
+  using StateDimVector = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::StateDimVector;
 
   /** \brief Type of vector of input dimension. */
-  using InputDimVector = typename DDPProblem<StateDim, InputDim>::InputDimVector;
+  using InputDimVector = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::InputDimVector;
 
   /** \brief Type of vector of inequality dimension. */
   using IneqDimVector = Eigen::Matrix<double, IneqDim, 1>;
 
   /** \brief Type of matrix of state x state dimension. */
-  using StateStateDimMatrix = typename DDPProblem<StateDim, InputDim>::StateStateDimMatrix;
+  using StateStateDimMatrix = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::StateStateDimMatrix;
 
   /** \brief Type of matrix of input x input dimension. */
-  using InputInputDimMatrix = typename DDPProblem<StateDim, InputDim>::InputInputDimMatrix;
+  using InputInputDimMatrix = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::InputInputDimMatrix;
 
   /** \brief Type of matrix of state x input dimension. */
-  using StateInputDimMatrix = typename DDPProblem<StateDim, InputDim>::StateInputDimMatrix;
+  using StateInputDimMatrix = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::StateInputDimMatrix;
 
   /** \brief Type of matrix of input x state dimension. */
-  using InputStateDimMatrix = typename DDPProblem<StateDim, InputDim>::InputStateDimMatrix;
+  using InputStateDimMatrix = typename nmpc_ddp::DDPProblem<StateDim, InputDim>::InputStateDimMatrix;
 
   /** \brief Type of matrix of inequality x state dimension. */
   using IneqStateDimMatrix = Eigen::Matrix<double, IneqDim, StateDim>;
@@ -48,7 +48,7 @@ public:
   /** \brief Constructor.
       \param dt discretization timestep [sec]
    */
-  FmpcProblem(double dt) : DDPProblem(dt)
+  FmpcProblem(double dt) : nmpc_ddp::DDPProblem<StateDim, InputDim>(dt)
   {
     // Check dimension
     static_assert(IneqDim >= 0 || IneqDim == Eigen::Dynamic,
@@ -90,7 +90,7 @@ public:
       \param u current input
       \returns inequality constraints that must be less than or equal to zero
    */
-  virtual StateDimVector ineqConst(double t, const StateDimVector & x, const InputDimVector & u) const = 0;
+  virtual IneqDimVector ineqConst(double t, const StateDimVector & x, const InputDimVector & u) const = 0;
 
   /** \brief Calculate first-order derivatives of inequality constraints.
       \param t time [sec]
@@ -105,7 +105,7 @@ public:
                                   Eigen::Ref<IneqStateDimMatrix> ineq_const_deriv_x,
                                   Eigen::Ref<IneqInputDimMatrix> ineq_const_deriv_u) const = 0;
 
-  using DDPProblem<StateDim, InputDim>::calcStateEqDeriv;
+  using nmpc_ddp::DDPProblem<StateDim, InputDim>::calcStateEqDeriv;
 
 private:
   /** \brief Calculate first-order and second-order derivatives of discrete state equation.

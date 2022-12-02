@@ -30,7 +30,7 @@ public:
   using InputDimVector = typename FmpcProblem<StateDim, InputDim, IneqDim>::InputDimVector;
 
   /** \brief Type of vector of inequality dimension. */
-  using IneqDimVector = typename FmpcProblem<StateDim, IneqDim>::IneqDimVector;
+  using IneqDimVector = typename FmpcProblem<StateDim, InputDim, IneqDim>::IneqDimVector;
 
   /** \brief Type of matrix of state x state dimension. */
   using StateStateDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::StateStateDimMatrix;
@@ -64,7 +64,7 @@ public:
     int max_iter = 10;
 
     //! Threshold of KKT condition error
-    double kkt_error_thre = 0.01; // \todo tune the value
+    double kkt_error_thre = 1e-4;
   };
 
   /*! \brief Optimization variables. */
@@ -125,7 +125,7 @@ public:
       x_bar.resize(state_dim);
       g_bar.resize(ineq_dim);
       Lx_bar.resize(state_dim);
-      lu_bar.resize(input_dim);
+      Lu_bar.resize(input_dim);
 
       k.resize(input_dim);
       K.resize(input_dim, state_dim);
@@ -356,7 +356,7 @@ protected:
   StateDimVector current_x_ = StateDimVector::Zero();
 
   //! Barrier parameter for inequality constraints
-  double barrier_eps_ = 0.01; // \todo reduce gradually
+  double barrier_eps_ = 1e-4; // \todo reduce gradually
 };
 } // namespace nmpc_fmpc
 

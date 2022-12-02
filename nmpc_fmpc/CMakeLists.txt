@@ -34,9 +34,9 @@ if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_fmpc INTERFACE -march=native)
 endif()
 
-# if(CATKIN_ENABLE_TESTING)
-#   add_subdirectory(tests)
-# endif()
+if(CATKIN_ENABLE_TESTING)
+  add_subdirectory(tests)
+endif()
 
 # OPTION(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 # if(INSTALL_DOCUMENTATION)
