@@ -82,6 +82,37 @@ public:
       nu_list.resize(horizon_steps);
     }
 
+    /** \brief Reset variables.
+        \param _x x
+        \param _u u
+        \param _lambda lambda
+        \param _s s (must be non-negative)
+        \param _nu nu (must be non-negative)
+    */
+    inline void reset(double _x, double _u, double _lambda, double _s, double _nu)
+    {
+      for(auto & x : x_list)
+      {
+        x.setConstant(_x);
+      }
+      for(auto & u : u_list)
+      {
+        u.setConstant(_u);
+      }
+      for(auto & lambda : lambda_list)
+      {
+        lambda.setConstant(_lambda);
+      }
+      for(auto & s : s_list)
+      {
+        s.setConstant(_s);
+      }
+      for(auto & nu : nu_list)
+      {
+        nu.setConstant(_nu);
+      }
+    }
+
     //! Number of steps in horizon
     int horizon_steps;
 
@@ -324,8 +355,10 @@ protected:
   /** \brief Process forward pass a.k.a forward Riccati recursion. */
   void forwardPass();
 
-  /** \brief Update optimization variables given Newton-step direction. */
-  void updateVariables();
+  /** \brief Update optimization variables given Newton-step direction.
+      \return whether the process is finished successfully
+  */
+  bool updateVariables();
 
 protected:
   //! Configuration

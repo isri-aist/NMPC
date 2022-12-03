@@ -1,5 +1,5 @@
 set(nmpc_fmpc_gtest_list
-  TestFmpcBipedal
+  TestFmpcOscillator
   )
 
 foreach(NAME IN LISTS nmpc_fmpc_gtest_list)

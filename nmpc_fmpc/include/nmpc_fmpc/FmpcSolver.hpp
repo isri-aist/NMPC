@@ -257,7 +257,10 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
   {
     auto start_time = std::chrono::system_clock::now();
 
-    updateVariables();
+    if(!updateVariables())
+    {
+      return -1;
+    }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
     trace_data.duration_update = duration;
@@ -441,7 +444,7 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-void FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
+bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 {
   // Fraction-to-boundary rule
   double alpha = 1.0;
@@ -467,8 +470,14 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
         }
       }
     }
-    assert(alpha <= 1.0);
-    assert(alpha > 0.0);
+    if(!(alpha > 0.0 && alpha <= 1.0))
+    {
+      if(config_.print_level >= 1)
+      {
+        std::cout << "[FMPC/Update] Invalid alpha: " + std::to_string(alpha) << std::endl;
+      }
+      return false;
+    }
 
     computation_duration_.fraction += calcDuration(start_time_fraction, std::chrono::system_clock::now());
   }
@@ -488,6 +497,8 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
       assert((variable_.nu_list[i].array() >= 0).all());
     }
   }
+
+  return true;
 }
 
 template<int StateDim, int InputDim, int IneqDim>
