@@ -375,7 +375,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
         {
           if(config_.print_level >= 1)
           {
-            std::cout << "[FMPC/Backward] G is not positive definite in Cholesky decomposition (LLT)." << std::endl;
+            std::cout << "[FMPC/Backward] G is not positive definite in Cholesky decomposition (LLT). current time: "
+                      << current_t_ << ", horizon idx: " << i << " / " << config_.horizon_steps << std::endl;
           }
           return false;
         }
@@ -397,6 +398,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 
       s = A.transpose() * (s - P * x_bar) - Lx_tilde - H * k;
       P.noalias() = F - K.transpose() * G * K;
+      P = 0.5 * (P + P.transpose()); // Enforce symmetric
 
       computation_duration_.gain_post += calcDuration(start_time_gain_post, std::chrono::system_clock::now());
     }
@@ -480,6 +482,11 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
     }
 
     computation_duration_.fraction += calcDuration(start_time_fraction, std::chrono::system_clock::now());
+  }
+
+  if(config_.print_level >= 3)
+  {
+    std::cout << "[FMPC/update] alpha: " << alpha << std::endl;
   }
 
   for(int i = 0; i < config_.horizon_steps + 1; i++)
