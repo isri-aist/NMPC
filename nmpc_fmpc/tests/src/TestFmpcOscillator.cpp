@@ -123,7 +123,7 @@ public:
   }
 };
 
-TEST(TestFmpcOscillator, TestCase1)
+TEST(TestFmpcOscillator, SolveMpc)
 {
   double horizon_dt = 0.1; // [sec]
   double horizon_duration = 4.0; // [sec]
@@ -183,6 +183,71 @@ TEST(TestFmpcOscillator, TestCase1)
             << "  set key autotitle columnhead\n"
             << "  set key noenhanced\n"
             << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:3 w lp, \"\" u 1:4 w lp\n";
+}
+
+TEST(TestFmpcOscillator, CheckDerivative)
+{
+  double horizon_dt = 0.1; // [sec]
+  auto fmpc_problem = std::make_shared<FmpcProblemOscillator>(horizon_dt);
+
+  double t = 0;
+  FmpcProblemOscillator::StateDimVector x;
+  x << 0.1, -0.2;
+  FmpcProblemOscillator::InputDimVector u;
+  u << 0.3;
+  constexpr double deriv_eps = 1e-6;
+
+  {
+    FmpcProblemOscillator::StateStateDimMatrix state_eq_deriv_x_analytical;
+    FmpcProblemOscillator::StateInputDimMatrix state_eq_deriv_u_analytical;
+    fmpc_problem->calcStateEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+
+    FmpcProblemOscillator::StateStateDimMatrix state_eq_deriv_x_numerical;
+    FmpcProblemOscillator::StateInputDimMatrix state_eq_deriv_u_numerical;
+    for(int i = 0; i < fmpc_problem->stateDim(); i++)
+    {
+      state_eq_deriv_x_numerical.col(i) =
+          (fmpc_problem->stateEq(t, x + deriv_eps * FmpcProblemOscillator::StateDimVector::Unit(i), u)
+           - fmpc_problem->stateEq(t, x - deriv_eps * FmpcProblemOscillator::StateDimVector::Unit(i), u))
+          / (2 * deriv_eps);
+    }
+    for(int i = 0; i < fmpc_problem->inputDim(); i++)
+    {
+      state_eq_deriv_u_numerical.col(i) =
+          (fmpc_problem->stateEq(t, x, u + deriv_eps * FmpcProblemOscillator::InputDimVector::Unit(i))
+           - fmpc_problem->stateEq(t, x, u - deriv_eps * FmpcProblemOscillator::InputDimVector::Unit(i)))
+          / (2 * deriv_eps);
+    }
+
+    EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
+    EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
+  }
+
+  {
+    FmpcProblemOscillator::IneqStateDimMatrix ineq_const_deriv_x_analytical;
+    FmpcProblemOscillator::IneqInputDimMatrix ineq_const_deriv_u_analytical;
+    fmpc_problem->calcIneqConstDeriv(t, x, u, ineq_const_deriv_x_analytical, ineq_const_deriv_u_analytical);
+
+    FmpcProblemOscillator::IneqStateDimMatrix ineq_const_deriv_x_numerical;
+    FmpcProblemOscillator::IneqInputDimMatrix ineq_const_deriv_u_numerical;
+    for(int i = 0; i < fmpc_problem->stateDim(); i++)
+    {
+      ineq_const_deriv_x_numerical.col(i) =
+          (fmpc_problem->ineqConst(t, x + deriv_eps * FmpcProblemOscillator::StateDimVector::Unit(i), u)
+           - fmpc_problem->ineqConst(t, x - deriv_eps * FmpcProblemOscillator::StateDimVector::Unit(i), u))
+          / (2 * deriv_eps);
+    }
+    for(int i = 0; i < fmpc_problem->inputDim(); i++)
+    {
+      ineq_const_deriv_u_numerical.col(i) =
+          (fmpc_problem->ineqConst(t, x, u + deriv_eps * FmpcProblemOscillator::InputDimVector::Unit(i))
+           - fmpc_problem->ineqConst(t, x, u - deriv_eps * FmpcProblemOscillator::InputDimVector::Unit(i)))
+          / (2 * deriv_eps);
+    }
+
+    EXPECT_LT((ineq_const_deriv_x_analytical - ineq_const_deriv_x_numerical).norm(), 1e-6);
+    EXPECT_LT((ineq_const_deriv_u_analytical - ineq_const_deriv_u_numerical).norm(), 1e-6);
+  }
 }
 
 int main(int argc, char ** argv)
