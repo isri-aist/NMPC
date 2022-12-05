@@ -5,6 +5,16 @@
 #include <iostream>
 #include <limits>
 
+#define CHECK_NAN(VAR, PRINT_PREFIX)                                                                      \
+  if(VAR.array().isNaN().any() || VAR.array().isInf().any())                                              \
+  {                                                                                                       \
+    if(print_level >= 3)                                                                                  \
+    {                                                                                                     \
+      std::cout << PRINT_PREFIX << #VAR << " contains NaN or infinity: " << VAR.transpose() << std::endl; \
+    }                                                                                                     \
+    return true;                                                                                          \
+  }
+
 namespace
 {
 template<class Clock>
@@ -60,58 +70,23 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::Variable::containsNaN() const
 {
   for(auto & x : x_list)
   {
-    if(x.array().isNaN().any() || x.array().isInf().any())
-    {
-      if(print_level >= 3)
-      {
-        std::cout << "[FMPC/Variable] x contains NaN or infinity: " << x.transpose() << std::endl;
-      }
-      return true;
-    }
+    CHECK_NAN(x, "[FMPC/Variable] ");
   }
   for(auto & u : u_list)
   {
-    if(u.array().isNaN().any() || u.array().isInf().any())
-    {
-      if(print_level >= 3)
-      {
-        std::cout << "[FMPC/Variable] u contains NaN or infinity: " << u.transpose() << std::endl;
-      }
-      return true;
-    }
+    CHECK_NAN(u, "[FMPC/Variable] ");
   }
   for(auto & lambda : lambda_list)
   {
-    if(lambda.array().isNaN().any() || lambda.array().isInf().any())
-    {
-      if(print_level >= 3)
-      {
-        std::cout << "[FMPC/Variable] lambda contains NaN or infinity: " << lambda.transpose() << std::endl;
-      }
-      return true;
-    }
+    CHECK_NAN(lambda, "[FMPC/Variable] ");
   }
   for(auto & s : s_list)
   {
-    if(s.array().isNaN().any() || s.array().isInf().any())
-    {
-      if(print_level >= 3)
-      {
-        std::cout << "[FMPC/Variable] s contains NaN or infinity: " << s.transpose() << std::endl;
-      }
-      return true;
-    }
+    CHECK_NAN(s, "[FMPC/Variable] ");
   }
   for(auto & nu : nu_list)
   {
-    if(nu.array().isNaN().any() || nu.array().isInf().any())
-    {
-      if(print_level >= 3)
-      {
-        std::cout << "[FMPC/Variable] nu contains NaN or infinity: " << nu.transpose() << std::endl;
-      }
-      return true;
-    }
+    CHECK_NAN(nu, "[FMPC/Variable] ");
   }
 
   return false;
@@ -150,6 +125,30 @@ FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim)
 
   s.resize(state_dim);
   P.resize(state_dim, state_dim);
+}
+
+template<int StateDim, int InputDim, int IneqDim>
+bool FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::containsNaN() const
+{
+  CHECK_NAN(A, "[FMPC/Coefficient] ");
+  CHECK_NAN(B, "[FMPC/Coefficient] ");
+  CHECK_NAN(C, "[FMPC/Coefficient] ");
+  CHECK_NAN(D, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lx, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lu, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lxx, "[FMPC/Coefficient] ");
+  CHECK_NAN(Luu, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lxu, "[FMPC/Coefficient] ");
+  CHECK_NAN(x_bar, "[FMPC/Coefficient] ");
+  CHECK_NAN(g_bar, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lx_bar, "[FMPC/Coefficient] ");
+  CHECK_NAN(Lu_bar, "[FMPC/Coefficient] ");
+  CHECK_NAN(k, "[FMPC/Coefficient] ");
+  CHECK_NAN(K, "[FMPC/Coefficient] ");
+  CHECK_NAN(s, "[FMPC/Coefficient] ");
+  CHECK_NAN(P, "[FMPC/Coefficient] ");
+
+  return false;
 }
 
 template<int StateDim, int InputDim, int IneqDim>
@@ -193,6 +192,10 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
                        Coefficient(problem_->stateDim(), problem_->inputDim(), problem_->ineqDim()));
   }
   coeff_list_.emplace_back(problem_->stateDim());
+  for(auto & coeff : coeff_list_)
+  {
+    coeff.print_level = config_.print_level;
+  }
 
   // Clear trace_data_list_
   trace_data_list_.clear();
@@ -577,6 +580,18 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
     coeff.P = P;
   }
 
+  for(const auto & coeff : coeff_list_)
+  {
+    if(coeff.containsNaN())
+    {
+      if(config_.print_level >= 1)
+      {
+        std::cout << "[FMPC/Backward] coeff contains NaN." << std::endl;
+      }
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -732,3 +747,5 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::dumpTraceDataList(const std::strin
   }
 }
 } // namespace nmpc_fmpc
+
+#undef CHECK_NAN

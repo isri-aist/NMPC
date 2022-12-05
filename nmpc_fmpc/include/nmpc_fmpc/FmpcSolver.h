@@ -151,6 +151,11 @@ public:
     */
     Coefficient(int state_dim);
 
+    /** \brief Check whether NaN or infinity is containd.
+        \return whether NaN or infinity is containd
+    */
+    bool containsNaN() const;
+
     //! First-order derivative of state equation w.r.t. state
     StateStateDimMatrix A;
 
@@ -197,6 +202,9 @@ public:
 
     //! Coefficient matrix for lambda calculation
     StateStateDimMatrix P;
+
+    //! Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose)
+    int print_level = 1;
   };
 
   /*! \brief Data to trace optimization loop. */
