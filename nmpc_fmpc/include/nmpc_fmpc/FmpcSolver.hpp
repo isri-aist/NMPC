@@ -607,7 +607,8 @@ template<int StateDim, int InputDim, int IneqDim>
 bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 {
   // Fraction-to-boundary rule
-  double alpha = 1.0;
+  double alpha_s = 1.0;
+  double alpha_nu = 1.0;
   {
     auto start_time_fraction = std::chrono::system_clock::now();
 
@@ -618,23 +619,23 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
       const IneqDimVector & nu = variable_.nu_list[i];
       const IneqDimVector & delta_s = delta_variable_.s_list[i];
       const IneqDimVector & delta_nu = delta_variable_.nu_list[i];
-      for(int ineq_idx = 0; ineq_idx < delta_s.size(); ineq_idx++)
+      for(int ineq_idx = 0; ineq_idx < s.size(); ineq_idx++)
       {
         if(delta_s[ineq_idx] < 0)
         {
-          alpha = std::min(alpha, -1 * margin_ratio * s[ineq_idx] / delta_s[ineq_idx]);
+          alpha_s = std::min(alpha_s, -1 * margin_ratio * s[ineq_idx] / delta_s[ineq_idx]);
         }
         if(delta_nu[ineq_idx] < 0)
         {
-          alpha = std::min(alpha, -1 * margin_ratio * nu[ineq_idx] / delta_nu[ineq_idx]);
+          alpha_nu = std::min(alpha_nu, -1 * margin_ratio * nu[ineq_idx] / delta_nu[ineq_idx]);
         }
       }
     }
-    if(!(alpha > 0.0 && alpha <= 1.0))
+    if(!(alpha_s > 0.0 && alpha_s <= 1.0 && alpha_nu > 0.0 && alpha_nu <= 1.0))
     {
       if(config_.print_level >= 1)
       {
-        std::cout << "[FMPC/Update] Invalid alpha: " + std::to_string(alpha) << std::endl;
+        std::cout << "[FMPC/Update] Invalid alpha. alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu << std::endl;
       }
       return false;
     }
@@ -644,19 +645,19 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 
   if(config_.print_level >= 3)
   {
-    std::cout << "[FMPC/update] alpha: " << alpha << std::endl;
+    std::cout << "[FMPC/update] alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu << std::endl;
   }
 
   for(int i = 0; i < config_.horizon_steps + 1; i++)
   {
-    variable_.x_list[i] += alpha * delta_variable_.x_list[i];
-    variable_.lambda_list[i] += alpha * delta_variable_.lambda_list[i];
+    variable_.x_list[i] += alpha_s * delta_variable_.x_list[i];
+    variable_.lambda_list[i] += alpha_nu * delta_variable_.lambda_list[i];
 
     if(i < config_.horizon_steps)
     {
-      variable_.u_list[i] += alpha * delta_variable_.u_list[i];
-      variable_.s_list[i] += alpha * delta_variable_.s_list[i];
-      variable_.nu_list[i] += alpha * delta_variable_.nu_list[i];
+      variable_.u_list[i] += alpha_s * delta_variable_.u_list[i];
+      variable_.s_list[i] += alpha_s * delta_variable_.s_list[i];
+      variable_.nu_list[i] += alpha_nu * delta_variable_.nu_list[i];
 
       constexpr double min_positive_value = std::numeric_limits<double>::lowest();
       if((variable_.s_list[i].array() < 0).any())
