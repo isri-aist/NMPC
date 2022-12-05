@@ -15,7 +15,7 @@ Non-linear model predictive control (NMPC) with differential dynamic drogramming
 ## Install
 See [here](https://isri-aist.github.io/NMPC/doc/Install).
 
-## Control method
+## Technical details
 See the following for a detailed algorithm.
 - Y Tassa, T Erez, E Todorov. Synthesis and stabilization of complex behaviors through online trajectory optimization. IROS, 2012.
 - Y Tassa, N Mansard, E Todorov. Control-limited differential dynamic programming. ICRA, 2014.

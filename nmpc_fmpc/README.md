@@ -10,6 +10,6 @@ FMPC: Fast non-linear model predictive control (NMPC) combining the direct multi
 ## Install
 See [here](https://isri-aist.github.io/NMPC/doc/Install).
 
-## Control method
+## Technical details
 See the following for a detailed algorithm.
 - S Katayama. Fast model predictive control of robotic systems with rigid contacts. Ph.D. thesis (section 2.2), Kyoto University, 2022.

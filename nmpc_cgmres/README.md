@@ -7,7 +7,7 @@ Non-linear model predictive control (NMPC) with continuation/GMRES method (C/GMR
 ## Install
 See [here](https://isri-aist.github.io/NMPC/doc/Install).
 
-## Control method
+## Technical details
 See the following for a detailed algorithm.
 - T Ohtsuka. Continuation/GMRES method for fast computation of nonlinear receding horizon control. Automatica, 2004.
 - https://www.coronasha.co.jp/np/isbn/9784339033182/
