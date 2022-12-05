@@ -84,6 +84,11 @@ public:
     */
     void reset(double _x, double _u, double _lambda, double _s, double _nu);
 
+    /** \brief Check whether NaN or infinity is containd.
+        \return whether NaN or infinity is containd
+    */
+    bool containsNaN() const;
+
     //! Number of steps in horizon
     int horizon_steps;
 
@@ -101,6 +106,9 @@ public:
 
     //! Sequence of Lagrange multipliers of inequality constraints (nu[0], ..., nu[N-1])
     std::vector<IneqDimVector> nu_list;
+
+    //! Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose)
+    int print_level = 1;
   };
 
   /*! \brief Coefficients of linearized KKT condition. */
@@ -294,8 +302,10 @@ protected:
   */
   bool backwardPass();
 
-  /** \brief Process forward pass a.k.a forward Riccati recursion. */
-  void forwardPass();
+  /** \brief Process forward pass a.k.a forward Riccati recursion.
+      \return whether the process is finished successfully
+  */
+  bool forwardPass();
 
   /** \brief Update optimization variables given Newton-step direction.
       \return whether the process is finished successfully

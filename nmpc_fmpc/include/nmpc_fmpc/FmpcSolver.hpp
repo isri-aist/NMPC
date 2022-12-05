@@ -56,6 +56,68 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::Variable::reset(double _x,
 }
 
 template<int StateDim, int InputDim, int IneqDim>
+bool FmpcSolver<StateDim, InputDim, IneqDim>::Variable::containsNaN() const
+{
+  for(auto & x : x_list)
+  {
+    if(x.array().isNaN().any() || x.array().isInf().any())
+    {
+      if(print_level >= 3)
+      {
+        std::cout << "[FMPC/Variable] x contains NaN or infinity: " << x.transpose() << std::endl;
+      }
+      return true;
+    }
+  }
+  for(auto & u : u_list)
+  {
+    if(u.array().isNaN().any() || u.array().isInf().any())
+    {
+      if(print_level >= 3)
+      {
+        std::cout << "[FMPC/Variable] u contains NaN or infinity: " << u.transpose() << std::endl;
+      }
+      return true;
+    }
+  }
+  for(auto & lambda : lambda_list)
+  {
+    if(lambda.array().isNaN().any() || lambda.array().isInf().any())
+    {
+      if(print_level >= 3)
+      {
+        std::cout << "[FMPC/Variable] lambda contains NaN or infinity: " << lambda.transpose() << std::endl;
+      }
+      return true;
+    }
+  }
+  for(auto & s : s_list)
+  {
+    if(s.array().isNaN().any() || s.array().isInf().any())
+    {
+      if(print_level >= 3)
+      {
+        std::cout << "[FMPC/Variable] s contains NaN or infinity: " << s.transpose() << std::endl;
+      }
+      return true;
+    }
+  }
+  for(auto & nu : nu_list)
+  {
+    if(nu.array().isNaN().any() || nu.array().isInf().any())
+    {
+      if(print_level >= 3)
+      {
+        std::cout << "[FMPC/Variable] nu contains NaN or infinity: " << nu.transpose() << std::endl;
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
+template<int StateDim, int InputDim, int IneqDim>
 FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim, int input_dim, int ineq_dim)
 {
   A.resize(state_dim, state_dim);
@@ -101,6 +163,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
   current_t_ = current_t;
   current_x_ = current_x;
   variable_ = initial_variable;
+  variable_.print_level = config_.print_level;
 
   // Check variable_
   checkVariable();
@@ -109,6 +172,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
   if(delta_variable_.horizon_steps != config_.horizon_steps)
   {
     delta_variable_ = Variable(config_.horizon_steps);
+    delta_variable_.print_level = config_.print_level;
   }
 
   // Setup coeff_list_
@@ -321,7 +385,10 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
   {
     auto start_time = std::chrono::system_clock::now();
 
-    forwardPass();
+    if(!forwardPass())
+    {
+      return -1;
+    }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
     trace_data.duration_forward = duration;
@@ -489,7 +556,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-void FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
+bool FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
 {
   delta_variable_.x_list[0] = current_x_ - variable_.x_list[0];
 
@@ -518,6 +585,17 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
          / variable_.s_list[i].array())
             .matrix();
   }
+
+  if(delta_variable_.containsNaN())
+  {
+    if(config_.print_level >= 1)
+    {
+      std::cout << "[FMPC/Forward] delta_variable contains NaN." << std::endl;
+    }
+    return false;
+  }
+
+  return true;
 }
 
 template<int StateDim, int InputDim, int IneqDim>
