@@ -9,6 +9,8 @@
 
 using Variable = typename nmpc_fmpc::FmpcSolver<2, 1, 3>::Variable;
 
+using Status = typename nmpc_fmpc::FmpcSolver<2, 1, 3>::Status;
+
 /** \brief FMPC problem for Van der Pol oscillator.
 
     See https://web.casadi.org/docs/#a-simple-test-problem
@@ -43,9 +45,9 @@ public:
   virtual IneqDimVector ineqConst(double t, const StateDimVector & x, const InputDimVector & u) const override
   {
     IneqDimVector g;
-    g[0] = -1 * x[1] - 0.25;
+    g[0] = -1 * x[1] - 0.05;
     g[1] = -1 * u[0] - 1.0;
-    g[2] = u[0] - 1.0;
+    g[2] = u[0] - 0.9;
     return g;
   }
 
@@ -125,7 +127,7 @@ public:
 
 TEST(TestFmpcOscillator, SolveMpc)
 {
-  double horizon_dt = 0.1; // [sec]
+  double horizon_dt = 0.01; // [sec]
   double horizon_duration = 4.0; // [sec]
   int horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
   double end_t = 10.0; // [sec]
@@ -137,7 +139,7 @@ TEST(TestFmpcOscillator, SolveMpc)
   auto fmpc_solver = std::make_shared<nmpc_fmpc::FmpcSolver<2, 1, 3>>(fmpc_problem);
   fmpc_solver->config().horizon_steps = horizon_steps;
   Variable variable(horizon_steps);
-  variable.reset(0.0, 0.0, 0.0, 1e-2, 1e-2);
+  variable.reset(0.0, 0.0, 0.0, 1e0, 1e0);
 
   // Initialize simulation
   double sim_dt = 0.005; // [sec]
@@ -152,7 +154,8 @@ TEST(TestFmpcOscillator, SolveMpc)
   while(current_t < end_t)
   {
     // Solve
-    fmpc_solver->solve(current_t, current_x, variable);
+    auto status = fmpc_solver->solve(current_t, current_x, variable);
+    EXPECT_TRUE(status == Status::Succeeded || status == Status::MaxIterationReached);
     if(first_iter)
     {
       first_iter = false;
