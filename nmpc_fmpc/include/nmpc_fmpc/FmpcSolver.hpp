@@ -225,8 +225,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   if(config_.print_level >= 3)
   {
     std::cout << "[FMPC] Solve finised. status: " << static_cast<int>(status)
-              << ", setup duration: " << computation_duration_.setup
-              << " [ms], optimization duration: " << computation_duration_.opt << " [ms]." << std::endl;
+              << ", iter: " << trace_data_list_.back().iter << std::endl;
   }
 
   return status;
