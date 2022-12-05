@@ -385,7 +385,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   }
 
   // Check KKT error
-  double kkt_error = calcKktError(barrier_eps_);
+  double kkt_error = calcKktError(0.0);
   trace_data.kkt_error = kkt_error;
   if(kkt_error <= config_.kkt_error_thre)
   {
