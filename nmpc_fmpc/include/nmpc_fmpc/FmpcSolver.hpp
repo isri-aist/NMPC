@@ -323,6 +323,26 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   auto & trace_data = trace_data_list_.back();
   trace_data.iter = iter;
 
+  // Update barrier parameter
+  {
+    double s_nu_ave = 0.0;
+    double s_nu_min = std::numeric_limits<double>::max();
+    int total_ineq_dim = 0;
+    for(int i = 0; i < config_.horizon_steps; i++)
+    {
+      s_nu_ave += variable_.s_list[i].dot(variable_.nu_list[i]);
+      s_nu_min = std::min(s_nu_min, variable_.s_list[i].cwiseProduct(variable_.nu_list[i]).minCoeff());
+      total_ineq_dim += variable_.s_list[i].size();
+    }
+    s_nu_ave /= total_ineq_dim;
+
+    double sigma = 0.5;
+    // The following equations follow (19.20) in "Nocedal, Wright. Numerical optimization" but does not work
+    // double xi = s_nu_min / s_nu_ave;
+    // double sigma = 0.1 * std::pow(std::min(0.05 * (1.0 - xi) / xi, 2.0), 3);
+    barrier_eps_ = sigma * s_nu_ave;
+  }
+
   // Step 1: calculate coefficients of linearized KKT condition
   {
     auto start_time = std::chrono::system_clock::now();
@@ -365,7 +385,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   }
 
   // Check KKT error
-  double kkt_error = calcKktError();
+  double kkt_error = calcKktError(barrier_eps_);
   trace_data.kkt_error = kkt_error;
   if(kkt_error <= config_.kkt_error_thre)
   {
@@ -418,7 +438,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-double FmpcSolver<StateDim, InputDim, IneqDim>::calcKktError() const
+double FmpcSolver<StateDim, InputDim, IneqDim>::calcKktError(double barrier_eps) const
 {
   double kkt_error = 0;
 
@@ -433,7 +453,7 @@ double FmpcSolver<StateDim, InputDim, IneqDim>::calcKktError() const
     kkt_error += coeff.Lx_bar.squaredNorm();
     kkt_error += coeff.Lu_bar.squaredNorm();
     kkt_error +=
-        (variable_.s_list[i].array() * variable_.nu_list[i].array() - barrier_eps_).max(0).matrix().squaredNorm();
+        (variable_.s_list[i].array() * variable_.nu_list[i].array() - barrier_eps).max(0).matrix().squaredNorm();
   }
   {
     const auto & terminal_coeff = coeff_list_[config_.horizon_steps];
@@ -635,7 +655,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
     {
       if(config_.print_level >= 1)
       {
-        std::cout << "[FMPC/Update] Invalid alpha. alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu << std::endl;
+        std::cout << "[FMPC/Update] Invalid alpha. barrier_eps: " << barrier_eps_ << ", alpha_s: " << alpha_s
+                  << ", alpha_nu: " << alpha_nu << std::endl;
       }
       return false;
     }
@@ -645,7 +666,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 
   if(config_.print_level >= 3)
   {
-    std::cout << "[FMPC/update] alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu << std::endl;
+    std::cout << "[FMPC/update] barrier_eps: " << barrier_eps_ << ", alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu
+              << std::endl;
   }
 
   for(int i = 0; i < config_.horizon_steps + 1; i++)

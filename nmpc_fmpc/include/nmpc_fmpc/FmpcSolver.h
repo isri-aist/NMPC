@@ -319,8 +319,10 @@ protected:
   */
   Status procOnce(int iter);
 
-  /** \brief Calculate KKT condition error. */
-  double calcKktError() const;
+  /** \brief Calculate KKT condition error.
+      \param barrier_eps barrier parameter
+  */
+  double calcKktError(double barrier_eps) const;
 
   /** \brief Process backward pass a.k.a backward Riccati recursion.
       \return whether the process is finished successfully
@@ -365,8 +367,8 @@ protected:
   //! Current state
   StateDimVector current_x_ = StateDimVector::Zero();
 
-  //! Barrier parameter for inequality constraints
-  double barrier_eps_ = 1e-4; // \todo reduce gradually
+  //! Barrier parameter
+  double barrier_eps_ = 1e-4;
 };
 } // namespace nmpc_fmpc
 
