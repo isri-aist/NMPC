@@ -368,10 +368,11 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
       problem_->calcIneqConstDeriv(t, x, u, coeff.C, coeff.D);
       problem_->calcRunningCostDeriv(t, x, u, coeff.Lx, coeff.Lu, coeff.Lxx, coeff.Luu, coeff.Lxu);
 
-      coeff.x_bar = problem_->stateEq(t, x, u) - next_x;
-      coeff.g_bar = problem_->ineqConst(t, x, u) + s;
-      coeff.Lx_bar = -1 * lambda + dt * coeff.Lx + coeff.A.transpose() * next_lambda + coeff.C.transpose() * nu;
-      coeff.Lu_bar = dt * coeff.Lu + coeff.B.transpose() * next_lambda + coeff.D.transpose() * nu;
+      coeff.x_bar = problem_->stateEq(t, x, u) - next_x; // (2.23c)
+      coeff.g_bar = problem_->ineqConst(t, x, u) + s; // (2.23d)
+      coeff.Lx_bar =
+          -1 * lambda + dt * coeff.Lx + coeff.A.transpose() * next_lambda + coeff.C.transpose() * nu; // (2.25b)
+      coeff.Lu_bar = dt * coeff.Lu + coeff.B.transpose() * next_lambda + coeff.D.transpose() * nu; // (2.25c)
     }
     {
       auto & terminal_coeff = coeff_list_[config_.horizon_steps];
@@ -379,7 +380,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
       const StateDimVector & terminal_x = variable_.x_list[config_.horizon_steps];
       const StateDimVector & terminal_lambda = variable_.lambda_list[config_.horizon_steps];
       problem_->calcTerminalCostDeriv(terminal_t, terminal_x, terminal_coeff.Lx_bar, terminal_coeff.Lxx);
-      terminal_coeff.Lx_bar -= terminal_lambda;
+      terminal_coeff.Lx_bar -= terminal_lambda; // (2.25a)
     }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
@@ -489,8 +490,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 
   {
     auto & terminal_coeff = coeff_list_[config_.horizon_steps];
-    s = -1 * terminal_coeff.Lx_bar;
-    P = terminal_coeff.Lxx;
+    s = -1 * terminal_coeff.Lx_bar; // (2.34)
+    P = terminal_coeff.Lxx; // (2.34)
     terminal_coeff.s = s;
     terminal_coeff.P = P;
   }
@@ -520,15 +521,15 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
       IneqDimVector nu_s = (variable_.nu_list[i].array() / variable_.s_list[i].array()).matrix();
       IneqDimVector tilde_sub =
           nu_s.cwiseProduct(g_bar) - variable_.nu_list[i] + barrier_eps_ * variable_.s_list[i].cwiseInverse();
-      Qxx_tilde.noalias() = dt * Lxx + C.transpose() * nu_s.asDiagonal() * C;
-      Quu_tilde.noalias() = dt * Luu + D.transpose() * nu_s.asDiagonal() * D;
-      Qxu_tilde.noalias() = dt * Lxu + C.transpose() * nu_s.asDiagonal() * D;
-      Lx_tilde.noalias() = Lx_bar + C.transpose() * tilde_sub;
-      Lu_tilde.noalias() = Lu_bar + D.transpose() * tilde_sub;
+      Qxx_tilde.noalias() = dt * Lxx + C.transpose() * nu_s.asDiagonal() * C; // (2.28c)
+      Quu_tilde.noalias() = dt * Luu + D.transpose() * nu_s.asDiagonal() * D; // (2.28e)
+      Qxu_tilde.noalias() = dt * Lxu + C.transpose() * nu_s.asDiagonal() * D; // (2.28d)
+      Lx_tilde.noalias() = Lx_bar + C.transpose() * tilde_sub; // (2.28f)
+      Lu_tilde.noalias() = Lu_bar + D.transpose() * tilde_sub; // (2.28g)
 
-      F.noalias() = Qxx_tilde + A.transpose() * P * A;
-      H.noalias() = Qxu_tilde + A.transpose() * P * B;
-      G.noalias() = Quu_tilde + B.transpose() * P * B;
+      F.noalias() = Qxx_tilde + A.transpose() * P * A; // (2.35b)
+      H.noalias() = Qxu_tilde + A.transpose() * P * B; // (2.35c)
+      G.noalias() = Quu_tilde + B.transpose() * P * B; // (2.35d)
 
       computation_duration_.gain_pre += calcDuration(start_time_gain_pre, std::chrono::system_clock::now());
     }
@@ -550,8 +551,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
           }
           return false;
         }
-        k.noalias() = -1 * llt_G.solve(B.transpose() * (P * x_bar - s) + Lu_tilde);
-        K.noalias() = -1 * llt_G.solve(H.transpose());
+        k.noalias() = -1 * llt_G.solve(B.transpose() * (P * x_bar - s) + Lu_tilde); // (2.35e)
+        K.noalias() = -1 * llt_G.solve(H.transpose()); // (2.35e)
       }
       else
       {
@@ -566,8 +567,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
     {
       auto start_time_gain_post = std::chrono::system_clock::now();
 
-      s = A.transpose() * (s - P * x_bar) - Lx_tilde - H * k;
-      P.noalias() = F - K.transpose() * G * K;
+      s = A.transpose() * (s - P * x_bar) - Lx_tilde - H * k; // (2.35a)
+      P.noalias() = F - K.transpose() * G * K; // (2.35a)
       P = 0.5 * (P + P.transpose()); // Enforce symmetric
 
       computation_duration_.gain_post += calcDuration(start_time_gain_post, std::chrono::system_clock::now());
@@ -607,13 +608,13 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
   {
     const auto & coeff = coeff_list_[i];
 
-    delta_variable_.lambda_list[i].noalias() = coeff.P * delta_variable_.x_list[i] - coeff.s;
+    delta_variable_.lambda_list[i].noalias() = coeff.P * delta_variable_.x_list[i] - coeff.s; // (2.33)
 
     if(i < config_.horizon_steps)
     {
-      delta_variable_.u_list[i].noalias() = coeff.K * delta_variable_.x_list[i] + coeff.k;
+      delta_variable_.u_list[i].noalias() = coeff.K * delta_variable_.x_list[i] + coeff.k; // (2.36)
       delta_variable_.x_list[i + 1].noalias() =
-          coeff.A * delta_variable_.x_list[i] + coeff.B * delta_variable_.u_list[i] + coeff.x_bar;
+          coeff.A * delta_variable_.x_list[i] + coeff.B * delta_variable_.u_list[i] + coeff.x_bar; // (2.26b)
     }
   }
 
@@ -622,11 +623,11 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
     const auto & coeff = coeff_list_[i];
 
     delta_variable_.s_list[i].noalias() =
-        -1 * (coeff.C * delta_variable_.x_list[i] + coeff.D * delta_variable_.u_list[i] + coeff.g_bar);
+        -1 * (coeff.C * delta_variable_.x_list[i] + coeff.D * delta_variable_.u_list[i] + coeff.g_bar); // (2.27a)
     delta_variable_.nu_list[i].noalias() =
         (-1 * (variable_.nu_list[i].array() * (delta_variable_.s_list[i] + variable_.s_list[i]).array() - barrier_eps_)
          / variable_.s_list[i].array())
-            .matrix();
+            .matrix(); // (2.27b)
   }
 
   if(config_.check_nan && delta_variable_.containsNaN())
