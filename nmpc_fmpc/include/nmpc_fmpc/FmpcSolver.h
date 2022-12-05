@@ -67,6 +67,31 @@ public:
     double kkt_error_thre = 1e-4;
   };
 
+  /*! \brief Result status. */
+  enum class Status
+  {
+    //! Uninitialized
+    Uninitialized = 0,
+
+    //! Succeeded
+    Succeeded = 1,
+
+    //! Error in forward
+    ErrorInForward = 2,
+
+    //! Error in backward
+    ErrorInBackward = 3,
+
+    //! Error in update
+    ErrorInUpdate = 4,
+
+    //! Maximum iteration reached
+    MaxIterationReached = 5,
+
+    //! Iteration continued (used internally only)
+    IterationContinued = 6
+  };
+
   /*! \brief Optimization variables. */
   struct Variable
   {
@@ -257,9 +282,9 @@ public:
       \param current_t current time [sec]
       \param current_x current state
       \param initial_variable initial guess of optimization variables
-      \return whether the process is finished successfully
+      \return result status
   */
-  bool solve(double current_t, const StateDimVector & current_x, const Variable & initial_variable);
+  Status solve(double current_t, const StateDimVector & current_x, const Variable & initial_variable);
 
   /** \brief Const accessor to optimization variables. */
   inline const Variable & variable() const
@@ -290,9 +315,9 @@ protected:
 
   /** \brief Process one iteration.
       \param iter current iteration
-      \return 0 for continue, 1 for terminate, -1 for failure
+      \return result status
   */
-  int procOnce(int iter);
+  Status procOnce(int iter);
 
   /** \brief Calculate KKT condition error. */
   double calcKktError() const;

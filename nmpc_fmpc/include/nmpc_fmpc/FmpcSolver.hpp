@@ -153,9 +153,10 @@ FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim)
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
-                                                    const StateDimVector & current_x,
-                                                    const Variable & initial_variable)
+typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, InputDim, IneqDim>::solve(
+    double current_t,
+    const StateDimVector & current_x,
+    const Variable & initial_variable)
 {
   auto start_time = std::chrono::system_clock::now();
 
@@ -203,14 +204,18 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
   computation_duration_.setup = calcDuration(start_time, setup_time);
 
   // Optimization loop
-  int retval = 0;
+  Status status = Status::Uninitialized;
   for(int iter = 1; iter <= config_.max_iter; iter++)
   {
-    retval = procOnce(iter);
-    if(retval != 0)
+    status = procOnce(iter);
+    if(status != Status::IterationContinued)
     {
       break;
     }
+  }
+  if(status == Status::IterationContinued)
+  {
+    status = Status::MaxIterationReached;
   }
 
   auto end_time = std::chrono::system_clock::now();
@@ -219,11 +224,12 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
 
   if(config_.print_level >= 3)
   {
-    std::cout << "[FMPC] Setup duration: " << computation_duration_.setup
+    std::cout << "[FMPC] Solve finised. status: " << static_cast<int>(status)
+              << ", setup duration: " << computation_duration_.setup
               << " [ms], optimization duration: " << computation_duration_.opt << " [ms]." << std::endl;
   }
 
-  return retval == 1;
+  return status;
 }
 
 template<int StateDim, int InputDim, int IneqDim>
@@ -306,7 +312,7 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
+typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
 {
   if(config_.print_level >= 3)
   {
@@ -364,7 +370,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
   trace_data.kkt_error = kkt_error;
   if(kkt_error <= config_.kkt_error_thre)
   {
-    return 1;
+    return Status::Succeeded;
   }
 
   // Step 2: backward pass
@@ -373,7 +379,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
 
     if(!backwardPass())
     {
-      return -1;
+      return Status::ErrorInBackward;
     }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
@@ -387,7 +393,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
 
     if(!forwardPass())
     {
-      return -1;
+      return Status::ErrorInForward;
     }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
@@ -401,7 +407,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
 
     if(!updateVariables())
     {
-      return -1;
+      return Status::ErrorInUpdate;
     }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
@@ -409,7 +415,7 @@ int FmpcSolver<StateDim, InputDim, IneqDim>::procOnce(int iter)
     computation_duration_.update += duration;
   }
 
-  return 0;
+  return Status::IterationContinued;
 }
 
 template<int StateDim, int InputDim, int IneqDim>
