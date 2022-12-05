@@ -580,15 +580,18 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
     coeff.P = P;
   }
 
-  for(const auto & coeff : coeff_list_)
+  if(config_.check_nan)
   {
-    if(coeff.containsNaN())
+    for(const auto & coeff : coeff_list_)
     {
-      if(config_.print_level >= 1)
+      if(coeff.containsNaN())
       {
-        std::cout << "[FMPC/Backward] coeff contains NaN." << std::endl;
+        if(config_.print_level >= 1)
+        {
+          std::cout << "[FMPC/Backward] coeff contains NaN." << std::endl;
+        }
+        return false;
       }
-      return false;
     }
   }
 
@@ -626,7 +629,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::forwardPass()
             .matrix();
   }
 
-  if(delta_variable_.containsNaN())
+  if(config_.check_nan && delta_variable_.containsNaN())
   {
     if(config_.print_level >= 1)
     {

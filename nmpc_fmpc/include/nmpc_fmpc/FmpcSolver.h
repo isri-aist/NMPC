@@ -65,6 +65,9 @@ public:
 
     //! Threshold of KKT condition error
     double kkt_error_thre = 1e-4;
+
+    //! Whether to check NaN
+    bool check_nan = true;
   };
 
   /*! \brief Result status. */
