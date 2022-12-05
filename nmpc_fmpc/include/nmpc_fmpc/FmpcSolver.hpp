@@ -541,18 +541,20 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
       int input_dim = B.cols();
       if(input_dim > 0)
       {
-        Eigen::LLT<InputInputDimMatrix> llt_G(G);
-        if(llt_G.info() == Eigen::NumericalIssue)
-        {
-          if(config_.print_level >= 1)
-          {
-            std::cout << "[FMPC/Backward] G is not positive definite in Cholesky decomposition (LLT). current time: "
-                      << current_t_ << ", horizon idx: " << i << " / " << config_.horizon_steps << std::endl;
-          }
-          return false;
-        }
-        k.noalias() = -1 * llt_G.solve(B.transpose() * (P * x_bar - s) + Lu_tilde); // (2.35e)
-        K.noalias() = -1 * llt_G.solve(H.transpose()); // (2.35e)
+        Eigen::PartialPivLU<InputInputDimMatrix> decompose_G(G);
+        // \todo LLT should be used for positive semi-definite matrices, but is G always so?
+        // Eigen::LLT<InputInputDimMatrix> decompose_G(G);
+        // if(decompose_G.info() == Eigen::NumericalIssue)
+        // {
+        //   if(config_.print_level >= 1)
+        //   {
+        //     std::cout << "[FMPC/Backward] G is not positive definite in Cholesky decomposition (LLT). horizon idx: "
+        //               << i << " / " << config_.horizon_steps << std::endl;
+        //   }
+        //   return false;
+        // }
+        k.noalias() = -1 * decompose_G.solve(B.transpose() * (P * x_bar - s) + Lu_tilde); // (2.35e)
+        K.noalias() = -1 * decompose_G.solve(H.transpose()); // (2.35e)
       }
       else
       {
