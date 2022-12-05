@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <limits>
 
 namespace
 {
@@ -500,8 +501,25 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
       variable_.s_list[i] += alpha * delta_variable_.s_list[i];
       variable_.nu_list[i] += alpha * delta_variable_.nu_list[i];
 
-      assert((variable_.s_list[i].array() >= 0).all());
-      assert((variable_.nu_list[i].array() >= 0).all());
+      constexpr double min_positive_value = std::numeric_limits<double>::lowest();
+      if((variable_.s_list[i].array() < 0).any())
+      {
+        if(config_.print_level >= 1)
+        {
+          std::cout << "[FMPC/Update] Updated s is negative: " << variable_.s_list[i].transpose() << std::endl;
+        }
+        variable_.s_list[i] = variable_.s_list[i].array().max(min_positive_value).matrix();
+        return false;
+      }
+      if((variable_.nu_list[i].array() < 0).any())
+      {
+        if(config_.print_level >= 1)
+        {
+          std::cout << "[FMPC/Update] Updated nu is negative: " << variable_.nu_list[i].transpose() << std::endl;
+        }
+        variable_.nu_list[i] = variable_.nu_list[i].array().max(min_positive_value).matrix();
+        return false;
+      }
     }
   }
 
