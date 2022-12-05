@@ -1,0 +1,44 @@
+# >=3.14 required for CMP0087
+cmake_minimum_required(VERSION 3.14)
+
+set(PROJECT_VERSION 0.1.0)
+project(NMPC)
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
+
+# Set a default build type to 'RelwithDebInfo' if none was specified
+IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES AND NOT ENV{CMAKE_BUILD_TYPE})
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+ENDIF()
+
+include(CTest)
+enable_testing()
+
+include(ExternalProject)
+
+function(add_nmpc_project NAME)
+  ExternalProject_Add(${NAME}
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${NAME}"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    CMAKE_ARGS
+      -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      -DINSTALL_DOCUMENTATION=${INSTALL_DOCUMENTATION}
+      -DBUILD_TESTING=${BUILD_TESTING}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      -DNMPC_STANDALONE=ON
+    INSTALL_COMMAND ""
+    TEST_COMMAND ""
+  )
+  add_test(NAME test-${NAME}
+    COMMAND ctest -C $<CONFIG>
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}/"
+  )
+  install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>)")
+endfunction()
+add_nmpc_project(nmpc_cgmres)
+add_nmpc_project(nmpc_ddp)
