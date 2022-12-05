@@ -73,14 +73,7 @@ public:
     /** \brief Constructor.
         \param horizon_steps number of steps in horizon
     */
-    Variable(int _horizon_steps = 0) : horizon_steps(_horizon_steps)
-    {
-      x_list.resize(horizon_steps + 1);
-      u_list.resize(horizon_steps);
-      lambda_list.resize(horizon_steps + 1);
-      s_list.resize(horizon_steps);
-      nu_list.resize(horizon_steps);
-    }
+    Variable(int _horizon_steps = 0);
 
     /** \brief Reset variables.
         \param _x x
@@ -89,29 +82,7 @@ public:
         \param _s s (must be non-negative)
         \param _nu nu (must be non-negative)
     */
-    inline void reset(double _x, double _u, double _lambda, double _s, double _nu)
-    {
-      for(auto & x : x_list)
-      {
-        x.setConstant(_x);
-      }
-      for(auto & u : u_list)
-      {
-        u.setConstant(_u);
-      }
-      for(auto & lambda : lambda_list)
-      {
-        lambda.setConstant(_lambda);
-      }
-      for(auto & s : s_list)
-      {
-        s.setConstant(_s);
-      }
-      for(auto & nu : nu_list)
-      {
-        nu.setConstant(_nu);
-      }
-    }
+    void reset(double _x, double _u, double _lambda, double _s, double _nu);
 
     //! Number of steps in horizon
     int horizon_steps;
@@ -140,41 +111,12 @@ public:
         \param input_dim input dimension
         \param ineq_dim inequality dimension
     */
-    Coefficient(int state_dim, int input_dim, int ineq_dim)
-    {
-      A.resize(state_dim, state_dim);
-      B.resize(state_dim, input_dim);
-      C.resize(ineq_dim, state_dim);
-      D.resize(ineq_dim, input_dim);
-
-      Lx.resize(state_dim);
-      Lu.resize(input_dim);
-      Lxx.resize(state_dim, state_dim);
-      Luu.resize(input_dim, input_dim);
-      Lxu.resize(state_dim, input_dim);
-
-      x_bar.resize(state_dim);
-      g_bar.resize(ineq_dim);
-      Lx_bar.resize(state_dim);
-      Lu_bar.resize(input_dim);
-
-      k.resize(input_dim);
-      K.resize(input_dim, state_dim);
-      s.resize(state_dim);
-      P.resize(state_dim, state_dim);
-    }
+    Coefficient(int state_dim, int input_dim, int ineq_dim);
 
     /** \brief Constructor for terminal coefficient.
         \param state_dim state dimension
     */
-    Coefficient(int state_dim)
-    {
-      Lxx.resize(state_dim, state_dim);
-      Lx_bar.resize(state_dim);
-
-      s.resize(state_dim);
-      P.resize(state_dim, state_dim);
-    }
+    Coefficient(int state_dim);
 
     //! First-order derivative of state equation w.r.t. state
     StateStateDimMatrix A;

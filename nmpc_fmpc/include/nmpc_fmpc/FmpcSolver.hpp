@@ -17,6 +17,80 @@ double calcDuration(const std::chrono::time_point<Clock> & start_time, const std
 namespace nmpc_fmpc
 {
 template<int StateDim, int InputDim, int IneqDim>
+FmpcSolver<StateDim, InputDim, IneqDim>::Variable::Variable(int _horizon_steps) : horizon_steps(_horizon_steps)
+{
+  x_list.resize(horizon_steps + 1);
+  u_list.resize(horizon_steps);
+  lambda_list.resize(horizon_steps + 1);
+  s_list.resize(horizon_steps);
+  nu_list.resize(horizon_steps);
+}
+
+template<int StateDim, int InputDim, int IneqDim>
+void FmpcSolver<StateDim, InputDim, IneqDim>::Variable::reset(double _x,
+                                                              double _u,
+                                                              double _lambda,
+                                                              double _s,
+                                                              double _nu)
+{
+  for(auto & x : x_list)
+  {
+    x.setConstant(_x);
+  }
+  for(auto & u : u_list)
+  {
+    u.setConstant(_u);
+  }
+  for(auto & lambda : lambda_list)
+  {
+    lambda.setConstant(_lambda);
+  }
+  for(auto & s : s_list)
+  {
+    s.setConstant(_s);
+  }
+  for(auto & nu : nu_list)
+  {
+    nu.setConstant(_nu);
+  }
+}
+
+template<int StateDim, int InputDim, int IneqDim>
+FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim, int input_dim, int ineq_dim)
+{
+  A.resize(state_dim, state_dim);
+  B.resize(state_dim, input_dim);
+  C.resize(ineq_dim, state_dim);
+  D.resize(ineq_dim, input_dim);
+
+  Lx.resize(state_dim);
+  Lu.resize(input_dim);
+  Lxx.resize(state_dim, state_dim);
+  Luu.resize(input_dim, input_dim);
+  Lxu.resize(state_dim, input_dim);
+
+  x_bar.resize(state_dim);
+  g_bar.resize(ineq_dim);
+  Lx_bar.resize(state_dim);
+  Lu_bar.resize(input_dim);
+
+  k.resize(input_dim);
+  K.resize(input_dim, state_dim);
+  s.resize(state_dim);
+  P.resize(state_dim, state_dim);
+}
+
+template<int StateDim, int InputDim, int IneqDim>
+FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim)
+{
+  Lxx.resize(state_dim, state_dim);
+  Lx_bar.resize(state_dim);
+
+  s.resize(state_dim);
+  P.resize(state_dim, state_dim);
+}
+
+template<int StateDim, int InputDim, int IneqDim>
 bool FmpcSolver<StateDim, InputDim, IneqDim>::solve(double current_t,
                                                     const StateDimVector & current_x,
                                                     const Variable & initial_variable)
