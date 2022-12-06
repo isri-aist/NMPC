@@ -21,7 +21,7 @@
   <test_depend>visualization_msgs</test_depend>
   <test_depend>std_srvs</test_depend>
   <test_depend>rviz</test_depend>
-  <test_depend>jsk_rviz_plugins</test_depend>
+  <test_depend>rqt_service_caller</test_depend>
 
   <doc_depend>doxygen</doc_depend>
 </package>
