@@ -12,20 +12,24 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_srvs/Empty.h>
 
-#include <nmpc_ddp/DDPSolver.h>
+#include <nmpc_fmpc/FmpcSolver.h>
 
 namespace Eigen
 {
 using Vector1d = Eigen::Matrix<double, 1, 1>;
 }
 
-/** \brief DDP problem for cart-pole.
+using Variable = typename nmpc_fmpc::FmpcSolver<4, 1, 4>::Variable;
+
+using Status = typename nmpc_fmpc::FmpcSolver<4, 1, 4>::Status;
+
+/** \brief FMPC problem for cart-pole.
 
     State is [pos, theta, vel, omega]. Input is [force].
     Running cost is sum of the respective quadratic terms of state and input.
     Terminal cost is quadratic term of state.
  */
-class DDPProblemCartPole : public nmpc_ddp::DDPProblem<4, 1>
+class FmpcProblemCartPole : public nmpc_fmpc::FmpcProblem<4, 1, 4>
 {
 public:
   struct Param
@@ -52,11 +56,11 @@ public:
   };
 
 public:
-  DDPProblemCartPole(double dt,
-                     const std::function<double(double)> & ref_pos_func,
-                     const Param & param = Param(),
-                     const CostWeight & cost_weight = CostWeight())
-  : DDPProblem(dt), ref_pos_func_(ref_pos_func), param_(param), cost_weight_(cost_weight)
+  FmpcProblemCartPole(double dt,
+                      const std::function<double(double)> & ref_pos_func,
+                      const Param & param = Param(),
+                      const CostWeight & cost_weight = CostWeight())
+  : FmpcProblem(dt), ref_pos_func_(ref_pos_func), param_(param), cost_weight_(cost_weight)
   {
   }
 
@@ -108,6 +112,20 @@ public:
     return 0.5 * cost_weight_.terminal_x.dot((x - ref_x).cwiseAbs2());
   }
 
+  virtual IneqDimVector ineqConst(double t, const StateDimVector & x, const InputDimVector & u) const override
+  {
+    constexpr double u_max = 15.0; // [N]
+    constexpr double u_min = -1 * u_max;
+    constexpr double x_max = 10.0; // [m]
+    constexpr double x_min = -10.0; // [m]
+    IneqDimVector g;
+    g[0] = -1 * u[0] + u_min;
+    g[1] = u[0] - u_max;
+    g[2] = -1 * x[0] + x_min;
+    g[3] = x[0] - x_max;
+    return g;
+  }
+
   virtual void calcStateEqDeriv(double t,
                                 const StateDimVector & x,
                                 const InputDimVector & u,
@@ -153,18 +171,6 @@ public:
     state_eq_deriv_u[2] = 1 / denom;
     state_eq_deriv_u[3] = cos_theta / (l * denom);
     state_eq_deriv_u *= dt_;
-  }
-
-  virtual void calcStateEqDeriv(double t,
-                                const StateDimVector & x,
-                                const InputDimVector & u,
-                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
-  {
-    throw std::runtime_error("Second-order derivatives of state equation are not implemented.");
   }
 
   virtual void calcRunningCostDeriv(double t,
@@ -222,6 +228,21 @@ public:
     terminal_cost_deriv_xx = cost_weight_.terminal_x.asDiagonal();
   }
 
+  virtual void calcIneqConstDeriv(double t,
+                                  const StateDimVector & x,
+                                  const InputDimVector & u,
+                                  Eigen::Ref<IneqStateDimMatrix> ineq_const_deriv_x,
+                                  Eigen::Ref<IneqInputDimMatrix> ineq_const_deriv_u) const override
+  {
+    ineq_const_deriv_x.setZero();
+    ineq_const_deriv_x(2, 0) = -1;
+    ineq_const_deriv_x(3, 0) = 1;
+
+    ineq_const_deriv_u.setZero();
+    ineq_const_deriv_u(0, 0) = -1;
+    ineq_const_deriv_u(1, 0) = 1;
+  }
+
 public:
   static constexpr double g_ = 9.80665; // [m/s^2]
   std::function<double(double)> ref_pos_func_;
@@ -229,67 +250,65 @@ public:
   CostWeight cost_weight_;
 };
 
-class TestDDPCartPole
+class TestFmpcCartPole
 {
 public:
-  TestDDPCartPole()
+  TestFmpcCartPole()
   {
     // Setup ROS
     marker_arr_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("marker_arr", 1);
     constexpr double dist_force_small = 10; // [N]
     dist_left_small_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
-        "/dist_left_small", std::bind(&TestDDPCartPole::distCallback, this, std::placeholders::_1,
+        "/dist_left_small", std::bind(&TestFmpcCartPole::distCallback, this, std::placeholders::_1,
                                       std::placeholders::_2, -1 * dist_force_small));
     dist_right_small_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
-        "/dist_right_small", std::bind(&TestDDPCartPole::distCallback, this, std::placeholders::_1,
+        "/dist_right_small", std::bind(&TestFmpcCartPole::distCallback, this, std::placeholders::_1,
                                        std::placeholders::_2, dist_force_small));
     constexpr double dist_force_large = 30; // [N]
     dist_left_large_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
-        "/dist_left_large", std::bind(&TestDDPCartPole::distCallback, this, std::placeholders::_1,
+        "/dist_left_large", std::bind(&TestFmpcCartPole::distCallback, this, std::placeholders::_1,
                                       std::placeholders::_2, -1 * dist_force_large));
     dist_right_large_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
-        "/dist_right_large", std::bind(&TestDDPCartPole::distCallback, this, std::placeholders::_1,
+        "/dist_right_large", std::bind(&TestFmpcCartPole::distCallback, this, std::placeholders::_1,
                                        std::placeholders::_2, dist_force_large));
     target_pos_m5_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
         "/target_pos_m5",
-        std::bind(&TestDDPCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, -5.0));
+        std::bind(&TestFmpcCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, -5.0));
     target_pos_0_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
         "/target_pos_0",
-        std::bind(&TestDDPCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, 0.0));
+        std::bind(&TestFmpcCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, 0.0));
     target_pos_p5_srv_ = nh_.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>(
         "/target_pos_p5",
-        std::bind(&TestDDPCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, 5.0));
+        std::bind(&TestFmpcCartPole::targetPosCallback, this, std::placeholders::_1, std::placeholders::_2, 5.0));
 
     // Instantiate problem
     double horizon_dt = 0.01; // [sec]
     double horizon_duration = 2.0; // [sec]
     pnh_.getParam("control/horizon_dt", horizon_dt);
     pnh_.getParam("control/horizon_duration", horizon_duration);
-    ddp_problem_ = std::make_shared<DDPProblemCartPole>(
-        horizon_dt, std::bind(&TestDDPCartPole::getRefPos, this, std::placeholders::_1));
-    pnh_.getParam("param/cart_mass", ddp_problem_->param_.cart_mass);
-    pnh_.getParam("param/pole_mass", ddp_problem_->param_.pole_mass);
-    pnh_.getParam("param/pole_length", ddp_problem_->param_.pole_length);
+    fmpc_problem_ = std::make_shared<FmpcProblemCartPole>(
+        horizon_dt, std::bind(&TestFmpcCartPole::getRefPos, this, std::placeholders::_1));
+    pnh_.getParam("param/cart_mass", fmpc_problem_->param_.cart_mass);
+    pnh_.getParam("param/pole_mass", fmpc_problem_->param_.pole_mass);
+    pnh_.getParam("param/pole_length", fmpc_problem_->param_.pole_length);
     std::vector<double> param_vec;
     if(pnh_.getParam("cost/running_x", param_vec))
     {
-      ddp_problem_->cost_weight_.running_x = Eigen::Map<DDPProblemCartPole::StateDimVector>(param_vec.data());
+      fmpc_problem_->cost_weight_.running_x = Eigen::Map<FmpcProblemCartPole::StateDimVector>(param_vec.data());
     }
     if(pnh_.getParam("cost/running_u", param_vec))
     {
-      ddp_problem_->cost_weight_.running_u = Eigen::Map<DDPProblemCartPole::InputDimVector>(param_vec.data());
+      fmpc_problem_->cost_weight_.running_u = Eigen::Map<FmpcProblemCartPole::InputDimVector>(param_vec.data());
     }
     if(pnh_.getParam("cost/terminal_x", param_vec))
     {
-      ddp_problem_->cost_weight_.terminal_x = Eigen::Map<DDPProblemCartPole::StateDimVector>(param_vec.data());
+      fmpc_problem_->cost_weight_.terminal_x = Eigen::Map<FmpcProblemCartPole::StateDimVector>(param_vec.data());
     }
 
     // Instantiate solver
-    ddp_solver_ = std::make_shared<nmpc_ddp::DDPSolver<4, 1>>(ddp_problem_);
-    ddp_solver_->setInputLimitsFunc(std::bind(&TestDDPCartPole::getInputLimits, this, std::placeholders::_1));
-    ddp_solver_->config().with_input_constraint = true;
-    ddp_solver_->config().horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
-    ddp_solver_->config().max_iter = 3;
+    fmpc_solver_ = std::make_shared<nmpc_fmpc::FmpcSolver<4, 1, 4>>(fmpc_problem_);
+    fmpc_solver_->config().horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
+    fmpc_solver_->config().max_iter = 3;
   }
 
   void run()
@@ -302,12 +321,13 @@ public:
     current_t_ = 0;
     current_x_ << 0, M_PI, 0, 0;
     current_u_ << 0;
-    initial_u_list_.assign(ddp_solver_->config().horizon_steps, DDPProblemCartPole::InputDimVector::Zero());
+    variable_ = Variable(fmpc_solver_->config().horizon_steps);
+    variable_.reset(0.0, 0.0, 0.0, 1e0, 1e0);
     dist_t_ = 0;
     dist_u_ << 0;
 
     // Run simulation loop
-    std::string file_path = "/tmp/TestDDPCartPoleResult.txt";
+    std::string file_path = "/tmp/TestFmpcCartPoleResult.txt";
     std::ofstream ofs(file_path);
     ofs << "time pos theta vel omega force ref_pos disturbance" << std::endl;
     ros::Rate rate(1.0 / sim_dt);
@@ -315,7 +335,7 @@ public:
     pnh_.getParam("no_exit", no_exit);
     constexpr double end_t = 10.0; // [sec]
     ros::Timer mpc_timer = nh_.createTimer(ros::Duration(mpc_dt),
-                                           std::bind(&TestDDPCartPole::mpcTimerCallback, this, std::placeholders::_1));
+                                           std::bind(&TestFmpcCartPole::mpcTimerCallback, this, std::placeholders::_1));
     while(ros::ok() && (no_exit || current_t_ < end_t))
     {
       // Simulate one step
@@ -323,7 +343,7 @@ public:
       {
         dist_u_ << 0;
       }
-      current_x_ = ddp_problem_->stateEq(current_t_, current_x_, current_u_ + dist_u_, sim_dt);
+      current_x_ = fmpc_problem_->stateEq(current_t_, current_x_, current_u_ + dist_u_, sim_dt);
       current_t_ += sim_dt;
 
       // Check pos
@@ -372,27 +392,18 @@ protected:
     }
   }
 
-  std::array<Eigen::Vector1d, 2> getInputLimits(double t) const
-  {
-    std::array<Eigen::Vector1d, 2> limits;
-    limits[0].setConstant(-15.0);
-    limits[1].setConstant(15.0);
-    return limits;
-  };
-
   void mpcTimerCallback(const ros::TimerEvent & event)
   {
     // Solve
-    ddp_solver_->solve(current_t_, current_x_, initial_u_list_);
-    const auto & input_limits = getInputLimits(current_t_);
-    current_u_ = ddp_solver_->controlData().u_list[0].cwiseMax(input_limits[0]).cwiseMin(input_limits[1]);
-    initial_u_list_ = ddp_solver_->controlData().u_list;
+    fmpc_solver_->solve(current_t_, current_x_, variable_);
+    current_u_ = fmpc_solver_->variable().u_list[0];
+    variable_ = fmpc_solver_->variable();
 
     // Dump
     if(first_iter_)
     {
       first_iter_ = false;
-      ddp_solver_->dumpTraceDataList("/tmp/TestDDPCartPoleTraceData.txt");
+      fmpc_solver_->dumpTraceDataList("/tmp/TestFmpcCartPoleTraceData.txt");
     }
   }
 
@@ -457,8 +468,8 @@ protected:
     mass_marker.scale.x = 0.6;
     mass_marker.scale.y = 0.6;
     mass_marker.scale.z = 0.1;
-    mass_marker.pose.position.x = current_x_[0] + ddp_problem_->param_.pole_length * -1 * std::sin(current_x_[1]);
-    mass_marker.pose.position.y = ddp_problem_->param_.pole_length * std::cos(current_x_[1]);
+    mass_marker.pose.position.x = current_x_[0] + fmpc_problem_->param_.pole_length * -1 * std::sin(current_x_[1]);
+    mass_marker.pose.position.y = fmpc_problem_->param_.pole_length * std::cos(current_x_[1]);
     mass_marker.pose.position.z = 2.0;
     mass_marker.pose.orientation.w = 1.0;
     marker_arr_msg.markers.push_back(mass_marker);
@@ -560,16 +571,16 @@ protected:
   }
 
 protected:
-  std::shared_ptr<DDPProblemCartPole> ddp_problem_;
-  std::shared_ptr<nmpc_ddp::DDPSolver<4, 1>> ddp_solver_;
+  std::shared_ptr<FmpcProblemCartPole> fmpc_problem_;
+  std::shared_ptr<nmpc_fmpc::FmpcSolver<4, 1, 4>> fmpc_solver_;
 
   double current_t_ = 0; // [sec]
-  DDPProblemCartPole::StateDimVector current_x_ = DDPProblemCartPole::StateDimVector::Zero();
-  DDPProblemCartPole::InputDimVector current_u_ = DDPProblemCartPole::InputDimVector::Zero();
-  std::vector<DDPProblemCartPole::InputDimVector> initial_u_list_;
+  FmpcProblemCartPole::StateDimVector current_x_ = FmpcProblemCartPole::StateDimVector::Zero();
+  FmpcProblemCartPole::InputDimVector current_u_ = FmpcProblemCartPole::InputDimVector::Zero();
+  Variable variable_;
 
   double dist_t_ = 0;
-  DDPProblemCartPole::InputDimVector dist_u_ = DDPProblemCartPole::InputDimVector::Zero();
+  FmpcProblemCartPole::InputDimVector dist_u_ = FmpcProblemCartPole::InputDimVector::Zero();
   double target_pos_ = std::numeric_limits<double>::quiet_NaN();
 
   bool first_iter_ = true;
@@ -586,9 +597,9 @@ protected:
   ros::ServiceServer target_pos_p5_srv_;
 };
 
-TEST(TestDDPCartPole, SolveMpc)
+TEST(TestFmpcCartPole, SolveMpc)
 {
-  TestDDPCartPole test;
+  TestFmpcCartPole test;
 
   // Sleep to wait for Rviz to launch
   ros::Duration(1.0).sleep();
@@ -596,49 +607,77 @@ TEST(TestDDPCartPole, SolveMpc)
   test.run();
 }
 
-TEST(TestDDPCartPole, CheckDerivative)
+TEST(TestFmpcCartPole, CheckDerivative)
 {
   double dt = 0.01; // [sec]
   std::function<double(double)> ref_pos_func = [&](double t) {
     return 0.0; // [m]
   };
-  auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
+  auto fmpc_problem = std::make_shared<FmpcProblemCartPole>(dt, ref_pos_func);
 
   double t = 0;
-  DDPProblemCartPole::StateDimVector x;
+  FmpcProblemCartPole::StateDimVector x;
   x << 1.0, -2.0, 3.0, -4.0;
-  DDPProblemCartPole::InputDimVector u;
+  FmpcProblemCartPole::InputDimVector u;
   u << 10.0;
-
-  DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_analytical;
-  DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_analytical;
-  ddp_problem->calcStateEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
-
-  DDPProblemCartPole::StateStateDimMatrix state_eq_deriv_x_numerical;
-  DDPProblemCartPole::StateInputDimMatrix state_eq_deriv_u_numerical;
   constexpr double deriv_eps = 1e-6;
-  for(int i = 0; i < ddp_problem->stateDim(); i++)
+
   {
-    state_eq_deriv_x_numerical.col(i) =
-        (ddp_problem->stateEq(t, x + deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u)
-         - ddp_problem->stateEq(t, x - deriv_eps * DDPProblemCartPole::StateDimVector::Unit(i), u))
-        / (2 * deriv_eps);
-  }
-  for(int i = 0; i < ddp_problem->inputDim(); i++)
-  {
-    state_eq_deriv_u_numerical.col(i) =
-        (ddp_problem->stateEq(t, x, u + deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i))
-         - ddp_problem->stateEq(t, x, u - deriv_eps * DDPProblemCartPole::InputDimVector::Unit(i)))
-        / (2 * deriv_eps);
+    FmpcProblemCartPole::StateStateDimMatrix state_eq_deriv_x_analytical;
+    FmpcProblemCartPole::StateInputDimMatrix state_eq_deriv_u_analytical;
+    fmpc_problem->calcStateEqDeriv(t, x, u, state_eq_deriv_x_analytical, state_eq_deriv_u_analytical);
+
+    FmpcProblemCartPole::StateStateDimMatrix state_eq_deriv_x_numerical;
+    FmpcProblemCartPole::StateInputDimMatrix state_eq_deriv_u_numerical;
+    for(int i = 0; i < fmpc_problem->stateDim(); i++)
+    {
+      state_eq_deriv_x_numerical.col(i) =
+          (fmpc_problem->stateEq(t, x + deriv_eps * FmpcProblemCartPole::StateDimVector::Unit(i), u)
+           - fmpc_problem->stateEq(t, x - deriv_eps * FmpcProblemCartPole::StateDimVector::Unit(i), u))
+          / (2 * deriv_eps);
+    }
+    for(int i = 0; i < fmpc_problem->inputDim(); i++)
+    {
+      state_eq_deriv_u_numerical.col(i) =
+          (fmpc_problem->stateEq(t, x, u + deriv_eps * FmpcProblemCartPole::InputDimVector::Unit(i))
+           - fmpc_problem->stateEq(t, x, u - deriv_eps * FmpcProblemCartPole::InputDimVector::Unit(i)))
+          / (2 * deriv_eps);
+    }
+
+    EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
+    EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
   }
 
-  EXPECT_LT((state_eq_deriv_x_analytical - state_eq_deriv_x_numerical).norm(), 1e-6);
-  EXPECT_LT((state_eq_deriv_u_analytical - state_eq_deriv_u_numerical).norm(), 1e-6);
+  {
+    FmpcProblemCartPole::IneqStateDimMatrix ineq_const_deriv_x_analytical;
+    FmpcProblemCartPole::IneqInputDimMatrix ineq_const_deriv_u_analytical;
+    fmpc_problem->calcIneqConstDeriv(t, x, u, ineq_const_deriv_x_analytical, ineq_const_deriv_u_analytical);
+
+    FmpcProblemCartPole::IneqStateDimMatrix ineq_const_deriv_x_numerical;
+    FmpcProblemCartPole::IneqInputDimMatrix ineq_const_deriv_u_numerical;
+    for(int i = 0; i < fmpc_problem->stateDim(); i++)
+    {
+      ineq_const_deriv_x_numerical.col(i) =
+          (fmpc_problem->ineqConst(t, x + deriv_eps * FmpcProblemCartPole::StateDimVector::Unit(i), u)
+           - fmpc_problem->ineqConst(t, x - deriv_eps * FmpcProblemCartPole::StateDimVector::Unit(i), u))
+          / (2 * deriv_eps);
+    }
+    for(int i = 0; i < fmpc_problem->inputDim(); i++)
+    {
+      ineq_const_deriv_u_numerical.col(i) =
+          (fmpc_problem->ineqConst(t, x, u + deriv_eps * FmpcProblemCartPole::InputDimVector::Unit(i))
+           - fmpc_problem->ineqConst(t, x, u - deriv_eps * FmpcProblemCartPole::InputDimVector::Unit(i)))
+          / (2 * deriv_eps);
+    }
+
+    EXPECT_LT((ineq_const_deriv_x_analytical - ineq_const_deriv_x_numerical).norm(), 1e-6);
+    EXPECT_LT((ineq_const_deriv_u_analytical - ineq_const_deriv_u_numerical).norm(), 1e-6);
+  }
 }
 
 int main(int argc, char ** argv)
 {
-  ros::init(argc, argv, "test_ddp_cart_pole");
+  ros::init(argc, argv, "test_fmpc_cart_pole");
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

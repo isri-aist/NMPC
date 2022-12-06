@@ -1,0 +1,33 @@
+<launch>
+  <arg name="no_exit" default="false" />
+
+  <arg name="time_limit" value="500.0" unless="$(arg no_exit)" />
+  <arg name="time_limit" value="6000.0" if="$(arg no_exit)" />
+
+  <test test-name="test_fmpc_cart_pole"
+        pkg="nmpc_fmpc" type="TestFmpcCartPole" name="test_fmpc_cart_pole"
+        time-limit="$(arg time_limit)">
+    <rosparam subst_value="true">
+      no_exit: $(arg no_exit)
+      control:
+        horizon_dt: 0.01 # [sec]
+        horizon_duration: 2.0 # [sec]
+        mpc_dt: 0.004 # [sec]
+        sim_dt: 0.002 # [sec]
+      param:
+        cart_mass: 1.0
+        pole_mass: 0.5
+        pole_length: 2.0
+      cost:
+        running_x: [0.1, 1.0, 0.01, 0.1]
+        running_u: [0.01]
+        terminal_x: [0.1, 1.0, 0.01, 0.1]
+    </rosparam>
+  </test>
+
+  <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find nmpc_fmpc)/tests/rviz/TestFmpcCartPole.rviz" />
+
+  <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui"
+        args="--perspective-file $(find nmpc_fmpc)/tests/rqt/TestFmpcCartPole.perspective" />
+</launch>
