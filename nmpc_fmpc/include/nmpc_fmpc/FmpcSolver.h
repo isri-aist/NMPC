@@ -68,6 +68,9 @@ public:
 
     //! Whether to check NaN
     bool check_nan = true;
+
+    //! Whether to break if LLT decomposition fails
+    bool break_if_llt_fails = false;
   };
 
   /*! \brief Result status. */
