@@ -1,3 +1,4 @@
 <map id="nmpc_cgmres::RungeKuttaOdeSolver" name="nmpc_cgmres::RungeKuttaOdeSolver">
-<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation. " alt="" coords="23,5,211,32"/>
+<area shape="rect" id="node1" title="Class to solve Ordinaly Diferential Equation by Runge&#45;Kutta method." alt="" coords="5,80,228,121"/>
+<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation." alt="" coords="23,5,211,32"/>
 </map>

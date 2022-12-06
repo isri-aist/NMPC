@@ -1,3 +1,4 @@
 <map id="nmpc_cgmres::EulerOdeSolver" name="nmpc_cgmres::EulerOdeSolver">
-<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation. " alt="" coords="22,5,210,32"/>
+<area shape="rect" id="node1" title="Class to solve Ordinaly Diferential Equation by Euler method." alt="" coords="5,80,227,107"/>
+<area shape="rect" id="node2" href="$classnmpc__cgmres_1_1OdeSolver.html" title="Virtual class to solve Ordinaly Diferential Equation." alt="" coords="22,5,210,32"/>
 </map>

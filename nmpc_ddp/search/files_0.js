@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['ddpproblem_2eh',['DDPProblem.h',['../DDPProblem_8h.html',1,'']]],
-  ['ddpsolver_2eh',['DDPSolver.h',['../DDPSolver_8h.html',1,'']]],
-  ['ddpsolver_2ehpp',['DDPSolver.hpp',['../DDPSolver_8hpp.html',1,'']]]
+  ['boxqp_2eh_130',['BoxQP.h',['../BoxQP_8h.html',1,'']]]
 ];

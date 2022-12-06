@@ -1,0 +1,4 @@
+<map id="nmpc_ddp::BoxQP&lt; VarDim &gt;" name="nmpc_ddp::BoxQP&lt; VarDim &gt;">
+<area shape="rect" id="node1" title="Solver for quadratic programming problems with box constraints (i.e., only upper and lower bounds)." alt="" coords="5,109,224,136"/>
+<area shape="rect" id="node2" href="$structnmpc__ddp_1_1BoxQP_1_1Configuration.html" title="Configuration." alt="" coords="13,5,216,47"/>
+</map>
