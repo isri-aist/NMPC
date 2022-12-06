@@ -27,3 +27,16 @@ System is non-linear and time-invariant. Constraints are imposed on the state an
 $ rosrun nmpc_fmpc TestFmpcOscillator
 ```
 ![TestFmpcOscillator](doc/images/TestFmpcOscillator.png)
+
+
+### [Cart-pole](tests/src/TestFmpcCartPole.cpp)
+Controlling cart-pole (also known as inverted pendulum).
+System is non-linear.
+This is an example of a realistic setup where the control and simulation have different time periods.
+```bash
+# 10-second simulation
+$ rostest nmpc_fmpc TestFmpcCartPole.test --text
+# Endless simulation
+$ rostest nmpc_fmpc TestFmpcCartPole.test no_exit:=true --text
+```
+![TestFmpcCartPole](doc/images/TestFmpcCartPole.png)
