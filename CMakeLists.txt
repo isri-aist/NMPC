@@ -55,7 +55,7 @@ function(add_nmpc_project NAME)
       -DBUILD_TESTING=${BUILD_TESTING}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
       -DNMPC_STANDALONE=ON
-      INSTALL_COMMAND ${SUDO_CMD}
+    INSTALL_COMMAND ${SUDO_CMD}
     TEST_COMMAND ctest -C $<CONFIG>
     INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --target install --config $<CONFIG>
     USES_TERMINAL_INSTALL TRUE
@@ -66,9 +66,8 @@ function(add_nmpc_project NAME)
     DEPENDERS configure
     DEPENDS ${SOURCES}
   )
+  install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>)")
 endfunction()
 add_nmpc_project(nmpc_cgmres)
 add_nmpc_project(nmpc_ddp)
 add_nmpc_project(nmpc_fmpc DEPENDS nmpc_ddp)
-
-install(CODE "message(\"Installation done\")")
