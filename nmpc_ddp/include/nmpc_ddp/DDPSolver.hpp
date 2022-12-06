@@ -6,6 +6,15 @@
 
 #include <nmpc_ddp/BoxQP.h>
 
+namespace
+{
+template<class Clock>
+double calcDuration(const std::chrono::time_point<Clock> & start_time, const std::chrono::time_point<Clock> & end_time)
+{
+  return 1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time).count();
+}
+} // namespace
+
 namespace nmpc_ddp
 {
 template<int StateDim, int InputDim>
@@ -100,8 +109,7 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
 
   auto setup_time = std::chrono::system_clock::now();
-  computation_duration_.setup =
-      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(setup_time - start_time).count();
+  computation_duration_.setup = calcDuration(start_time, setup_time);
 
   // Optimization loop
   int retval = 0;
@@ -120,19 +128,13 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   }
 
   auto end_time = std::chrono::system_clock::now();
-  computation_duration_.opt =
-      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - setup_time).count();
-  computation_duration_.solve =
-      1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time).count();
+  computation_duration_.opt = calcDuration(setup_time, end_time);
+  computation_duration_.solve = calcDuration(start_time, end_time);
 
   if(config_.print_level >= 3)
   {
-    double duration_setup =
-        1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(setup_time - start_time).count();
-    double duration_opt =
-        1e3 * std::chrono::duration_cast<std::chrono::duration<double>>(end_time - setup_time).count();
-    std::cout << "[DDP] Setup duration: " << duration_setup << " [ms], optimization duration: " << duration_opt
-              << " [ms]." << std::endl;
+    std::cout << "[DDP] Setup duration: " << computation_duration_.setup
+              << " [ms], optimization duration: " << computation_duration_.opt << " [ms]." << std::endl;
   }
 
   return retval == 1;
@@ -177,15 +179,12 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     double terminal_t = current_t_ + config_.horizon_steps * problem_->dt();
     problem_->calcTerminalCostDeriv(terminal_t, control_data_.x_list[config_.horizon_steps], last_Vx_, last_Vxx_);
 
-    double duration_derivative =
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
-              .count();
+    double duration_derivative = calcDuration(start_time, std::chrono::system_clock::now());
     trace_data.duration_derivative = duration_derivative;
     computation_duration_.derivative += duration_derivative;
   }
 
-  // STEP 2: backward pass, compute optimal control law and cost-to-go
+  // Step 2: backward pass, compute optimal control law and cost-to-go
   {
     auto start_time = std::chrono::system_clock::now();
 
@@ -209,10 +208,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
       }
     }
 
-    double duration_backward =
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
-              .count();
+    double duration_backward = calcDuration(start_time, std::chrono::system_clock::now());
     trace_data.duration_backward = duration_backward;
     computation_duration_.backward += duration_backward;
   }
@@ -234,7 +230,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     return 1; // Terminate
   }
 
-  // STEP 3: forward pass, line-search to find new control sequence, trajectory, cost
+  // Step 3: forward pass, line-search to find new control sequence, trajectory, cost
   bool forward_pass_success = false;
   double cost_update_actual = 0;
   {
@@ -272,10 +268,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     trace_data.cost_update_expected = cost_update_expected;
     trace_data.cost_update_ratio = cost_update_ratio;
 
-    double duration_forward =
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time)
-              .count();
+    double duration_forward = calcDuration(start_time, std::chrono::system_clock::now());
     trace_data.duration_forward = duration_forward;
     computation_duration_.forward += duration_forward;
   }
@@ -284,7 +277,7 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
     std::cout << "[DDP] Forward pass failed." << std::endl;
   }
 
-  // STEP 4: accept step (or not)
+  // Step 4: accept step (or not)
   int retval = 0; // Continue
   if(forward_pass_success)
   {
@@ -353,6 +346,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
   StateDimVector Vx = last_Vx_;
   StateStateDimMatrix Vxx = last_Vxx_;
   StateStateDimMatrix Vxx_reg;
+  StateStateDimMatrix Vxx_symmetric;
 
   InputDimVector Qu;
   StateDimVector Qx;
@@ -419,10 +413,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       // Qxx += Vx * Fxx;
     }
 
-    computation_duration_.Q +=
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_Q)
-              .count();
+    computation_duration_.Q += calcDuration(start_time_Q, std::chrono::system_clock::now());
 
     // Calculate regularization
     auto start_time_reg = std::chrono::system_clock::now();
@@ -449,10 +440,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       Quu_F.diagonal().array() += lambda_;
     }
 
-    computation_duration_.reg +=
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_reg)
-              .count();
+    computation_duration_.reg += calcDuration(start_time_reg, std::chrono::system_clock::now());
 
     // Calculate gains
     auto start_time_gain = std::chrono::system_clock::now();
@@ -528,16 +516,14 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
       K.setZero(0, problem_->stateDim());
     }
 
-    computation_duration_.gain +=
-        1e3
-        * std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::system_clock::now() - start_time_gain)
-              .count();
+    computation_duration_.gain += calcDuration(start_time_gain, std::chrono::system_clock::now());
 
     // Update cost-to-go approximation
     dV_ += Eigen::Vector2d(k.dot(Qu), 0.5 * k.dot(Quu * k));
     Vx.noalias() = Qx + K.transpose() * Quu * k + K.transpose() * Qu + Qux.transpose() * k;
     Vxx.noalias() = Qxx + K.transpose() * Quu * K + K.transpose() * Qux + Qux.transpose() * K;
-    Vxx = 0.5 * (Vxx + Vxx.transpose());
+    Vxx_symmetric = 0.5 * (Vxx + Vxx.transpose());
+    Vxx = Vxx_symmetric;
 
     // Save gains
     k_list_[i] = k;

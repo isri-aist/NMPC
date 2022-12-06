@@ -1,0 +1,186 @@
+{
+  "keys": {},
+  "groups": {
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "type": "repr",
+          "repr": "{u'rqt_service_caller/ServiceCaller': [1]}"
+        }
+      },
+      "groups": {
+        "plugin__rqt_ez_publisher__EzPublisher__1": {
+          "keys": {},
+          "groups": {
+            "plugin": {
+              "keys": {
+                "texts": {
+                  "type": "repr",
+                  "repr": "[u'/goal/header/frame_id', u'/goal/pose/position/x', u'/goal/pose/position/y', u'/goal/pose/position/z', u'/goal/pose/orientation']"
+                },
+                "publish_interval": {
+                  "type": "repr",
+                  "repr": "u'100'"
+                },
+                "configurable": {
+                  "type": "repr",
+                  "repr": "u'true'"
+                }
+              },
+              "groups": {
+                "goal": {
+                  "keys": {},
+                  "groups": {
+                    "header": {
+                      "keys": {
+                        "frame_id_is_repeat": {
+                          "type": "repr",
+                          "repr": "u'false'"
+                        },
+                        "frame_id_range": {
+                          "type": "repr",
+                          "repr": "(0, 0)"
+                        }
+                      },
+                      "groups": {}
+                    },
+                    "pose": {
+                      "keys": {
+                        "orientation_is_repeat": {
+                          "type": "repr",
+                          "repr": "u'false'"
+                        },
+                        "orientation_range": {
+                          "type": "repr",
+                          "repr": "(-3.14, 3.14)"
+                        }
+                      },
+                      "groups": {
+                        "position": {
+                          "keys": {
+                            "x_range": {
+                              "type": "repr",
+                              "repr": "(-1.0, 1.0)"
+                            },
+                            "z_is_repeat": {
+                              "type": "repr",
+                              "repr": "u'false'"
+                            },
+                            "y_is_repeat": {
+                              "type": "repr",
+                              "repr": "u'false'"
+                            },
+                            "x_is_repeat": {
+                              "type": "repr",
+                              "repr": "u'false'"
+                            },
+                            "y_range": {
+                              "type": "repr",
+                              "repr": "(-1.0, 1.0)"
+                            },
+                            "z_range": {
+                              "type": "repr",
+                              "repr": "(-1.0, 1.0)"
+                            }
+                          },
+                          "groups": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "plugin__rqt_service_caller__ServiceCaller__1": {
+          "keys": {},
+          "groups": {
+            "dock_widget__ServiceCallerWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr",
+                  "repr": "True"
+                },
+                "parent": {
+                  "type": "repr",
+                  "repr": "None"
+                },
+                "dock_widget_title": {
+                  "type": "repr",
+                  "repr": "u'Service Caller'"
+                }
+              },
+              "groups": {}
+            },
+            "plugin": {
+              "keys": {
+                "splitter_orientation": {
+                  "type": "repr",
+                  "repr": "2"
+                }
+              },
+              "groups": {}
+            }
+          }
+        },
+        "plugin__rqt_publisher__Publisher__1": {
+          "keys": {},
+          "groups": {
+            "dock_widget__PublisherWidget": {
+              "keys": {
+                "dockable": {
+                  "type": "repr",
+                  "repr": "u'true'"
+                },
+                "parent": {
+                  "type": "repr",
+                  "repr": "None"
+                },
+                "dock_widget_title": {
+                  "type": "repr",
+                  "repr": "u'Message Publisher'"
+                }
+              },
+              "groups": {}
+            },
+            "plugin": {
+              "keys": {
+                "publishers": {
+                  "type": "repr",
+                  "repr": "u\"[{'type_name': 'std_msgs/Float64', 'topic_name': '/test', 'enabled': False, 'rate': 1.0, 'expressions': {u'/test/data': '10'}, 'publisher_id': 1, 'counter': 0}]\""
+                }
+              },
+              "groups": {}
+            }
+          }
+        }
+      }
+    },
+    "mainwindow": {
+      "keys": {
+        "geometry": {
+          "type": "repr(QByteArray.hex)",
+          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00020000000000a00000032e0000056a0000054e000000a00000035c0000056a0000054e00000000000000000a00')",
+          "pretty-print": "       . j N   \\ j N     "
+        },
+        "state": {
+          "type": "repr(QByteArray.hex)",
+          "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd0000000200000002000004cb000001d2fc0100000001fb00000072007200710074005f0073006500720076006900630065005f00630061006c006c00650072005f005f005300650072007600690063006500430061006c006c00650072005f005f0031005f005f005300650072007600690063006500430061006c006c006500720057006900640067006500740100000000000004cb000002b700ffffff00000003000004cb00000198fc0100000002fb0000006a007200710074005f0065007a005f007000750062006c00690073006800650072005f005f0045007a005000750062006c00690073006800650072005f005f0031005f005f0045007a005000750062006c006900730068006500720050006c007500670069006e005500690100000000000004cb0000000000000000fb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0031005f005f005000750062006c006900730068006500720057006900640067006500740100000000000004cb0000000000000000000004cb0000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')",
+          "pretty-print": "                 rrqt_service_caller__ServiceCaller__1__ServiceCallerWidget                   jrqt_ez_publisher__EzPublisher__1__EzPublisherPluginUi          Xrqt_publisher__Publisher__1__PublisherWidget                            6MinimizedDockWidgetsToolbar        "
+        }
+      },
+      "groups": {
+        "toolbar_areas": {
+          "keys": {
+            "MinimizedDockWidgetsToolbar": {
+              "type": "repr",
+              "repr": "8"
+            }
+          },
+          "groups": {}
+        }
+      }
+    }
+  }
+}
