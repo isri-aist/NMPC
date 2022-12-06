@@ -107,7 +107,7 @@ jobs:
           git remote set-url origin "https://mmurooka:${{ secrets.CI_TOKEN }}@github.com/isri-aist/NMPC"
           git fetch --depth=1 origin gh-pages:gh-pages
           git checkout --quiet gh-pages
-          rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/
+          rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/ cmake/
           cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_ddp/doc/html/ nmpc_ddp
           cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_fmpc/doc/html/ nmpc_fmpc
           cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_cgmres/doc/html/ nmpc_cgmres
