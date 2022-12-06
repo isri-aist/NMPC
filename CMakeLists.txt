@@ -17,9 +17,33 @@ ENDIF()
 include(CTest)
 enable_testing()
 
+# Check if the install prefix is writable by the current user and set SUDO_CMD accordingly
+set(SUDO_CMD)
+if(NOT EXISTS "${CMAKE_INSTALL_PREFIX}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX} OUTPUT_QUIET ERROR_QUIET)
+endif()
+set(TEST_FILE "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.writable")
+# Same as file(TOUCH ...) but ignores failure
+execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${TEST_FILE} OUTPUT_QUIET ERROR_QUIET)
+if(NOT EXISTS ${TEST_FILE})
+  find_program(SUDO_CMD sudo)
+  if(NOT SUDO_CMD)
+    message(FATAL_ERROR "sudo is not installed on this system and the install prefix (${CMAKE_INSTALL_PREFIX}) is not writable by the current user.
+You can try the following solutions:
+    - Choose a different installation prefix;
+    - Install sudo;
+    - Fix the permissions and try again;")
+  endif()
+  message("-- Use sudo for install: ${SUDO_CMD}")
+  set(SUDO_CMD ${SUDO_CMD} -E)
+else()
+  file(REMOVE ${TEST_FILE})
+endif()
+
 include(ExternalProject)
 
 function(add_nmpc_project NAME)
+  file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${NAME}/*")
   ExternalProject_Add(${NAME}
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${NAME}"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
@@ -31,14 +55,20 @@ function(add_nmpc_project NAME)
       -DBUILD_TESTING=${BUILD_TESTING}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
       -DNMPC_STANDALONE=ON
-    INSTALL_COMMAND ""
-    TEST_COMMAND ""
+      INSTALL_COMMAND ${SUDO_CMD}
+    TEST_COMMAND ctest -C $<CONFIG>
+    INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --target install --config $<CONFIG>
+    USES_TERMINAL_INSTALL TRUE
+    STEP_TARGETS configure install
+    ${ARGN}
   )
-  add_test(NAME test-${NAME}
-    COMMAND ctest -C $<CONFIG>
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}/"
+  ExternalProject_Add_Step(${NAME} check-sources
+    DEPENDERS configure
+    DEPENDS ${SOURCES}
   )
-  install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>)")
 endfunction()
 add_nmpc_project(nmpc_cgmres)
 add_nmpc_project(nmpc_ddp)
+add_nmpc_project(nmpc_fmpc DEPENDS nmpc_ddp)
+
+install(CODE "message(\"Installation done\")")
