@@ -1,0 +1,6 @@
+<map id="nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;" name="nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;">
+<area shape="rect" id="node1" title="FMPC solver." alt="" coords="452,85,635,141"/>
+<area shape="rect" id="node2" href="$structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html" title="Optimization variables." alt="" coords="36,5,219,61"/>
+<area shape="rect" id="node3" href="$structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html" title="Data of computation duration." alt="" coords="5,85,249,141"/>
+<area shape="rect" id="node4" href="$structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html" title="Configuration." alt="" coords="32,165,223,221"/>
+</map>
