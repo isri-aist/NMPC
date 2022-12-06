@@ -308,7 +308,7 @@ public:
     // Instantiate solver
     fmpc_solver_ = std::make_shared<nmpc_fmpc::FmpcSolver<4, 1, 4>>(fmpc_problem_);
     fmpc_solver_->config().horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
-    fmpc_solver_->config().max_iter = 10;
+    fmpc_solver_->config().max_iter = 5;
   }
 
   void run()
