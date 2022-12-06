@@ -306,6 +306,12 @@ public:
     return variable_;
   }
 
+  /** \brief Const accessor to sequence of coefficients of linearized KKT condition. */
+  inline const std::vector<Coefficient> & coeffList() const
+  {
+    return coeff_list_;
+  }
+
   /** \brief Const accessor to trace data list. */
   inline const std::vector<TraceData> & traceDataList() const
   {

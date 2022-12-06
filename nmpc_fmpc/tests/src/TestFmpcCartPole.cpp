@@ -116,8 +116,8 @@ public:
   {
     constexpr double u_max = 15.0; // [N]
     constexpr double u_min = -1 * u_max;
-    constexpr double x_max = 10.0; // [m]
-    constexpr double x_min = -10.0; // [m]
+    constexpr double x_max = 20.0; // [m]
+    constexpr double x_min = -20.0; // [m]
     IneqDimVector g;
     g[0] = -1 * u[0] + u_min;
     g[1] = u[0] - u_max;
@@ -308,7 +308,7 @@ public:
     // Instantiate solver
     fmpc_solver_ = std::make_shared<nmpc_fmpc::FmpcSolver<4, 1, 4>>(fmpc_problem_);
     fmpc_solver_->config().horizon_steps = static_cast<int>(horizon_duration / horizon_dt);
-    fmpc_solver_->config().max_iter = 3;
+    fmpc_solver_->config().max_iter = 10;
   }
 
   void run()
@@ -343,7 +343,12 @@ public:
       {
         dist_u_ << 0;
       }
-      current_x_ = fmpc_problem_->stateEq(current_t_, current_x_, current_u_ + dist_u_, sim_dt);
+      FmpcProblemCartPole::InputDimVector u = current_u_;
+      if(!first_iter_)
+      {
+        u += fmpc_solver_->coeffList().front().K * (fmpc_solver_->variable().x_list[0] - current_x_);
+      }
+      current_x_ = fmpc_problem_->stateEq(current_t_, current_x_, u + dist_u_, sim_dt);
       current_t_ += sim_dt;
 
       // Check pos

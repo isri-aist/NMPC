@@ -343,7 +343,8 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
     // The following equations follow (19.20) in "Nocedal, Wright. Numerical optimization" but does not work
     // double xi = s_nu_min / s_nu_ave;
     // double sigma = 0.1 * std::pow(std::min(0.05 * (1.0 - xi) / xi, 2.0), 3);
-    barrier_eps_ = sigma * s_nu_ave;
+    constexpr double barrier_eps_min = 1e-8;
+    barrier_eps_ = std::max(sigma * s_nu_ave, barrier_eps_min);
   }
 
   // Step 1: calculate coefficients of linearized KKT condition
