@@ -699,6 +699,8 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
     computation_duration_.fraction += calcDuration(start_time_fraction, std::chrono::system_clock::now());
   }
 
+  // \todo Add line search to avoid divergence.
+
   if(config_.print_level >= 3)
   {
     std::cout << "[FMPC/update] barrier_eps: " << barrier_eps_ << ", alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu
