@@ -346,6 +346,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
   StateDimVector Vx = last_Vx_;
   StateStateDimMatrix Vxx = last_Vxx_;
   StateStateDimMatrix Vxx_reg;
+  StateStateDimMatrix Vxx_symmetric;
 
   InputDimVector Qu;
   StateDimVector Qx;
@@ -521,7 +522,8 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     dV_ += Eigen::Vector2d(k.dot(Qu), 0.5 * k.dot(Quu * k));
     Vx.noalias() = Qx + K.transpose() * Quu * k + K.transpose() * Qu + Qux.transpose() * k;
     Vxx.noalias() = Qxx + K.transpose() * Quu * K + K.transpose() * Qux + Qux.transpose() * K;
-    Vxx = 0.5 * (Vxx + Vxx.transpose());
+    Vxx_symmetric = 0.5 * (Vxx + Vxx.transpose());
+    Vxx = Vxx_symmetric;
 
     // Save gains
     k_list_[i] = k;

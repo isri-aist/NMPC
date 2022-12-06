@@ -487,6 +487,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
   InputStateDimMatrix K;
   StateDimVector s;
   StateStateDimMatrix P;
+  StateStateDimMatrix P_symmetric;
 
   {
     auto & terminal_coeff = coeff_list_[config_.horizon_steps];
@@ -571,7 +572,9 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
 
       s = A.transpose() * (s - P * x_bar) - Lx_tilde - H * k; // (2.35a)
       P.noalias() = F - K.transpose() * G * K; // (2.35a)
-      P = 0.5 * (P + P.transpose()); // Enforce symmetric
+      P_symmetric = 0.5 * (P + P.transpose()); // Enforce symmetric
+      // Assigning directly to P without using the intermediate variable P_symmetric yields incorrect results!
+      P = P_symmetric;
 
       computation_duration_.gain_post += calcDuration(start_time_gain_post, std::chrono::system_clock::now());
     }
