@@ -1,4 +1,4 @@
-name: CI of NMPC
+name: CI of NMPC (standalone)
 
 on:
   push:

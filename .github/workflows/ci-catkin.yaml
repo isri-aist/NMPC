@@ -1,4 +1,4 @@
-name: CI of NMPC with catkin
+name: CI of NMPC (catkin)
 
 on:
   push:
