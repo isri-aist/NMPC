@@ -344,7 +344,8 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
     // double xi = s_nu_min / s_nu_ave;
     // double sigma = 0.1 * std::pow(std::min(0.05 * (1.0 - xi) / xi, 2.0), 3);
     constexpr double barrier_eps_min = 1e-8;
-    barrier_eps_ = std::max(sigma * s_nu_ave, barrier_eps_min);
+    constexpr double barrier_eps_max = 1e6;
+    barrier_eps_ = std::clamp(sigma * s_nu_ave, barrier_eps_min, barrier_eps_max);
   }
 
   // Step 1: calculate coefficients of linearized KKT condition
