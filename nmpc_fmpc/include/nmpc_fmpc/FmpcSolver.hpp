@@ -120,6 +120,7 @@ FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim,
 template<int StateDim, int InputDim, int IneqDim>
 FmpcSolver<StateDim, InputDim, IneqDim>::Coefficient::Coefficient(int state_dim)
 {
+  Lx.resize(state_dim);
   Lxx.resize(state_dim, state_dim);
   Lx_bar.resize(state_dim);
 
@@ -328,6 +329,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
 
   // Update barrier parameter
   {
+    // (19.19) in "Nocedal, Wright. Numerical optimization"
     double s_nu_ave = 0.0;
     double s_nu_min = std::numeric_limits<double>::max();
     int total_ineq_dim = 0;
@@ -353,7 +355,6 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
     auto start_time = std::chrono::system_clock::now();
 
     double dt = problem_->dt();
-
     for(int i = 0; i < config_.horizon_steps; i++)
     {
       auto & coeff = coeff_list_[i];
@@ -381,8 +382,8 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
       double terminal_t = current_t_ + config_.horizon_steps * dt;
       const StateDimVector & terminal_x = variable_.x_list[config_.horizon_steps];
       const StateDimVector & terminal_lambda = variable_.lambda_list[config_.horizon_steps];
-      problem_->calcTerminalCostDeriv(terminal_t, terminal_x, terminal_coeff.Lx_bar, terminal_coeff.Lxx);
-      terminal_coeff.Lx_bar -= terminal_lambda; // (2.25a)
+      problem_->calcTerminalCostDeriv(terminal_t, terminal_x, terminal_coeff.Lx, terminal_coeff.Lxx);
+      terminal_coeff.Lx_bar = terminal_coeff.Lx - terminal_lambda; // (2.25a)
     }
 
     double duration = calcDuration(start_time, std::chrono::system_clock::now());
