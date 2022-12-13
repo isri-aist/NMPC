@@ -66,6 +66,11 @@ function(add_nmpc_project NAME)
     DEPENDERS configure
     DEPENDS ${SOURCES}
   )
+  add_test(
+    NAME test-${NAME}
+    COMMAND ctest -C $<CONFIG>
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+  )
   install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>)")
 endfunction()
 add_nmpc_project(nmpc_cgmres)
