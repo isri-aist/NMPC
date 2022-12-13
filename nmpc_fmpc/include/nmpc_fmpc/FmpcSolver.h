@@ -50,6 +50,9 @@ public:
   /** \brief Type of matrix of inequality x input dimension. */
   using IneqInputDimMatrix = typename FmpcProblem<StateDim, InputDim, IneqDim>::IneqInputDimMatrix;
 
+  /** \brief Type of matrix of inequality x inequality dimension. */
+  using IneqIneqDimMatrix = Eigen::Matrix<double, IneqDim, IneqDim>;
+
 public:
   /*! \brief Configuration. */
   struct Configuration
@@ -71,6 +74,12 @@ public:
 
     //! Whether to break if LLT decomposition fails
     bool break_if_llt_fails = false;
+
+    //! Whether to enable line search
+    bool enable_line_search = false;
+
+    //! Whether to calculate the scale of constraint errors in the merit function from Lagrange multipliers
+    bool merit_const_scale_from_lagrange_multipliers = false;
   };
 
   /*! \brief Result status. */
@@ -359,6 +368,14 @@ protected:
   */
   bool updateVariables();
 
+  /** \brief Setup the merit function and its directional derivative. */
+  void setupMeritFunc();
+
+  /** \brief Calculate merit function.
+      \param variable variable
+  */
+  double calcMeritFunc(const Variable & variable) const;
+
 protected:
   //! Configuration
   Configuration config_;
@@ -389,6 +406,15 @@ protected:
 
   //! Barrier parameter
   double barrier_eps_ = 1e-4;
+
+  //! Scale of constraint errors in the merit function
+  double merit_const_scale_ = 0.0;
+
+  //! Merit function
+  double merit_func_ = 0.0;
+
+  //! Directional derivative of merit function
+  double merit_deriv_ = 0.0;
 };
 } // namespace nmpc_fmpc
 

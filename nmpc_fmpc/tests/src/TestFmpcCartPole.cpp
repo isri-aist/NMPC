@@ -378,7 +378,7 @@ public:
               << "  set key autotitle columnhead\n"
               << "  set key noenhanced\n"
               << "  plot \"" << file_path << "\" u 1:2 w lp, \"\" u 1:3 w lp, \"\" u 1:7 w l lw 3 # State\n"
-              << "  plot \"" << file_path << "\" u 1:6 w l lw 3 # Input\n";
+              << "  plot \"" << file_path << "\" u 1:6 w lp # Input\n";
   }
 
 protected:

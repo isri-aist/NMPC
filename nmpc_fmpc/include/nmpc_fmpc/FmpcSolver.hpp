@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits>
 
+#include <nmpc_fmpc/MathUtils.h>
+
 #define CHECK_NAN(VAR, PRINT_PREFIX)                                                                      \
   if(VAR.array().isNaN().any() || VAR.array().isInf().any())                                              \
   {                                                                                                       \
@@ -235,6 +237,31 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   return status;
 }
 
+template<int StateDim, int InputDim, int IneqDim>
+void FmpcSolver<StateDim, InputDim, IneqDim>::dumpTraceDataList(const std::string & file_path) const
+{
+  std::ofstream ofs(file_path);
+  // clang-format off
+  ofs << "iter "
+      << "kkt_error "
+      << "duration_coeff "
+      << "duration_backward "
+      << "duration_forward "
+      << "duration_update" << std::endl;
+  // clang-format on
+  for(const auto & trace_data : trace_data_list_)
+  {
+    // clang-format off
+    ofs << trace_data.iter << " "
+        << trace_data.kkt_error << " "
+        << trace_data.duration_coeff << " "
+        << trace_data.duration_backward << " "
+        << trace_data.duration_forward << " "
+        << trace_data.duration_update
+        << std::endl;
+    // clang-format on
+  }
+}
 template<int StateDim, int InputDim, int IneqDim>
 void FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
 {
@@ -664,8 +691,8 @@ template<int StateDim, int InputDim, int IneqDim>
 bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 {
   // Fraction-to-boundary rule
-  double alpha_s = 1.0;
-  double alpha_nu = 1.0;
+  double alpha_s_max = 1.0;
+  double alpha_nu_max = 1.0;
   {
     auto start_time_fraction = std::chrono::system_clock::now();
 
@@ -678,22 +705,23 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
       const IneqDimVector & delta_nu = delta_variable_.nu_list[i];
       for(int ineq_idx = 0; ineq_idx < s.size(); ineq_idx++)
       {
+        // (19.9) in "Nocedal, Wright. Numerical optimization"
         if(delta_s[ineq_idx] < 0)
         {
-          alpha_s = std::min(alpha_s, -1 * margin_ratio * s[ineq_idx] / delta_s[ineq_idx]);
+          alpha_s_max = std::min(alpha_s_max, -1 * margin_ratio * s[ineq_idx] / delta_s[ineq_idx]);
         }
         if(delta_nu[ineq_idx] < 0)
         {
-          alpha_nu = std::min(alpha_nu, -1 * margin_ratio * nu[ineq_idx] / delta_nu[ineq_idx]);
+          alpha_nu_max = std::min(alpha_nu_max, -1 * margin_ratio * nu[ineq_idx] / delta_nu[ineq_idx]);
         }
       }
     }
-    if(!(alpha_s > 0.0 && alpha_s <= 1.0 && alpha_nu > 0.0 && alpha_nu <= 1.0))
+    if(!(alpha_s_max > 0.0 && alpha_s_max <= 1.0 && alpha_nu_max > 0.0 && alpha_nu_max <= 1.0))
     {
       if(config_.print_level >= 1)
       {
-        std::cout << "[FMPC/Update] Invalid alpha. barrier_eps: " << barrier_eps_ << ", alpha_s: " << alpha_s
-                  << ", alpha_nu: " << alpha_nu << std::endl;
+        std::cout << "[FMPC/Update] Invalid alpha. barrier_eps: " << barrier_eps_ << ", alpha_s_max: " << alpha_s_max
+                  << ", alpha_nu_max: " << alpha_nu_max << std::endl;
       }
       return false;
     }
@@ -701,11 +729,53 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
     computation_duration_.fraction += calcDuration(start_time_fraction, std::chrono::system_clock::now());
   }
 
-  // \todo Add line search to avoid divergence.
+  // Line search
+  double alpha_s = alpha_s_max;
+  double alpha_nu = alpha_nu_max;
+  if(config_.enable_line_search)
+  {
+    setupMeritFunc();
+
+    constexpr double armijo_scale = 1e-3;
+    constexpr double alpha_s_update_ratio = 0.5;
+    constexpr double alpha_s_min = 1e-10;
+    Variable ls_variable = variable_;
+    while(true)
+    {
+      if(alpha_s < alpha_s_min)
+      {
+        if(config_.print_level >= 1)
+        {
+          std::cout << "[FMPC/Update] alpha_s is too small in line search backtracking. alpha_s_max: " << alpha_s_max
+                    << ", alpha_s: " << alpha_s << std::endl;
+        }
+        break;
+      }
+
+      for(int i = 0; i < config_.horizon_steps + 1; i++)
+      {
+        ls_variable.x_list[i] = variable_.x_list[i] + alpha_s * delta_variable_.x_list[i];
+
+        if(i < config_.horizon_steps)
+        {
+          ls_variable.u_list[i] = variable_.u_list[i] + alpha_s * delta_variable_.u_list[i];
+          ls_variable.s_list[i] = variable_.s_list[i] + alpha_s * delta_variable_.s_list[i];
+        }
+      }
+
+      double merit_func_new = calcMeritFunc(ls_variable);
+      if(merit_func_new < merit_func_ + armijo_scale * alpha_s * merit_deriv_)
+      {
+        break;
+      }
+      alpha_s *= alpha_s_update_ratio;
+    }
+  }
 
   if(config_.print_level >= 3)
   {
-    std::cout << "[FMPC/update] barrier_eps: " << barrier_eps_ << ", alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu
+    std::cout << "[FMPC/update] barrier_eps: " << barrier_eps_ << ", alpha_s_max: " << alpha_s_max
+              << ", alpha_nu_max: " << alpha_nu_max << ", alpha_s: " << alpha_s << ", alpha_nu: " << alpha_nu
               << std::endl;
   }
 
@@ -746,29 +816,151 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
 }
 
 template<int StateDim, int InputDim, int IneqDim>
-void FmpcSolver<StateDim, InputDim, IneqDim>::dumpTraceDataList(const std::string & file_path) const
+void FmpcSolver<StateDim, InputDim, IneqDim>::setupMeritFunc()
 {
-  std::ofstream ofs(file_path);
-  // clang-format off
-  ofs << "iter "
-      << "kkt_error "
-      << "duration_coeff "
-      << "duration_backward "
-      << "duration_forward "
-      << "duration_update" << std::endl;
-  // clang-format on
-  for(const auto & trace_data : trace_data_list_)
+  double merit_func_obj = 0.0;
+  double merit_func_const = 0.0;
+  double merit_deriv_obj = 0.0;
+  double merit_deriv_const = 0.0;
+  double dt = problem_->dt();
+
   {
-    // clang-format off
-    ofs << trace_data.iter << " "
-        << trace_data.kkt_error << " "
-        << trace_data.duration_coeff << " "
-        << trace_data.duration_backward << " "
-        << trace_data.duration_forward << " "
-        << trace_data.duration_update
-        << std::endl;
-    // clang-format on
+    StateDimVector const_func = current_x_ - variable_.x_list[0];
+    merit_func_const += const_func.template lpNorm<1>();
+    merit_deriv_const +=
+        l1NormDirectionalDeriv(const_func, (-1 * StateStateDimMatrix::Identity()).eval(), delta_variable_.x_list[0]);
   }
+
+  for(int i = 0; i < config_.horizon_steps; i++)
+  {
+    double t = current_t_ + i * dt;
+    const StateDimVector & x = variable_.x_list[i];
+    const InputDimVector & u = variable_.u_list[i];
+    const IneqDimVector & s = variable_.s_list[i];
+    const StateDimVector & next_x = variable_.x_list[i + 1];
+    const StateDimVector & delta_x = delta_variable_.x_list[i];
+    const InputDimVector & delta_u = delta_variable_.u_list[i];
+    const IneqDimVector & delta_s = delta_variable_.s_list[i];
+    const StateDimVector & delta_next_x = delta_variable_.x_list[i + 1];
+    const auto & coeff = coeff_list_[i];
+
+    {
+      merit_func_obj += problem_->runningCost(t, x, u) * dt;
+      merit_deriv_obj += (coeff.Lx.dot(delta_x) + coeff.Lu.dot(delta_u)) * dt;
+    }
+
+    {
+      merit_func_obj += -1 * barrier_eps_ * s.array().log().sum();
+      merit_deriv_obj += -1 * barrier_eps_ * s.cwiseInverse().dot(delta_s);
+    }
+
+    {
+      StateDimVector const_func = problem_->stateEq(t, x, u) - next_x;
+      merit_func_const += const_func.template lpNorm<1>();
+      merit_deriv_const += l1NormDirectionalDeriv(const_func, coeff.A, delta_x);
+      merit_deriv_const += l1NormDirectionalDeriv(const_func, coeff.B, delta_u);
+      merit_deriv_const +=
+          l1NormDirectionalDeriv(const_func, (-1 * StateStateDimMatrix::Identity()).eval(), delta_next_x);
+    }
+
+    {
+      IneqDimVector const_func = problem_->ineqConst(t, x, u) + s;
+      merit_func_const += const_func.template lpNorm<1>();
+      merit_deriv_const += l1NormDirectionalDeriv(const_func, coeff.C, delta_x);
+      merit_deriv_const += l1NormDirectionalDeriv(const_func, coeff.D, delta_u);
+      merit_deriv_const += l1NormDirectionalDeriv(const_func, IneqIneqDimMatrix::Identity().eval(), delta_s);
+    }
+  }
+
+  {
+    double terminal_t = current_t_ + config_.horizon_steps * dt;
+    const StateDimVector & terminal_x = variable_.x_list[config_.horizon_steps];
+    const StateDimVector & terminal_delta_x = delta_variable_.x_list[config_.horizon_steps];
+    const auto & terminal_coeff = coeff_list_[config_.horizon_steps];
+
+    merit_func_obj += problem_->terminalCost(terminal_t, terminal_x);
+    merit_deriv_obj += terminal_coeff.Lx.dot(terminal_delta_x);
+  }
+
+  constexpr double merit_const_scale_min = 1e-3;
+  if(config_.merit_const_scale_from_lagrange_multipliers)
+  {
+    // (18.32) in "Nocedal, Wright. Numerical optimization"
+    merit_const_scale_ = merit_const_scale_min;
+    for(int i = 0; i < config_.horizon_steps + 1; i++)
+    {
+      merit_const_scale_ = std::max(merit_const_scale_, variable_.lambda_list[i].cwiseAbs().maxCoeff());
+
+      if(i < config_.horizon_steps)
+      {
+        merit_const_scale_ = std::max(merit_const_scale_, variable_.nu_list[i].cwiseAbs().maxCoeff());
+      }
+    }
+  }
+  else
+  {
+    // (18.33) in "Nocedal, Wright. Numerical optimization"
+    constexpr double rho = 0.5;
+    merit_const_scale_ = std::max(merit_deriv_obj / ((1.0 - rho) * merit_func_const), merit_const_scale_min);
+  }
+
+  merit_func_ = merit_func_obj + merit_const_scale_ * merit_func_const;
+  merit_deriv_ = merit_deriv_obj + merit_const_scale_ * merit_deriv_const;
+
+  if(config_.print_level >= 3)
+  {
+    std::cout << "[FMPC/merit] merit_func: " << merit_func_ << ", merit_deriv: " << merit_deriv_
+              << ", merit_const_scale: " << merit_const_scale_ << std::endl;
+  }
+}
+
+template<int StateDim, int InputDim, int IneqDim>
+double FmpcSolver<StateDim, InputDim, IneqDim>::calcMeritFunc(const Variable & variable) const
+{
+  double merit_func_obj = 0.0;
+  double merit_func_const = 0.0;
+  double dt = problem_->dt();
+
+  {
+    StateDimVector const_func = current_x_ - variable.x_list[0];
+    merit_func_const += const_func.template lpNorm<1>();
+  }
+
+  for(int i = 0; i < config_.horizon_steps; i++)
+  {
+    double t = current_t_ + i * dt;
+    const StateDimVector & x = variable.x_list[i];
+    const InputDimVector & u = variable.u_list[i];
+    const IneqDimVector & s = variable.s_list[i];
+    const StateDimVector & next_x = variable.x_list[i + 1];
+
+    {
+      merit_func_obj += problem_->runningCost(t, x, u) * dt;
+    }
+
+    {
+      merit_func_obj += -1 * barrier_eps_ * s.array().log().sum();
+    }
+
+    {
+      StateDimVector const_func = problem_->stateEq(t, x, u) - next_x;
+      merit_func_const += const_func.template lpNorm<1>();
+    }
+
+    {
+      IneqDimVector const_func = problem_->ineqConst(t, x, u) + s;
+      merit_func_const += const_func.template lpNorm<1>();
+    }
+  }
+
+  {
+    double terminal_t = current_t_ + config_.horizon_steps * dt;
+    const StateDimVector & terminal_x = variable.x_list[config_.horizon_steps];
+
+    merit_func_obj += problem_->terminalCost(terminal_t, terminal_x);
+  }
+
+  return merit_func_obj + merit_const_scale_ * merit_func_const;
 }
 } // namespace nmpc_fmpc
 
