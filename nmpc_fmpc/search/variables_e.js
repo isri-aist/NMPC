@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['s_176',['s',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a3137673ff65953e59a1124a98033f3cb',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['s_5flist_177',['s_list',['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#ad51e2fdc7a6becce9ebbdf06a47e6a66',1,'nmpc_fmpc::FmpcSolver::Variable']]],
-  ['setup_178',['setup',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#aa67fd4de3115676eb1df65ee3b95e8fc',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]],
-  ['solve_179',['solve',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#a3ed71ad3763c2befe69454c9cb011a6b',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
+  ['p_192',['P',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a84e5abfbe9c94e4e9631b930cc9e28ab',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
+  ['print_5flevel_193',['print_level',['../structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a9adacba7a34b01138bcdd809f67818dd',1,'nmpc_fmpc::FmpcSolver::Configuration::print_level()'],['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#ab0689c417d450e77cb1845e80706bdc4',1,'nmpc_fmpc::FmpcSolver::Variable::print_level()'],['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a8bf8ea39d688b55a6b22ad7a5087f4c9',1,'nmpc_fmpc::FmpcSolver::Coefficient::print_level()']]],
+  ['problem_5f_194',['problem_',['../classnmpc__fmpc_1_1FmpcSolver.html#a6d629e70f79557ba259dac94eafb6626',1,'nmpc_fmpc::FmpcSolver']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['solve_128',['solve',['../classnmpc__fmpc_1_1FmpcSolver.html#a4a6010291870f0c0751e10b383341621',1,'nmpc_fmpc::FmpcSolver']]]
+  ['reset_140',['reset',['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#aecbb738a259df5aca2e9a98930f4bff5',1,'nmpc_fmpc::FmpcSolver::Variable']]]
 ];

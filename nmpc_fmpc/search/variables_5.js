@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['g_5fbar_153',['g_bar',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a31bb93d5563802c53d01875514631142',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['gain_5fpost_154',['gain_post',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#a34bcf41248d52ceb89642ee080cfa269',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]],
-  ['gain_5fpre_155',['gain_pre',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#a1b0d42615fb8f327937eb58b520ac497',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]],
-  ['gain_5fsolve_156',['gain_solve',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#a7a47c77b517b35b655c71f6019546273',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
+  ['forward_166',['forward',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#aecb5cbbfb2b233c66f49881980682af4',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]],
+  ['fraction_167',['fraction',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#adab166789d09a25a404d6e845b0978ee',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['proconce_126',['procOnce',['../classnmpc__fmpc_1_1FmpcSolver.html#a8c2fef5e6e53009b0646455602d3882c',1,'nmpc_fmpc::FmpcSolver']]]
+  ['l1normdirectionalderiv_138',['l1NormDirectionalDeriv',['../namespacenmpc__fmpc.html#a2cc57c0dcbe1e2f025aa00db317f8f3d',1,'nmpc_fmpc']]]
 ];

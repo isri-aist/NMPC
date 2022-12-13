@@ -1,11 +1,6 @@
 var searchData=
 [
-  ['lambda_5flist_162',['lambda_list',['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#a6f82d06b9f3cc269856f98e1773c2197',1,'nmpc_fmpc::FmpcSolver::Variable']]],
-  ['lu_163',['Lu',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#ab000f94cc06ab8bcf7e2114323b5391e',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['lu_5fbar_164',['Lu_bar',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a1ffd3192e88fe10a7c01fd64c21a196b',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['luu_165',['Luu',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a90ea7786fec0faf1da0d916c512ba22c',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['lx_166',['Lx',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#ad6bce8aa04559c30b14faff8b8174283',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['lx_5fbar_167',['Lx_bar',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a4e2e1d4e2bc021d20c08080d9d056aba',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['lxu_168',['Lxu',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a78bf40b1e5360cdbf9706e15c136ee07',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['lxx_169',['Lxx',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a98d64babe8034a491d5226905d3fd0c1',1,'nmpc_fmpc::FmpcSolver::Coefficient']]]
+  ['k_174',['k',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#ad0511441e204b88a95b8962489d4c758',1,'nmpc_fmpc::FmpcSolver::Coefficient::k()'],['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#ab54ea5cb6fb9acdfdf98588ff06c8bbe',1,'nmpc_fmpc::FmpcSolver::Coefficient::K()']]],
+  ['kkt_5ferror_175',['kkt_error',['../structnmpc__fmpc_1_1FmpcSolver_1_1TraceData.html#a9b8eca74ac198c247dcf72a6259974fc',1,'nmpc_fmpc::FmpcSolver::TraceData']]],
+  ['kkt_5ferror_5fthre_176',['kkt_error_thre',['../structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a9c2da92935b0cecc0782cbc7950c513c',1,'nmpc_fmpc::FmpcSolver::Configuration']]]
 ];

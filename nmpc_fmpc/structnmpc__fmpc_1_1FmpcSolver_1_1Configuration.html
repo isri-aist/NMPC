@@ -98,6 +98,12 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a0b0a3cce18c4212c458b8631d2216917"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a0b0a3cce18c4212c458b8631d2216917">break_if_llt_fails</a> = false</td></tr>
 <tr class="memdesc:a0b0a3cce18c4212c458b8631d2216917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to break if LLT decomposition fails.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a0b0a3cce18c4212c458b8631d2216917">More...</a><br /></td></tr>
 <tr class="separator:a0b0a3cce18c4212c458b8631d2216917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dddece190fc8a0158ca7111ebd8eff0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a3dddece190fc8a0158ca7111ebd8eff0">enable_line_search</a> = false</td></tr>
+<tr class="memdesc:a3dddece190fc8a0158ca7111ebd8eff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to enable line search.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a3dddece190fc8a0158ca7111ebd8eff0">More...</a><br /></td></tr>
+<tr class="separator:a3dddece190fc8a0158ca7111ebd8eff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26232349ee3cd524fadc70222a574526"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a26232349ee3cd524fadc70222a574526">merit_const_scale_from_lagrange_multipliers</a> = false</td></tr>
+<tr class="memdesc:a26232349ee3cd524fadc70222a574526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to calculate the scale of constraint errors in the merit function from Lagrange multipliers.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a26232349ee3cd524fadc70222a574526">More...</a><br /></td></tr>
+<tr class="separator:a26232349ee3cd524fadc70222a574526"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;int StateDim, int InputDim, int IneqDim&gt;<br />
@@ -105,7 +111,7 @@ struct nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::Configuration
 
 <p><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html" title="Configuration.">Configuration</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00055">55</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00058">58</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a0b0a3cce18c4212c458b8631d2216917"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0b0a3cce18c4212c458b8631d2216917">&#9670;&nbsp;</a></span>break_if_llt_fails</h2>
@@ -123,7 +129,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Whether to break if LLT decomposition fails. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00073">73</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00076">76</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -143,7 +149,27 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Whether to check NaN. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00070">70</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00073">73</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a3dddece190fc8a0158ca7111ebd8eff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dddece190fc8a0158ca7111ebd8eff0">&#9670;&nbsp;</a></span>enable_line_search</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::Configuration::enable_line_search = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether to enable line search. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00079">79</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -163,7 +189,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Number of steps in horizon. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00061">61</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00064">64</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -183,7 +209,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Threshold of KKT condition error. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00067">67</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00070">70</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +229,27 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Maximum iteration of optimization loop. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00064">64</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00067">67</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a26232349ee3cd524fadc70222a574526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26232349ee3cd524fadc70222a574526">&#9670;&nbsp;</a></span>merit_const_scale_from_lagrange_multipliers</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::Configuration::merit_const_scale_from_lagrange_multipliers = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether to calculate the scale of constraint errors in the merit function from Lagrange multipliers. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00082">82</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -223,7 +269,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose) </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00058">58</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00061">61</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>

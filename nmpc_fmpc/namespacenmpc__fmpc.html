@@ -62,7 +62,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">nmpc_fmpc Namespace Reference</div>  </div>
 </div><!--header-->
@@ -76,7 +77,64 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">FmpcSolver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">FMPC solver.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2cc57c0dcbe1e2f025aa00db317f8f3d"><td class="memTemplParams" colspan="2">template&lt;int InputDim, int OutputDim&gt; </td></tr>
+<tr class="memitem:a2cc57c0dcbe1e2f025aa00db317f8f3d"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacenmpc__fmpc.html#a2cc57c0dcbe1e2f025aa00db317f8f3d">l1NormDirectionalDeriv</a> (const Eigen::Matrix&lt; double, OutputDim, 1 &gt; &amp;func, const Eigen::Matrix&lt; double, OutputDim, InputDim &gt; &amp;jac, const Eigen::Matrix&lt; double, InputDim, 1 &gt; &amp;dir)</td></tr>
+<tr class="memdesc:a2cc57c0dcbe1e2f025aa00db317f8f3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the directional derivative of the L1-norm of the function.  <a href="namespacenmpc__fmpc.html#a2cc57c0dcbe1e2f025aa00db317f8f3d">More...</a><br /></td></tr>
+<tr class="separator:a2cc57c0dcbe1e2f025aa00db317f8f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a2cc57c0dcbe1e2f025aa00db317f8f3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cc57c0dcbe1e2f025aa00db317f8f3d">&#9670;&nbsp;</a></span>l1NormDirectionalDeriv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int InputDim, int OutputDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double nmpc_fmpc::l1NormDirectionalDeriv </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; double, OutputDim, 1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Matrix&lt; double, OutputDim, InputDim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>jac</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Matrix&lt; double, InputDim, 1 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dir</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the directional derivative of the L1-norm of the function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">func</td><td>function value </td></tr>
+    <tr><td class="paramname">jac</td><td>jacobian matrix of function </td></tr>
+    <tr><td class="paramname">dir</td><td>direction for directional derivative</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>See (A.51) in "J Nocedal, S J Wright. Numerical optimization". </p>
+
+<p class="definition">Definition at line <a class="el" href="MathUtils_8h_source.html#l00017">17</a> of file <a class="el" href="MathUtils_8h_source.html">MathUtils.h</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

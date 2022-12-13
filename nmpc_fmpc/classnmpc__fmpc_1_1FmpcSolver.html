@@ -153,6 +153,9 @@ Public Types</h2></td></tr>
 <tr class="memitem:ab2bd1bc33d0bf2520125560de21a482d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#ab2bd1bc33d0bf2520125560de21a482d">IneqInputDimMatrix</a> = typename <a class="el" href="classnmpc__fmpc_1_1FmpcProblem.html">FmpcProblem</a>&lt; StateDim, InputDim, IneqDim &gt;::<a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#ab2bd1bc33d0bf2520125560de21a482d">IneqInputDimMatrix</a></td></tr>
 <tr class="memdesc:ab2bd1bc33d0bf2520125560de21a482d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of matrix of inequality x input dimension.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#ab2bd1bc33d0bf2520125560de21a482d">More...</a><br /></td></tr>
 <tr class="separator:ab2bd1bc33d0bf2520125560de21a482d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35e5c9d37afda77d3e9415fd20200175"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a35e5c9d37afda77d3e9415fd20200175">IneqIneqDimMatrix</a> = Eigen::Matrix&lt; double, IneqDim, IneqDim &gt;</td></tr>
+<tr class="memdesc:a35e5c9d37afda77d3e9415fd20200175"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of matrix of inequality x inequality dimension.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#a35e5c9d37afda77d3e9415fd20200175">More...</a><br /></td></tr>
+<tr class="separator:a35e5c9d37afda77d3e9415fd20200175"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -204,6 +207,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a120b085601a0e087953f5df6c991b216"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a120b085601a0e087953f5df6c991b216">updateVariables</a> ()</td></tr>
 <tr class="memdesc:a120b085601a0e087953f5df6c991b216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update optimization variables given Newton-step direction.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#a120b085601a0e087953f5df6c991b216">More...</a><br /></td></tr>
 <tr class="separator:a120b085601a0e087953f5df6c991b216"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5b25a4e18e3c487f64d59b7e71d63ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#ac5b25a4e18e3c487f64d59b7e71d63ba">setupMeritFunc</a> ()</td></tr>
+<tr class="memdesc:ac5b25a4e18e3c487f64d59b7e71d63ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the merit function and its directional derivative.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#ac5b25a4e18e3c487f64d59b7e71d63ba">More...</a><br /></td></tr>
+<tr class="separator:ac5b25a4e18e3c487f64d59b7e71d63ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c3c3ba5ce20165a4768c764762da126"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a4c3c3ba5ce20165a4768c764762da126">calcMeritFunc</a> (const <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html">Variable</a> &amp;<a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a1cd6e2dab86863e75d31ed1696f304c0">variable</a>) const</td></tr>
+<tr class="memdesc:a4c3c3ba5ce20165a4768c764762da126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate merit function.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#a4c3c3ba5ce20165a4768c764762da126">More...</a><br /></td></tr>
+<tr class="separator:a4c3c3ba5ce20165a4768c764762da126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -237,6 +246,15 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:afba509fed4adff9dfe7b790c22a4dfc5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#afba509fed4adff9dfe7b790c22a4dfc5">barrier_eps_</a> = 1e-4</td></tr>
 <tr class="memdesc:afba509fed4adff9dfe7b790c22a4dfc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Barrier parameter.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#afba509fed4adff9dfe7b790c22a4dfc5">More...</a><br /></td></tr>
 <tr class="separator:afba509fed4adff9dfe7b790c22a4dfc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69a723f32fca1a244426c659f02f6488"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a69a723f32fca1a244426c659f02f6488">merit_const_scale_</a> = 0.0</td></tr>
+<tr class="memdesc:a69a723f32fca1a244426c659f02f6488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale of constraint errors in the merit function.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#a69a723f32fca1a244426c659f02f6488">More...</a><br /></td></tr>
+<tr class="separator:a69a723f32fca1a244426c659f02f6488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f119253f5ff3abbbb5fa373d26fa1b3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a1f119253f5ff3abbbb5fa373d26fa1b3">merit_func_</a> = 0.0</td></tr>
+<tr class="memdesc:a1f119253f5ff3abbbb5fa373d26fa1b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merit function.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#a1f119253f5ff3abbbb5fa373d26fa1b3">More...</a><br /></td></tr>
+<tr class="separator:a1f119253f5ff3abbbb5fa373d26fa1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee47d9f2dddd0584193ec06a62bbd843"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#aee47d9f2dddd0584193ec06a62bbd843">merit_deriv_</a> = 0.0</td></tr>
+<tr class="memdesc:aee47d9f2dddd0584193ec06a62bbd843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional derivative of merit function.  <a href="classnmpc__fmpc_1_1FmpcSolver.html#aee47d9f2dddd0584193ec06a62bbd843">More...</a><br /></td></tr>
+<tr class="separator:aee47d9f2dddd0584193ec06a62bbd843"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;int StateDim, int InputDim, int IneqDim&gt;<br />
@@ -274,6 +292,26 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Type of vector of inequality dimension. </p>
 
 <p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00033">33</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a35e5c9d37afda77d3e9415fd20200175"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35e5c9d37afda77d3e9415fd20200175">&#9670;&nbsp;</a></span>IneqIneqDimMatrix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::<a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a35e5c9d37afda77d3e9415fd20200175">IneqIneqDimMatrix</a> =  Eigen::Matrix&lt;double, IneqDim, IneqDim&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type of matrix of inequality x inequality dimension. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00054">54</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -478,7 +516,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00077">77</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00086">86</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -517,7 +555,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00281">281</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00290">290</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -547,7 +585,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Process backward pass a.k.a backward Riccati recursion. </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the process is finished successfully </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00474">474</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00503">503</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -585,7 +623,45 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00446">446</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00475">475</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a4c3c3ba5ce20165a4768c764762da126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c3c3ba5ce20165a4768c764762da126">&#9670;&nbsp;</a></span>calcMeritFunc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::calcMeritFunc </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html">Variable</a> &amp;&#160;</td>
+          <td class="paramname"><em>variable</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate merit function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">variable</td><td>variable </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00918">918</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -613,7 +689,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Check optimization variables. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00238">238</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00266">266</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -644,7 +720,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Const accessor to sequence of coefficients of linearized KKT condition. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00310">310</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00319">319</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -675,7 +751,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Const accessor to computation duration. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00322">322</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00331">331</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -706,7 +782,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00284">284</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00293">293</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -737,7 +813,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Const accessor to configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00290">290</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00299">299</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -767,7 +843,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00747">747</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00241">241</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -796,7 +872,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Process forward pass a.k.a forward Riccati recursion. </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the process is finished successfully </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00619">619</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00648">648</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -835,7 +911,35 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>result status </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00317">317</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00345">345</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ac5b25a4e18e3c487f64d59b7e71d63ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5b25a4e18e3c487f64d59b7e71d63ba">&#9670;&nbsp;</a></span>setupMeritFunc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::setupMeritFunc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Setup the merit function and its directional derivative. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00819">819</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -884,7 +988,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>result status </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00155">155</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00158">158</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -915,7 +1019,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Const accessor to trace data list. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00316">316</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00325">325</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -944,7 +1048,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Update optimization variables given Newton-step direction. </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the process is finished successfully </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00662">662</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8hpp_source.html#l00691">691</a> of file <a class="el" href="FmpcSolver_8hpp_source.html">FmpcSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -975,7 +1079,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Const accessor to optimization variables. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00304">304</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00313">313</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +1108,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Barrier parameter. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00391">391</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00408">408</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1032,7 +1136,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Sequence of coefficients of linearized KKT condition. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00376">376</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00393">393</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1060,7 +1164,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Computation duration data. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00382">382</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00399">399</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1088,7 +1192,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html" title="Configuration.">Configuration</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00364">364</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00381">381</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1116,7 +1220,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Current time [sec]. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00385">385</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00402">402</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1144,7 +1248,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Current state. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00388">388</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00405">405</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1172,7 +1276,91 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Update amount of optimization variables. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00373">373</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00390">390</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a69a723f32fca1a244426c659f02f6488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69a723f32fca1a244426c659f02f6488">&#9670;&nbsp;</a></span>merit_const_scale_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::merit_const_scale_ = 0.0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scale of constraint errors in the merit function. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00411">411</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="aee47d9f2dddd0584193ec06a62bbd843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee47d9f2dddd0584193ec06a62bbd843">&#9670;&nbsp;</a></span>merit_deriv_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::merit_deriv_ = 0.0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Directional derivative of merit function. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00417">417</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a1f119253f5ff3abbbb5fa373d26fa1b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f119253f5ff3abbbb5fa373d26fa1b3">&#9670;&nbsp;</a></span>merit_func_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::merit_func_ = 0.0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Merit function. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00414">414</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1200,7 +1388,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>FMPC problem. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00367">367</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00384">384</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1228,7 +1416,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Sequence of trace data. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00379">379</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00396">396</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -1256,7 +1444,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Optimization variables. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00370">370</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00387">387</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['x_5fbar_184',['x_bar',['../structnmpc__fmpc_1_1FmpcSolver_1_1Coefficient.html#a60a73711f101c1f7a741155b84a9f1ba',1,'nmpc_fmpc::FmpcSolver::Coefficient']]],
-  ['x_5flist_185',['x_list',['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#a15f8f6aaf18562db58e337f9aea2d3f2',1,'nmpc_fmpc::FmpcSolver::Variable']]]
+  ['variable_5f_202',['variable_',['../classnmpc__fmpc_1_1FmpcSolver.html#a08db5b7ca686daf5911a3f30e75576d8',1,'nmpc_fmpc::FmpcSolver']]]
 ];

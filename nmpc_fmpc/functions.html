@@ -99,6 +99,9 @@ $(function() {
 <li>calcKktError()
 : <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a9208b7d0f3000a09db7d8649c83d60c5">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
 </li>
+<li>calcMeritFunc()
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a4c3c3ba5ce20165a4768c764762da126">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+</li>
 <li>check_nan
 : <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a1d8aa52ef837a3dad49dbc4883e8e5bb">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::Configuration</a>
 </li>
@@ -124,7 +127,7 @@ $(function() {
 : <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a6e362155a81643a5fb11b426be308481">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
 </li>
 <li>config()
-: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#ae8309edecbab2d8adbdfe0699937f37e">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#aeadbdf57c56f7e09599951a3c99337f8">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
 </li>
 <li>config_
 : <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a2b7cf54b065281f76431832ca96d8c72">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
@@ -163,6 +166,13 @@ $(function() {
 </li>
 <li>duration_update
 : <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1TraceData.html#a3f4aa4f24bf138e4c71e43fc14cc7b67">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::TraceData</a>
+</li>
+</ul>
+
+
+<h3><a id="index_e"></a>- e -</h3><ul>
+<li>enable_line_search
+: <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a3dddece190fc8a0158ca7111ebd8eff0">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::Configuration</a>
 </li>
 </ul>
 
@@ -220,6 +230,9 @@ $(function() {
 <li>IneqDimVector
 : <a class="el" href="classnmpc__fmpc_1_1FmpcProblem.html#ac221594b3e014e9cb830bf1f46c7956a">nmpc_fmpc::FmpcProblem&lt; StateDim, InputDim, IneqDim &gt;</a>
 , <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#abfbf4292f387b1ec3984d2644f941773">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+</li>
+<li>IneqIneqDimMatrix
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a35e5c9d37afda77d3e9415fd20200175">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
 </li>
 <li>IneqInputDimMatrix
 : <a class="el" href="classnmpc__fmpc_1_1FmpcProblem.html#a316f20d782a5f20bada20023f4f78b1b">nmpc_fmpc::FmpcProblem&lt; StateDim, InputDim, IneqDim &gt;</a>
@@ -295,6 +308,18 @@ $(function() {
 <li>max_iter
 : <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#ad191e1f1d95e6234572624608ba3f43d">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::Configuration</a>
 </li>
+<li>merit_const_scale_
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a69a723f32fca1a244426c659f02f6488">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+</li>
+<li>merit_const_scale_from_lagrange_multipliers
+: <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a26232349ee3cd524fadc70222a574526">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::Configuration</a>
+</li>
+<li>merit_deriv_
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#aee47d9f2dddd0584193ec06a62bbd843">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+</li>
+<li>merit_func_
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#a1f119253f5ff3abbbb5fa373d26fa1b3">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
+</li>
 </ul>
 
 
@@ -346,6 +371,9 @@ $(function() {
 </li>
 <li>setup
 : <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#aa67fd4de3115676eb1df65ee3b95e8fc">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::ComputationDuration</a>
+</li>
+<li>setupMeritFunc()
+: <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html#ac5b25a4e18e3c487f64d59b7e71d63ba">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;</a>
 </li>
 <li>solve
 : <a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#a3ed71ad3763c2befe69454c9cb011a6b">nmpc_fmpc::FmpcSolver&lt; StateDim, InputDim, IneqDim &gt;::ComputationDuration</a>

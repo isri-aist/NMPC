@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['variable_5f_183',['variable_',['../classnmpc__fmpc_1_1FmpcSolver.html#a08db5b7ca686daf5911a3f30e75576d8',1,'nmpc_fmpc::FmpcSolver']]]
+  ['u_5flist_200',['u_list',['../structnmpc__fmpc_1_1FmpcSolver_1_1Variable.html#a230d0a80800a2086ca3d1f19f82bfa81',1,'nmpc_fmpc::FmpcSolver::Variable']]],
+  ['update_201',['update',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#acefce0de659158e757cf980b6be762ce',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
 ];
