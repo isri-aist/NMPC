@@ -20,6 +20,7 @@ endif()
 
 
 set(nmpc_fmpc_gtest_list
+  TestMathUtils
   TestFmpcOscillator
   )
 
