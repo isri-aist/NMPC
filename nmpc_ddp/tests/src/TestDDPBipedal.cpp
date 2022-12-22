@@ -53,8 +53,8 @@ public:
   }
 
   virtual void calcStateEqDeriv(double t,
-                                const StateDimVector & x,
-                                const InputDimVector & u,
+                                const StateDimVector &, // x
+                                const InputDimVector &, // u
                                 Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                 Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {

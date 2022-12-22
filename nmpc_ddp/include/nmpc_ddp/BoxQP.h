@@ -217,9 +217,9 @@ public:
       {
         // Set H_free
         Eigen::MatrixXd H_free(free_idxs_.size(), free_idxs_.size());
-        for(int i = 0; i < free_idxs_.size(); i++)
+        for(size_t i = 0; i < free_idxs_.size(); i++)
         {
-          for(int j = 0; j < free_idxs_.size(); j++)
+          for(size_t j = 0; j < free_idxs_.size(); j++)
           {
             H_free(i, j) = H(free_idxs_[i], free_idxs_[j]);
           }
@@ -242,7 +242,7 @@ public:
 
       // Check gradient norm
       double grad_norm = 0;
-      for(int i = 0; i < free_idxs_.size(); i++)
+      for(size_t i = 0; i < free_idxs_.size(); i++)
       {
         grad_norm += std::pow(grad[free_idxs_[i]], 2);
       }
@@ -257,15 +257,15 @@ public:
       Eigen::VectorXd x_free(free_idxs_.size());
       Eigen::VectorXd g_free(free_idxs_.size());
       Eigen::MatrixXd H_free_clamped(free_idxs_.size(), clamped_idxs.size());
-      for(int i = 0; i < clamped_idxs.size(); i++)
+      for(size_t i = 0; i < clamped_idxs.size(); i++)
       {
         x_clamped[i] = x[clamped_idxs[i]];
       }
-      for(int i = 0; i < free_idxs_.size(); i++)
+      for(size_t i = 0; i < free_idxs_.size(); i++)
       {
         x_free[i] = x[free_idxs_[i]];
         g_free[i] = g[free_idxs_[i]];
-        for(int j = 0; j < clamped_idxs.size(); j++)
+        for(size_t j = 0; j < clamped_idxs.size(); j++)
         {
           H_free_clamped(i, j) = H(free_idxs_[i], clamped_idxs[j]);
         }
@@ -273,7 +273,7 @@ public:
       Eigen::VectorXd grad_free_clamped = g_free + H_free_clamped * x_clamped;
       Eigen::VectorXd search_dir_free = -1 * llt_free_->solve(grad_free_clamped) - x_free;
       VarDimVector search_dir = VarDimVector::Zero(var_dim_);
-      for(int i = 0; i < free_idxs_.size(); i++)
+      for(size_t i = 0; i < free_idxs_.size(); i++)
       {
         search_dir[free_idxs_[i]] = search_dir_free[i];
       }

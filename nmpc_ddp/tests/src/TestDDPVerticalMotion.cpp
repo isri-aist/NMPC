@@ -74,7 +74,9 @@ public:
     }
   }
 
-  virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u) const override
+  virtual StateDimVector stateEq(double, // t
+                                 const StateDimVector & x,
+                                 const InputDimVector & u) const override
   {
     StateDimVector x_dot;
     x_dot << x[1], u.sum() / mass_ - g_;
@@ -105,9 +107,9 @@ public:
     return 0.5 * cost_weight_.terminal_x.dot((x - ref_x).cwiseAbs2());
   }
 
-  virtual void calcStateEqDeriv(double t,
-                                const StateDimVector & x,
-                                const InputDimVector & u,
+  virtual void calcStateEqDeriv(double, // t
+                                const StateDimVector &, // x
+                                const InputDimVector &, // u
                                 Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                 Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {

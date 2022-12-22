@@ -38,7 +38,7 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
   dlambda_ = config_.initial_dlambda;
 
   // Check initial_u_list
-  if(initial_u_list.size() != config_.horizon_steps)
+  if(static_cast<int>(initial_u_list.size()) != config_.horizon_steps)
   {
     throw std::invalid_argument("initial_u_list length should be " + std::to_string(config_.horizon_steps) + " but "
                                 + std::to_string(initial_u_list.size()) + ".");
@@ -370,15 +370,15 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
     double t = current_t_ + i * problem_->dt();
     const StateStateDimMatrix & Fx = derivative_list_[i].Fx;
     const StateInputDimMatrix & Fu = derivative_list_[i].Fu;
-    const std::vector<StateStateDimMatrix> & Fxx = derivative_list_[i].Fxx;
-    const std::vector<InputInputDimMatrix> & Fuu = derivative_list_[i].Fuu;
-    const std::vector<StateInputDimMatrix> & Fxu = derivative_list_[i].Fxu;
+    // const std::vector<StateStateDimMatrix> & Fxx = derivative_list_[i].Fxx;
+    // const std::vector<InputInputDimMatrix> & Fuu = derivative_list_[i].Fuu;
+    // const std::vector<StateInputDimMatrix> & Fxu = derivative_list_[i].Fxu;
     const StateDimVector & Lx = derivative_list_[i].Lx;
     const InputDimVector & Lu = derivative_list_[i].Lu;
     const StateStateDimMatrix & Lxx = derivative_list_[i].Lxx;
     const InputInputDimMatrix & Luu = derivative_list_[i].Luu;
     const StateInputDimMatrix & Lxu = derivative_list_[i].Lxu;
-    int input_dim = Fu.cols();
+    int input_dim = static_cast<int>(Fu.cols());
 
     // Calculate Q
     auto start_time_Q = std::chrono::system_clock::now();
@@ -466,7 +466,7 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
           }
         }
 
-        BoxQP<Eigen::Dynamic> qp(Quu_F.cols());
+        BoxQP<Eigen::Dynamic> qp(static_cast<int>(Quu_F.cols()));
         const auto & u_limits = input_limits_func_(t);
         k = qp.solve(Quu_F, Qu, u_limits[0] - control_data_.u_list[i], u_limits[1] - control_data_.u_list[i],
                      initial_k);
@@ -484,12 +484,12 @@ bool DDPSolver<StateDim, InputDim>::backwardPass()
         if(free_idxs.size() > 0)
         {
           Eigen::MatrixXd Qux_reg_free(free_idxs.size(), problem_->stateDim());
-          for(int j = 0; j < free_idxs.size(); j++)
+          for(size_t j = 0; j < free_idxs.size(); j++)
           {
             Qux_reg_free.row(j) = Qux_reg.row(free_idxs[j]);
           }
           Eigen::MatrixXd K_free = -1 * qp.llt_free_->solve(Qux_reg_free);
-          for(int j = 0; j < free_idxs.size(); j++)
+          for(size_t j = 0; j < free_idxs.size(); j++)
           {
             K.row(free_idxs[j]) = K_free.row(j);
           }

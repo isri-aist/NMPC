@@ -64,7 +64,7 @@ public:
   virtual int inputDim(double t) const override
   {
     const StanceData & stance_data = ref_stance_func_(t);
-    return stance_data.vertices_mat.cols();
+    return static_cast<int>(stance_data.vertices_mat.cols());
   }
 
   virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u) const override
@@ -75,7 +75,7 @@ public:
 
     const Eigen::Ref<const Eigen::Vector3d> & com = x.segment<3>(0);
     const Eigen::Ref<const Eigen::Vector3d> & linear_momentum = x.segment<3>(3);
-    const Eigen::Ref<const Eigen::Vector3d> & angular_momentum = x.segment<3>(6);
+    // const Eigen::Ref<const Eigen::Vector3d> & angular_momentum = x.segment<3>(6);
 
     StateDimVector x_dot;
     Eigen::Ref<Eigen::Vector3d> com_dot = x_dot.segment<3>(0);
@@ -117,8 +117,8 @@ public:
     const Eigen::Matrix3Xd & ridges_mat = stance_data.ridges_mat;
 
     const Eigen::Ref<const Eigen::Vector3d> & com = x.segment<3>(0);
-    const Eigen::Ref<const Eigen::Vector3d> & linear_momentum = x.segment<3>(3);
-    const Eigen::Ref<const Eigen::Vector3d> & angular_momentum = x.segment<3>(6);
+    // const Eigen::Ref<const Eigen::Vector3d> & linear_momentum = x.segment<3>(3);
+    // const Eigen::Ref<const Eigen::Vector3d> & angular_momentum = x.segment<3>(6);
 
     state_eq_deriv_x.setZero();
     state_eq_deriv_x.block<3, 3>(0, 3).diagonal().setConstant(1 / mass_);
@@ -135,14 +135,15 @@ public:
     state_eq_deriv_u *= dt_;
   }
 
-  virtual void calcStateEqDeriv(double t,
-                                const StateDimVector & x,
-                                const InputDimVector & u,
-                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
+  virtual void calcStateEqDeriv(double, // t
+                                const StateDimVector &, // x
+                                const InputDimVector &, // u
+                                Eigen::Ref<StateStateDimMatrix>, // state_eq_deriv_x
+                                Eigen::Ref<StateInputDimMatrix>, // state_eq_deriv_u
+                                std::vector<StateStateDimMatrix> &, // state_eq_deriv_xx
+                                std::vector<InputInputDimMatrix> &, // state_eq_deriv_uu
+                                std::vector<StateInputDimMatrix> & // state_eq_deriv_xu
+  ) const override
   {
     throw std::runtime_error("Second-order derivatives of state equation are not implemented.");
   }
@@ -364,10 +365,12 @@ TEST(TestDDPCentroidalMotion, SolveMpc)
 TEST(TestDDPCentroidalMotion, CheckDerivative)
 {
   double dt = 0.01; // [sec]
-  std::function<DDPProblemCentroidalMotion::StanceData(double)> ref_stance_func = [](double t) {
+  std::function<DDPProblemCentroidalMotion::StanceData(double)> ref_stance_func = [](double // t
+                                                                                  ) {
     return makeStanceDataFromRect({Eigen::Vector2d(-0.1, -0.1), Eigen::Vector2d(0.1, 0.1)});
   };
-  std::function<Eigen::Vector3d(double)> ref_pos_func = [](double t) {
+  std::function<Eigen::Vector3d(double)> ref_pos_func = [](double // t
+                                                        ) {
     return Eigen::Vector3d(0.0, 0.0, 1.0); // [m]
   };
   auto ddp_problem = std::make_shared<DDPProblemCentroidalMotion>(dt, ref_stance_func, ref_pos_func);

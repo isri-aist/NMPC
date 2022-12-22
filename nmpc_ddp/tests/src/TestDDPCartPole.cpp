@@ -65,9 +65,12 @@ public:
     return stateEq(t, x, u, dt_);
   }
 
-  virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u, double dt) const
+  virtual StateDimVector stateEq(double, // t
+                                 const StateDimVector & x,
+                                 const InputDimVector & u,
+                                 double dt) const
   {
-    double pos = x[0];
+    // double pos = x[0];
     double theta = x[1];
     double vel = x[2];
     double omega = x[3];
@@ -108,15 +111,15 @@ public:
     return 0.5 * cost_weight_.terminal_x.dot((x - ref_x).cwiseAbs2());
   }
 
-  virtual void calcStateEqDeriv(double t,
+  virtual void calcStateEqDeriv(double, // t
                                 const StateDimVector & x,
                                 const InputDimVector & u,
                                 Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                 Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {
-    double pos = x[0];
+    // double pos = x[0];
     double theta = x[1];
-    double vel = x[2];
+    // double vel = x[2];
     double omega = x[3];
     double f = u[0];
 
@@ -155,14 +158,15 @@ public:
     state_eq_deriv_u *= dt_;
   }
 
-  virtual void calcStateEqDeriv(double t,
-                                const StateDimVector & x,
-                                const InputDimVector & u,
-                                Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
-                                Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u,
-                                std::vector<StateStateDimMatrix> & state_eq_deriv_xx,
-                                std::vector<InputInputDimMatrix> & state_eq_deriv_uu,
-                                std::vector<StateInputDimMatrix> & state_eq_deriv_xu) const override
+  virtual void calcStateEqDeriv(double, // t
+                                const StateDimVector &, // x
+                                const InputDimVector &, // u
+                                Eigen::Ref<StateStateDimMatrix>, // state_eq_deriv_x
+                                Eigen::Ref<StateInputDimMatrix>, // state_eq_deriv_u
+                                std::vector<StateStateDimMatrix> &, // state_eq_deriv_xx
+                                std::vector<InputInputDimMatrix> &, // state_eq_deriv_uu
+                                std::vector<StateInputDimMatrix> & // state_eq_deriv_xu
+  ) const override
   {
     throw std::runtime_error("Second-order derivatives of state equation are not implemented.");
   }
@@ -372,7 +376,8 @@ protected:
     }
   }
 
-  std::array<Eigen::Vector1d, 2> getInputLimits(double t) const
+  std::array<Eigen::Vector1d, 2> getInputLimits(double // t
+  ) const
   {
     std::array<Eigen::Vector1d, 2> limits;
     limits[0].setConstant(-15.0);
@@ -380,7 +385,8 @@ protected:
     return limits;
   };
 
-  void mpcTimerCallback(const ros::TimerEvent & event)
+  void mpcTimerCallback(const ros::TimerEvent & // event
+  )
   {
     // Solve
     ddp_solver_->solve(current_t_, current_x_, initial_u_list_);
@@ -396,14 +402,18 @@ protected:
     }
   }
 
-  bool distCallback(std_srvs::Empty::Request & req, std_srvs::Empty::Response & res, double dist_force)
+  bool distCallback(std_srvs::Empty::Request &, // req
+                    std_srvs::Empty::Response &, // res
+                    double dist_force)
   {
     dist_u_ << dist_force;
     dist_t_ = current_t_ + 0.5; // [sec]
     return true;
   }
 
-  bool targetPosCallback(std_srvs::Empty::Request & req, std_srvs::Empty::Response & res, double pos)
+  bool targetPosCallback(std_srvs::Empty::Request &, // req
+                         std_srvs::Empty::Response &, // res
+                         double pos)
   {
     target_pos_ = pos;
     return true;
@@ -422,14 +432,14 @@ protected:
     visualization_msgs::Marker del_marker;
     del_marker.action = visualization_msgs::Marker::DELETEALL;
     del_marker.header = header_msg;
-    del_marker.id = marker_arr_msg.markers.size();
+    del_marker.id = static_cast<int>(marker_arr_msg.markers.size());
     marker_arr_msg.markers.push_back(del_marker);
 
     // Cart marker
     visualization_msgs::Marker cart_marker;
     cart_marker.header = header_msg;
     cart_marker.ns = "cart";
-    cart_marker.id = marker_arr_msg.markers.size();
+    cart_marker.id = static_cast<int>(marker_arr_msg.markers.size());
     cart_marker.type = visualization_msgs::Marker::CUBE;
     cart_marker.color.r = 0;
     cart_marker.color.g = 1;
@@ -448,7 +458,7 @@ protected:
     visualization_msgs::Marker mass_marker;
     mass_marker.header = header_msg;
     mass_marker.ns = "mass";
-    cart_marker.id = marker_arr_msg.markers.size();
+    cart_marker.id = static_cast<int>(marker_arr_msg.markers.size());
     mass_marker.type = visualization_msgs::Marker::CYLINDER;
     mass_marker.color.r = 0;
     mass_marker.color.g = 0;
@@ -467,7 +477,7 @@ protected:
     visualization_msgs::Marker pole_marker;
     pole_marker.header = header_msg;
     pole_marker.ns = "pole";
-    pole_marker.id = marker_arr_msg.markers.size();
+    pole_marker.id = static_cast<int>(marker_arr_msg.markers.size());
     pole_marker.type = visualization_msgs::Marker::LINE_LIST;
     pole_marker.color.r = 0;
     pole_marker.color.g = 0;
@@ -491,7 +501,7 @@ protected:
       visualization_msgs::Marker force_marker;
       force_marker.header = header_msg;
       force_marker.ns = "force";
-      force_marker.id = marker_arr_msg.markers.size();
+      force_marker.id = static_cast<int>(marker_arr_msg.markers.size());
       force_marker.type = visualization_msgs::Marker::ARROW;
       force_marker.color.r = 1;
       force_marker.color.g = 0;
@@ -516,7 +526,7 @@ protected:
       visualization_msgs::Marker dist_marker;
       dist_marker.header = header_msg;
       dist_marker.ns = "disturbance";
-      dist_marker.id = marker_arr_msg.markers.size();
+      dist_marker.id = static_cast<int>(marker_arr_msg.markers.size());
       dist_marker.type = visualization_msgs::Marker::ARROW;
       dist_marker.color.r = 1;
       dist_marker.color.g = 1;
@@ -540,7 +550,7 @@ protected:
     visualization_msgs::Marker target_marker;
     target_marker.header = header_msg;
     target_marker.ns = "target";
-    target_marker.id = marker_arr_msg.markers.size();
+    target_marker.id = static_cast<int>(marker_arr_msg.markers.size());
     target_marker.type = visualization_msgs::Marker::LINE_LIST;
     target_marker.color.r = 0;
     target_marker.color.g = 1;
@@ -599,7 +609,8 @@ TEST(TestDDPCartPole, SolveMpc)
 TEST(TestDDPCartPole, CheckDerivative)
 {
   double dt = 0.01; // [sec]
-  std::function<double(double)> ref_pos_func = [&](double t) {
+  std::function<double(double)> ref_pos_func = [&](double // t
+                                               ) {
     return 0.0; // [m]
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
