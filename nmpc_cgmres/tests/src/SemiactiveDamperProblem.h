@@ -37,7 +37,7 @@ public:
   }
 
   /** \brief Calculate the state equation. */
-  virtual void stateEquation(double t,
+  virtual void stateEquation(double, // t
                              const Eigen::Ref<const Eigen::VectorXd> & x,
                              const Eigen::Ref<const Eigen::VectorXd> & u,
                              Eigen::Ref<Eigen::VectorXd> dotx) override
@@ -48,7 +48,7 @@ public:
   }
 
   /** \brief Calculate the costate equation. */
-  virtual void costateEquation(double t,
+  virtual void costateEquation(double, // t
                                const Eigen::Ref<const Eigen::VectorXd> & lmd,
                                const Eigen::Ref<const Eigen::VectorXd> & xu,
                                Eigen::Ref<Eigen::VectorXd> dotlmd) override
@@ -67,7 +67,7 @@ public:
   }
 
   /** \brief Calculate \f$ \frac{\partial \phi}{\partial x} \f$. */
-  virtual void calcDphiDx(double t,
+  virtual void calcDphiDx(double, // t
                           const Eigen::Ref<const Eigen::VectorXd> & x,
                           Eigen::Ref<Eigen::VectorXd> DphiDx) override
   {
@@ -80,7 +80,7 @@ public:
   }
 
   /** \brief Calculate \f$ \frac{\partial h}{\partial u} \f$. */
-  virtual void calcDhDu(double t,
+  virtual void calcDhDu(double, // t
                         const Eigen::Ref<const Eigen::VectorXd> & x,
                         const Eigen::Ref<const Eigen::VectorXd> & u,
                         const Eigen::Ref<const Eigen::VectorXd> & lmd,

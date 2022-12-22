@@ -22,8 +22,9 @@ public:
   virtual void solve(const Eigen::MatrixXd & A,
                      const Eigen::VectorXd & b,
                      Eigen::Ref<Eigen::VectorXd> x,
-                     double & tm,
-                     double & err)
+                     double &, // tm
+                     double & // err
+  )
   {
     gmres_ = std::make_shared<nmpc_cgmres::Gmres>();
     gmres_->make_triangular_ = make_triangular_;
@@ -43,8 +44,9 @@ public:
   virtual void solve(const Eigen::MatrixXd & A,
                      const Eigen::VectorXd & b,
                      Eigen::Ref<Eigen::VectorXd> x,
-                     double & tm,
-                     double & err)
+                     double &, // tm
+                     double & // err
+  )
   {
     x = A.fullPivLu().solve(b);
   }
@@ -56,8 +58,9 @@ public:
   virtual void solve(const Eigen::MatrixXd & A,
                      const Eigen::VectorXd & b,
                      Eigen::Ref<Eigen::VectorXd> x,
-                     double & tm,
-                     double & err)
+                     double &, // tm
+                     double & // err
+  )
   {
     x = A.householderQr().solve(b);
   }
@@ -67,11 +70,11 @@ double eval(std::shared_ptr<LinearSolver> solver,
             const std::vector<Eigen::MatrixXd> & A_list,
             const std::vector<Eigen::VectorXd> & b_list)
 {
-  int trial_num = A_list.size();
+  size_t trial_num = A_list.size();
   double tm = 0;
   double err = 0;
 
-  for(int i = 0; i < trial_num; i++)
+  for(size_t i = 0; i < trial_num; i++)
   {
     const Eigen::MatrixXd & A = A_list[i];
     const Eigen::VectorXd & b = b_list[i];
@@ -85,8 +88,8 @@ double eval(std::shared_ptr<LinearSolver> solver,
     err += (A * x - b).norm();
   }
 
-  tm /= trial_num;
-  err /= trial_num;
+  tm /= static_cast<double>(trial_num);
+  err /= static_cast<double>(trial_num);
   std::cout << "ave time: " << 1e3 * tm << " [msec], ave err: " << err << std::endl;
 
   return err;

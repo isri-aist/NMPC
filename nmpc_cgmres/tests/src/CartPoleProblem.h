@@ -55,13 +55,14 @@ public:
 
     if(ref_func_ == nullptr)
     {
-      ref_func_ = [&](double t, Eigen::Ref<Eigen::VectorXd> ref) { ref.setZero(); };
+      ref_func_ = [&](double, // t
+                      Eigen::Ref<Eigen::VectorXd> ref) { ref.setZero(); };
     }
     ref_.resize(dim_x_);
   }
 
   /** \brief Calculate the state equation. */
-  virtual void stateEquation(double t,
+  virtual void stateEquation(double, // t
                              const Eigen::Ref<const Eigen::VectorXd> & xvec,
                              const Eigen::Ref<const Eigen::VectorXd> & uvec,
                              Eigen::Ref<Eigen::VectorXd> dotxvec) override
@@ -72,7 +73,7 @@ public:
     const double & m2 = state_eq_param_(1);
     const double & l = state_eq_param_(2);
 
-    const double & x = xvec(0);
+    // const double & x = xvec(0);
     const double & theta = xvec(1);
     const double & dx = xvec(2);
     const double & dtheta = xvec(3);
@@ -103,9 +104,9 @@ public:
     const double & m2 = state_eq_param_(1);
     const double & l = state_eq_param_(2);
 
-    const double & x = xvec(0);
+    // const double & x = xvec(0);
     const double & theta = xvec(1);
-    const double & dx = xvec(2);
+    // const double & dx = xvec(2);
     const double & dtheta = xvec(3);
     const double & f = uvec(0);
 
@@ -151,7 +152,7 @@ public:
   }
 
   /** \brief Calculate \f$ \frac{\partial h}{\partial u} \f$. */
-  virtual void calcDhDu(double t,
+  virtual void calcDhDu(double, // t
                         const Eigen::Ref<const Eigen::VectorXd> & xvec,
                         const Eigen::Ref<const Eigen::VectorXd> & uvec,
                         const Eigen::Ref<const Eigen::VectorXd> & lmd,
@@ -161,7 +162,7 @@ public:
     const double & m2 = state_eq_param_(1);
     const double & l = state_eq_param_(2);
 
-    const double & x = xvec(0);
+    // const double & x = xvec(0);
     const double & theta = xvec(1);
     const double & f = uvec(0);
     const double & r1 = obj_weight_(4);
