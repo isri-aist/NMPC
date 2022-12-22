@@ -266,27 +266,27 @@ template<int StateDim, int InputDim, int IneqDim>
 void FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
 {
   // Check sequence length
-  if(variable_.x_list.size() != config_.horizon_steps + 1)
+  if(static_cast<int>(variable_.x_list.size()) != config_.horizon_steps + 1)
   {
     throw std::invalid_argument("[FMPC] x_list length should be " + std::to_string(config_.horizon_steps + 1) + " but "
                                 + std::to_string(variable_.x_list.size()) + ".");
   }
-  if(variable_.u_list.size() != config_.horizon_steps)
+  if(static_cast<int>(variable_.u_list.size()) != config_.horizon_steps)
   {
     throw std::invalid_argument("[FMPC] u_list length should be " + std::to_string(config_.horizon_steps) + " but "
                                 + std::to_string(variable_.u_list.size()) + ".");
   }
-  if(variable_.lambda_list.size() != config_.horizon_steps + 1)
+  if(static_cast<int>(variable_.lambda_list.size()) != config_.horizon_steps + 1)
   {
     throw std::invalid_argument("[FMPC] lambda_list length should be " + std::to_string(config_.horizon_steps + 1)
                                 + " but " + std::to_string(variable_.lambda_list.size()) + ".");
   }
-  if(variable_.s_list.size() != config_.horizon_steps)
+  if(static_cast<int>(variable_.s_list.size()) != config_.horizon_steps)
   {
     throw std::invalid_argument("[FMPC] s_list length should be " + std::to_string(config_.horizon_steps) + " but "
                                 + std::to_string(variable_.s_list.size()) + ".");
   }
-  if(variable_.nu_list.size() != config_.horizon_steps)
+  if(static_cast<int>(variable_.nu_list.size()) != config_.horizon_steps)
   {
     throw std::invalid_argument("[FMPC] nu_list length should be " + std::to_string(config_.horizon_steps) + " but "
                                 + std::to_string(variable_.nu_list.size()) + ".");
@@ -295,11 +295,10 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
   // Check element dimension
   for(int i = 0; i < config_.horizon_steps; i++)
   {
-    double t = current_t_ + i * problem_->dt();
-    int input_dim = problem_->inputDim(t);
-    int ineq_dim = problem_->ineqDim(t);
     if constexpr(InputDim == Eigen::Dynamic)
     {
+      double t = current_t_ + i * problem_->dt();
+      int input_dim = problem_->inputDim(t);
       if(variable_.u_list[i].size() != input_dim)
       {
         throw std::runtime_error("[FMPC] u_list[i] dimension should be " + std::to_string(input_dim) + " but "
@@ -309,6 +308,8 @@ void FmpcSolver<StateDim, InputDim, IneqDim>::checkVariable() const
     }
     if constexpr(IneqDim == Eigen::Dynamic)
     {
+      double t = current_t_ + i * problem_->dt();
+      int ineq_dim = problem_->ineqDim(t);
       if(variable_.s_list[i].size() != ineq_dim)
       {
         throw std::runtime_error("[FMPC] s_list[i] dimension should be " + std::to_string(ineq_dim) + " but "
@@ -364,7 +365,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
     {
       s_nu_ave += variable_.s_list[i].dot(variable_.nu_list[i]);
       s_nu_min = std::min(s_nu_min, variable_.s_list[i].cwiseProduct(variable_.nu_list[i]).minCoeff());
-      total_ineq_dim += variable_.s_list[i].size();
+      total_ineq_dim += static_cast<int>(variable_.s_list[i].size());
     }
     s_nu_ave /= total_ineq_dim;
 
@@ -531,7 +532,6 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
   {
     // Get coefficients
     double dt = problem_->dt();
-    double t = current_t_ + i * dt;
     auto & coeff = coeff_list_[i];
     const StateStateDimMatrix & A = coeff.A;
     const StateInputDimMatrix & B = coeff.B;
@@ -569,7 +569,7 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::backwardPass()
     {
       auto start_time_gain_solve = std::chrono::system_clock::now();
 
-      int input_dim = B.cols();
+      int input_dim = static_cast<int>(B.cols());
       if(input_dim > 0)
       {
         // In numerically difficult cases, LLT may diverge and LDLT may work.

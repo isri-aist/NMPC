@@ -25,24 +25,33 @@ public:
     return stateEq(t, x, u, dt_);
   }
 
-  virtual StateDimVector stateEq(double t, const StateDimVector & x, const InputDimVector & u, double dt) const
+  virtual StateDimVector stateEq(double, // t
+                                 const StateDimVector & x,
+                                 const InputDimVector & u,
+                                 double dt) const
   {
     StateDimVector x_dot;
     x_dot << (1.0 - std::pow(x[1], 2)) * x[0] - x[1] + u[0], x[0];
     return x + dt * x_dot;
   }
 
-  virtual double runningCost(double t, const StateDimVector & x, const InputDimVector & u) const override
+  virtual double runningCost(double, // t
+                             const StateDimVector & x,
+                             const InputDimVector & u) const override
   {
     return 0.5 * (x.squaredNorm() + u.squaredNorm());
   }
 
-  virtual double terminalCost(double t, const StateDimVector & x) const override
+  virtual double terminalCost(double, // t
+                              const StateDimVector & // x
+  ) const override
   {
     return 0;
   }
 
-  virtual IneqDimVector ineqConst(double t, const StateDimVector & x, const InputDimVector & u) const override
+  virtual IneqDimVector ineqConst(double, // t
+                                  const StateDimVector & x,
+                                  const InputDimVector & u) const override
   {
     IneqDimVector g;
     g[0] = -1 * x[1] - 0.05;
@@ -51,9 +60,9 @@ public:
     return g;
   }
 
-  virtual void calcStateEqDeriv(double t,
+  virtual void calcStateEqDeriv(double, // t
                                 const StateDimVector & x,
-                                const InputDimVector & u,
+                                const InputDimVector &, // u
                                 Eigen::Ref<StateStateDimMatrix> state_eq_deriv_x,
                                 Eigen::Ref<StateInputDimMatrix> state_eq_deriv_u) const override
   {
@@ -69,7 +78,7 @@ public:
     state_eq_deriv_u *= dt_;
   }
 
-  virtual void calcRunningCostDeriv(double t,
+  virtual void calcRunningCostDeriv(double, // t
                                     const StateDimVector & x,
                                     const InputDimVector & u,
                                     Eigen::Ref<StateDimVector> running_cost_deriv_x,
@@ -94,8 +103,8 @@ public:
     running_cost_deriv_xu.setZero();
   }
 
-  virtual void calcTerminalCostDeriv(double t,
-                                     const StateDimVector & x,
+  virtual void calcTerminalCostDeriv(double, // t
+                                     const StateDimVector &, // x
                                      Eigen::Ref<StateDimVector> terminal_cost_deriv_x) const override
   {
     terminal_cost_deriv_x.setZero();
@@ -110,9 +119,9 @@ public:
     terminal_cost_deriv_xx.setZero();
   }
 
-  virtual void calcIneqConstDeriv(double t,
-                                  const StateDimVector & x,
-                                  const InputDimVector & u,
+  virtual void calcIneqConstDeriv(double, // t
+                                  const StateDimVector &, // x
+                                  const InputDimVector &, // u
                                   Eigen::Ref<IneqStateDimMatrix> ineq_const_deriv_x,
                                   Eigen::Ref<IneqInputDimMatrix> ineq_const_deriv_u) const override
   {
