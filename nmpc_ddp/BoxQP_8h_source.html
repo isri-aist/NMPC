@@ -242,9 +242,9 @@ $(function() {
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      {</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="comment">// Set H_free</span></div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        Eigen::MatrixXd H_free(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(), <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size());</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); j++)</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); j++)</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;          {</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;            H_free(i, j) = H(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i], <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[j]);</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          }</div>
@@ -267,7 +267,7 @@ $(function() {
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160; </div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      <span class="comment">// Check gradient norm</span></div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      <span class="keywordtype">double</span> grad_norm = 0;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      {</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        grad_norm += std::pow(grad[<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i]], 2);</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      }</div>
@@ -282,15 +282,15 @@ $(function() {
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      Eigen::VectorXd x_free(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size());</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;      Eigen::VectorXd g_free(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size());</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;      Eigen::MatrixXd H_free_clamped(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(), clamped_idxs.size());</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; clamped_idxs.size(); i++)</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 0; i &lt; clamped_idxs.size(); i++)</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      {</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        x_clamped[i] = x[clamped_idxs[i]];</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;      }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      {</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        x_free[i] = x[<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i]];</div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        g_free[i] = g[<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i]];</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; clamped_idxs.size(); j++)</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> j = 0; j &lt; clamped_idxs.size(); j++)</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        {</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;          H_free_clamped(i, j) = H(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i], clamped_idxs[j]);</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        }</div>
@@ -298,7 +298,7 @@ $(function() {
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;      Eigen::VectorXd grad_free_clamped = g_free + H_free_clamped * x_clamped;</div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      Eigen::VectorXd search_dir_free = -1 * <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a2669d6543b4219f3a9ccc8557a78eb15">llt_free_</a>-&gt;solve(grad_free_clamped) - x_free;</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      <a class="code" href="classnmpc__ddp_1_1BoxQP.html#ad2917ce6144325e601b5eec1f50f9175">VarDimVector</a> search_dir = VarDimVector::Zero(<a class="code" href="classnmpc__ddp_1_1BoxQP.html#aa3450e9534edaa3719b343570ef8d010">var_dim_</a>);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>.size(); i++)</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;      {</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        search_dir[<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a6ac7d73d7fa9c1fcb5bc1fb19c079c6b">free_idxs_</a>[i]] = search_dir_free[i];</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;      }</div>

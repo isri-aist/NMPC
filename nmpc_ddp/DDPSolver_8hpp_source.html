@@ -109,7 +109,7 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  dlambda_ = config_.initial_dlambda;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">// Check initial_u_list</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span>(initial_u_list.size() != config_.horizon_steps)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(initial_u_list.size()) != config_.horizon_steps)</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;initial_u_list length should be &quot;</span> + std::to_string(config_.horizon_steps) + <span class="stringliteral">&quot; but &quot;</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                + std::to_string(initial_u_list.size()) + <span class="stringliteral">&quot;.&quot;</span>);</div>
@@ -441,15 +441,15 @@ $(function() {
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    <span class="keywordtype">double</span> t = current_t_ + i * problem_-&gt;dt();</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a051a8be53bfe75d48fb9956d5151ebd9">StateStateDimMatrix</a> &amp; Fx = derivative_list_[i].Fx;</div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a425776f23e0d8f59788a8f36eca15c27">StateInputDimMatrix</a> &amp; Fu = derivative_list_[i].Fu;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="keyword">const</span> std::vector&lt;StateStateDimMatrix&gt; &amp; Fxx = derivative_list_[i].Fxx;</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="keyword">const</span> std::vector&lt;InputInputDimMatrix&gt; &amp; Fuu = derivative_list_[i].Fuu;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    <span class="keyword">const</span> std::vector&lt;StateInputDimMatrix&gt; &amp; Fxu = derivative_list_[i].Fxu;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="comment">// const std::vector&lt;StateStateDimMatrix&gt; &amp; Fxx = derivative_list_[i].Fxx;</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="comment">// const std::vector&lt;InputInputDimMatrix&gt; &amp; Fuu = derivative_list_[i].Fuu;</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    <span class="comment">// const std::vector&lt;StateInputDimMatrix&gt; &amp; Fxu = derivative_list_[i].Fxu;</span></div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a51712b3eb8645578d61f1c59a48bf571">StateDimVector</a> &amp; Lx = derivative_list_[i].Lx;</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#aefaba6eacc1e58037806506c0a93dbe6">InputDimVector</a> &amp; Lu = derivative_list_[i].Lu;</div>
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a051a8be53bfe75d48fb9956d5151ebd9">StateStateDimMatrix</a> &amp; Lxx = derivative_list_[i].Lxx;</div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a26cb03edbd1257f9fb9213ae383e72cd">InputInputDimMatrix</a> &amp; Luu = derivative_list_[i].Luu;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    <span class="keyword">const</span> <a class="code" href="classnmpc__ddp_1_1DDPSolver.html#a425776f23e0d8f59788a8f36eca15c27">StateInputDimMatrix</a> &amp; Lxu = derivative_list_[i].Lxu;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    <span class="keywordtype">int</span> input_dim = Fu.cols();</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    <span class="keywordtype">int</span> input_dim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(Fu.cols());</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160; </div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    <span class="comment">// Calculate Q</span></div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    <span class="keyword">auto</span> start_time_Q = std::chrono::system_clock::now();</div>
@@ -537,7 +537,7 @@ $(function() {
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;          }</div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;        }</div>
 <div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160; </div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;        <a class="code" href="classnmpc__ddp_1_1BoxQP.html">BoxQP&lt;Eigen::Dynamic&gt;</a> qp(Quu_F.cols());</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;        <a class="code" href="classnmpc__ddp_1_1BoxQP.html">BoxQP&lt;Eigen::Dynamic&gt;</a> qp(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(Quu_F.cols()));</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> &amp; u_limits = input_limits_func_(t);</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;        k = qp.<a class="code" href="classnmpc__ddp_1_1BoxQP.html#addc83ea5c520a4ce0bdb8b295d156920">solve</a>(Quu_F, Qu, u_limits[0] - control_data_.u_list[i], u_limits[1] - control_data_.u_list[i],</div>
 <div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;                     initial_k);</div>
@@ -555,12 +555,12 @@ $(function() {
 <div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;        <span class="keywordflow">if</span>(free_idxs.size() &gt; 0)</div>
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;        {</div>
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;          Eigen::MatrixXd Qux_reg_free(free_idxs.size(), problem_-&gt;stateDim());</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; free_idxs.size(); j++)</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> j = 0; j &lt; free_idxs.size(); j++)</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;          {</div>
 <div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;            Qux_reg_free.row(j) = Qux_reg.row(free_idxs[j]);</div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;          }</div>
 <div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;          Eigen::MatrixXd K_free = -1 * qp.<a class="code" href="classnmpc__ddp_1_1BoxQP.html#a2669d6543b4219f3a9ccc8557a78eb15">llt_free_</a>-&gt;solve(Qux_reg_free);</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; free_idxs.size(); j++)</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;          <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> j = 0; j &lt; free_idxs.size(); j++)</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;          {</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;            K.row(free_idxs[j]) = K_free.row(j);</div>
 <div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;          }</div>
