@@ -148,6 +148,7 @@ TEST(TestFmpcOscillator, SolveMpc)
   auto fmpc_solver = std::make_shared<nmpc_fmpc::FmpcSolver<2, 1, 3>>(fmpc_problem);
   fmpc_solver->config().horizon_steps = horizon_steps;
   fmpc_solver->config().max_iter = 3;
+  // The option "init_complementary_variable" is effective for problems in which state constraints are infasible.
   // fmpc_solver->config().init_complementary_variable = true;
   Variable variable(horizon_steps);
   variable.reset(0.0, 0.0, 0.0, 1e0, 1e0);
