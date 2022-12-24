@@ -168,6 +168,25 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   variable_ = initial_variable;
   variable_.print_level = config_.print_level;
 
+  // Initialize complementarity variables
+  if(config_.init_complementary_variable)
+  {
+    constexpr double initial_barrier_eps = 1e-4;
+    constexpr double complementary_variable_margin_rate = 1e-2;
+    constexpr double complementary_variable_min = 1e-2;
+
+    barrier_eps_ = initial_barrier_eps;
+    for(int i = 0; i < config_.horizon_steps; i++)
+    {
+      double t = current_t_ + i * problem_->dt();
+      variable_.s_list[i] = (1.0 + complementary_variable_margin_rate)
+                            * (-1 * problem_->ineqConst(t, variable_.x_list[i], variable_.u_list[i]))
+                                  .cwiseMax(complementary_variable_min);
+      variable_.nu_list[i] = (1.0 + complementary_variable_margin_rate)
+                             * (barrier_eps_ * variable_.s_list[i].cwiseInverse()).cwiseMax(complementary_variable_min);
+    }
+  }
+
   // Check variable_
   checkVariable();
 
@@ -356,6 +375,7 @@ typename FmpcSolver<StateDim, InputDim, IneqDim>::Status FmpcSolver<StateDim, In
   trace_data.iter = iter;
 
   // Update barrier parameter
+  if(config_.update_barrier_eps)
   {
     // (19.19) in "Nocedal, Wright. Numerical optimization"
     double s_nu_ave = 0.0;

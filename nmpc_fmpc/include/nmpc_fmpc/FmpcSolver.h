@@ -72,6 +72,12 @@ public:
     //! Whether to check NaN
     bool check_nan = true;
 
+    //! Whether to initialize complementarity variables
+    bool init_complementary_variable = false;
+
+    //! Whether to update barrier parameter
+    bool update_barrier_eps = true;
+
     //! Whether to break if LLT decomposition fails
     bool break_if_llt_fails = false;
 
