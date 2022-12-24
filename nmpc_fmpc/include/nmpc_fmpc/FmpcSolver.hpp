@@ -798,7 +798,6 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
           std::cout << "[FMPC/Update] Updated s is negative: " << variable_.s_list[i].transpose() << std::endl;
         }
         variable_.s_list[i] = variable_.s_list[i].array().max(min_positive_value).matrix();
-        return false;
       }
       if((variable_.nu_list[i].array() < 0).any())
       {
@@ -807,7 +806,6 @@ bool FmpcSolver<StateDim, InputDim, IneqDim>::updateVariables()
           std::cout << "[FMPC/Update] Updated nu is negative: " << variable_.nu_list[i].transpose() << std::endl;
         }
         variable_.nu_list[i] = variable_.nu_list[i].array().max(min_positive_value).matrix();
-        return false;
       }
     }
   }
