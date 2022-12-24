@@ -95,6 +95,12 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1d8aa52ef837a3dad49dbc4883e8e5bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a1d8aa52ef837a3dad49dbc4883e8e5bb">check_nan</a> = true</td></tr>
 <tr class="memdesc:a1d8aa52ef837a3dad49dbc4883e8e5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to check NaN.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a1d8aa52ef837a3dad49dbc4883e8e5bb">More...</a><br /></td></tr>
 <tr class="separator:a1d8aa52ef837a3dad49dbc4883e8e5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5af4971da9020b18ab385dc72315611"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#ae5af4971da9020b18ab385dc72315611">init_complementary_variable</a> = false</td></tr>
+<tr class="memdesc:ae5af4971da9020b18ab385dc72315611"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to initialize complementarity variables.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#ae5af4971da9020b18ab385dc72315611">More...</a><br /></td></tr>
+<tr class="separator:ae5af4971da9020b18ab385dc72315611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad293783cd7b0b5d076c528239360be77"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#ad293783cd7b0b5d076c528239360be77">update_barrier_eps</a> = true</td></tr>
+<tr class="memdesc:ad293783cd7b0b5d076c528239360be77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to update barrier parameter.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#ad293783cd7b0b5d076c528239360be77">More...</a><br /></td></tr>
+<tr class="separator:ad293783cd7b0b5d076c528239360be77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b0a3cce18c4212c458b8631d2216917"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a0b0a3cce18c4212c458b8631d2216917">break_if_llt_fails</a> = false</td></tr>
 <tr class="memdesc:a0b0a3cce18c4212c458b8631d2216917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to break if LLT decomposition fails.  <a href="structnmpc__fmpc_1_1FmpcSolver_1_1Configuration.html#a0b0a3cce18c4212c458b8631d2216917">More...</a><br /></td></tr>
 <tr class="separator:a0b0a3cce18c4212c458b8631d2216917"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,7 +135,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Whether to break if LLT decomposition fails. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00076">76</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00082">82</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -169,7 +175,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Whether to enable line search. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00079">79</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00085">85</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -190,6 +196,26 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Number of steps in horizon. </p>
 
 <p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00064">64</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="ae5af4971da9020b18ab385dc72315611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5af4971da9020b18ab385dc72315611">&#9670;&nbsp;</a></span>init_complementary_variable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::Configuration::init_complementary_variable = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether to initialize complementarity variables. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00076">76</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -249,7 +275,7 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 
 <p>Whether to calculate the scale of constraint errors in the merit function from Lagrange multipliers. </p>
 
-<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00082">82</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00088">88</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>
@@ -270,6 +296,26 @@ template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
 <p>Print level (0: no print, 1: print only important, 2: print verbose, 3: print very verbose) </p>
 
 <p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00061">61</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="ad293783cd7b0b5d076c528239360be77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad293783cd7b0b5d076c528239360be77">&#9670;&nbsp;</a></span>update_barrier_eps</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int StateDim, int InputDim, int IneqDim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classnmpc__fmpc_1_1FmpcSolver.html">nmpc_fmpc::FmpcSolver</a>&lt; StateDim, InputDim, IneqDim &gt;::Configuration::update_barrier_eps = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether to update barrier parameter. </p>
+
+<p class="definition">Definition at line <a class="el" href="FmpcSolver_8h_source.html#l00079">79</a> of file <a class="el" href="FmpcSolver_8h_source.html">FmpcSolver.h</a>.</p>
 
 </div>
 </div>

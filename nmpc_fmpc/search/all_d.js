@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['opt_81',['opt',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#ade3416e999f857262ae2bfda7a4a62b4',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
+  ['opt_82',['opt',['../structnmpc__fmpc_1_1FmpcSolver_1_1ComputationDuration.html#ade3416e999f857262ae2bfda7a4a62b4',1,'nmpc_fmpc::FmpcSolver::ComputationDuration']]]
 ];
