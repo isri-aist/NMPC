@@ -55,9 +55,8 @@ function(add_nmpc_project NAME)
       -DBUILD_TESTING=${BUILD_TESTING}
       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
       -DNMPC_STANDALONE=ON
-    INSTALL_COMMAND ${SUDO_CMD}
     TEST_COMMAND ctest -C $<CONFIG>
-    INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --target install --config $<CONFIG>
+    INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>
     USES_TERMINAL_INSTALL TRUE
     STEP_TARGETS configure install
     ${ARGN}
