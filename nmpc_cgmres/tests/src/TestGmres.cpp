@@ -29,7 +29,7 @@ public:
     gmres_ = std::make_shared<nmpc_cgmres::Gmres>();
     gmres_->make_triangular_ = make_triangular_;
     gmres_->apply_reorth_ = apply_reorth_;
-    gmres_->solve(A, b, x, k_max_);
+    gmres_->solve(static_cast<const Eigen::Ref<const Eigen::MatrixXd> &>(A), b, x, k_max_);
   }
 
   std::shared_ptr<nmpc_cgmres::Gmres> gmres_;

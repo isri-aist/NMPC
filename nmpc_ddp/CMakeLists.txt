@@ -25,9 +25,7 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    )
+  find_package(rclcpp REQUIRED)
 endif()
 
 # Eigen
@@ -39,27 +37,14 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  catkin_package(
-    CATKIN_DEPENDS
-    roscpp
-    DEPENDS EIGEN3
-    INCLUDE_DIRS include
-    LIBRARIES
-    )
+  ament_package()
 else()
-  set(CATKIN_ENABLE_TESTING OFF)
+  set(BUILD_TESTING OFF)
 endif()
 
 add_library(nmpc_ddp INTERFACE)
 target_compile_features(nmpc_ddp INTERFACE cxx_std_17)
-if(NOT NMPC_STANDALONE)
-  target_include_directories(nmpc_ddp INTERFACE
-    ${catkin_INCLUDE_DIRS}
-    )
-  target_link_libraries(nmpc_ddp INTERFACE
-    ${catkin_LIBRARIES}
-    )
-endif()
+
 target_include_directories(nmpc_ddp INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_ddp INTERFACE -march=native)
@@ -73,7 +58,7 @@ endif()
 install(TARGETS nmpc_ddp EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_ddp DESTINATION "${INCLUDE_INSTALL_DIR}")
 
-if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 

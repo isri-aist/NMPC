@@ -33,14 +33,16 @@ TEST(TestMathUtils, L1NormDirectionalDeriv)
   {
     int input_dim = 4;
     int output_dim = 3;
-    auto sample_func = [&](const Eigen::VectorXd & x) {
+    auto sample_func = [&](const Eigen::VectorXd & x)
+    {
       Eigen::VectorXd func(output_dim);
       func[0] = x.squaredNorm() - 10.0;
       func[1] = std::pow(x[1], 3) + -5 * std::pow(x[2], 2) + 10 * x[3] + -20;
       func[2] = std::sin(x[0]) + std::cos(x[1]);
       return func;
     };
-    auto sample_jac = [&](const Eigen::VectorXd & x) -> Eigen::MatrixXd {
+    auto sample_jac = [&](const Eigen::VectorXd & x) -> Eigen::MatrixXd
+    {
       Eigen::MatrixXd jac(output_dim, input_dim);
       jac.row(0) = 2 * x.transpose();
       jac.row(1) << 0, 3 * std::pow(x[1], 2), -10 * x[2], 10;

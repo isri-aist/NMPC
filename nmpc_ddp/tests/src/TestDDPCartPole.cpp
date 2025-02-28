@@ -610,7 +610,8 @@ TEST(TestDDPCartPole, CheckDerivative)
 {
   double dt = 0.01; // [sec]
   std::function<double(double)> ref_pos_func = [&](double // t
-                                               ) {
+                                               )
+  {
     return 0.0; // [m]
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
