@@ -1,3 +1,5 @@
+**This is the branch for ROS2; use [the ros1 branch](https://github.com/isri-aist/NMPC/tree/ros1) for ROS1.**
+
 # [NMPC](https://github.com/isri-aist/NMPC)
 Non-linear model predictive control (NMPC) library
 
