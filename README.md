@@ -2,9 +2,9 @@
 Non-linear model predictive control (NMPC) library
 
 [![CI-standalone](https://github.com/isri-aist/NMPC/actions/workflows/ci-standalone.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-standalone.yaml)
-[![CI-catkin](https://github.com/isri-aist/NMPC/actions/workflows/ci-catkin.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-catkin.yaml)
+[![CI-colcon](https://github.com/isri-aist/NMPC/actions/workflows/ci-colcon.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-colcon.yaml)
 
-This repository provides ROS packages for the following NMPC methods
+This repository provides ROS2 packages for the following NMPC methods
 
 ## [nmpc_ddp](./nmpc_ddp)
 
