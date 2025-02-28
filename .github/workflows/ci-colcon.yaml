@@ -1,0 +1,80 @@
+name: CI of NMPC (catkin)
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+
+  clang-format:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install clang-format-14
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install clang-format-14
+      - name: Run clang-format-check
+        run: |
+          ./.clang-format-check.sh
+
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [Ubuntu-22.04, Ubuntu-24.04]
+        build-type: [Debug, RelWithDebInfo, Release]
+        include:
+          - build-type: Debug
+            optimize-for-native: OFF
+          - build-type: RelWithDebInfo
+            optimize-for-native: OFF
+          - build-type: Release
+            optimize-for-native: ON
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install ROS
+        uses: jrl-umi3218/github-actions/install-dependencies@master
+        with:
+          build-type: ${{ matrix.build-type }}
+          ros: |
+            apt: ros-base
+      - name: Colcon build
+        uses: jrl-umi3218/github-actions/build-colcon-project@master
+        with:
+          build-type: ${{ matrix.build-type }}
+          cmake-args: -DUSE_ROS2=ON 
+          build-packages: NMPC
+          test-packages: NMPC
+
+      - name: Upload documentation
+        # Only run for one configuration and on origin master branch
+        if: matrix.os == 'ubuntu-22.04' && matrix.build-type == 'RelWithDebInfo' && github.repository_owner == 'isri-aist' && github.ref == 'refs/heads/master'
+        run: |
+          set -e
+          set -x
+          cd ${GITHUB_WORKSPACE}/catkin_ws/src/NMPC
+          git config --global user.name "Masaki Murooka"
+          git config --global user.email "m-murooka@aist.go.jp"
+          git remote set-url origin "https://mmurooka:${{ secrets.CI_TOKEN }}@github.com/isri-aist/NMPC"
+          git fetch --depth=1 origin gh-pages:gh-pages
+          git checkout --quiet gh-pages
+          rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/ cmake/
+          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_ddp/doc/html/ nmpc_ddp
+          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_fmpc/doc/html/ nmpc_fmpc
+          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_cgmres/doc/html/ nmpc_cgmres
+          git add nmpc_ddp nmpc_fmpc nmpc_cgmres
+          git_status=`git status -s`
+          if test -n "$git_status"; then
+            git commit --quiet -m "Update Doxygen HTML files from commit ${{ github.sha }}"
+            git push origin gh-pages
+          else
+            echo "Github pages documentation is already up-to-date."
+          fi
