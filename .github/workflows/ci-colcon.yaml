@@ -1,4 +1,4 @@
-name: CI of NMPC (catkin)
+name: CI of NMPC (colcon)
 
 on:
   push:
