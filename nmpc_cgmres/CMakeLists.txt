@@ -9,7 +9,9 @@ set(PROJECT_DESCRIPTION "")
 set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
+
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
+option(USE_ROS2 "Use ROS2" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)
@@ -25,9 +27,7 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    )
+  find_package(rclcpp REQUIRED)
 endif()
 
 # Eigen
@@ -39,13 +39,7 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  catkin_package(
-    CATKIN_DEPENDS
-    roscpp
-    DEPENDS EIGEN3
-    INCLUDE_DIRS include
-    LIBRARIES nmpc_cgmres
-    )
+  ament_package()
 else()
   set(CATKIN_ENABLE_TESTING OFF)
 endif()
@@ -54,14 +48,6 @@ add_library(nmpc_cgmres
   src/CgmresSolver.cpp
   )
 target_compile_features(nmpc_cgmres PUBLIC cxx_std_17)
-if(NOT NMPC_STANDALONE)
-  target_include_directories(nmpc_cgmres PUBLIC
-    ${catkin_INCLUDE_DIRS}
-    )
-  target_link_libraries(nmpc_cgmres PUBLIC
-    ${catkin_LIBRARIES}
-    )
-endif()
 target_include_directories(nmpc_cgmres PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 
 if(TARGET Eigen3::Eigen)

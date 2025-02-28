@@ -25,36 +25,20 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  find_package(catkin REQUIRED COMPONENTS
-    nmpc_ddp
-    )
+  find_package(nmpc_ddp REQUIRED)
 
   # Eigen
   find_package(Eigen3 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
 
-  catkin_package(
-    CATKIN_DEPENDS
-    nmpc_ddp
-    DEPENDS EIGEN3
-    INCLUDE_DIRS include
-    LIBRARIES
-    )
+  ament_package()
 else()
-  set(CATKIN_ENABLE_TESTING OFF)
+  set(BUILD_TESTING OFF)
   add_project_dependency(nmpc_ddp REQUIRED)
 endif()
 
 add_library(nmpc_fmpc INTERFACE)
 target_compile_features(nmpc_fmpc INTERFACE cxx_std_17)
-if(NOT NMPC_STANDALONE)
-target_include_directories(nmpc_fmpc INTERFACE
-  ${catkin_INCLUDE_DIRS}
-  )
-target_link_libraries(nmpc_fmpc INTERFACE
-  ${catkin_LIBRARIES}
-  )
-endif()
 
 target_include_directories(nmpc_fmpc INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 if(TARGET nmpc_ddp::nmpc_ddp)
@@ -68,7 +52,7 @@ endif()
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
 
-if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 

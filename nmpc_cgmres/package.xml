@@ -1,4 +1,4 @@
-<package format="2">
+<package format="3">
   <name>nmpc_cgmres</name>
   <version>0.1.0</version>
   <description>
@@ -10,14 +10,17 @@
   <url>http://ros.org/wiki/nmpc_cgmres</url>
   <author>Masaki Murooka</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>roscpp</depend>
+  <depend>rclcpp</depend>
 
   <build_depend>eigen</build_depend>
 
-  <test_depend>rosunit</test_depend>
-  <test_depend>rostest</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
 
   <doc_depend>doxygen</doc_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
