@@ -168,7 +168,8 @@ TEST(TestDDPBipedal, TestCase1)
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
-  std::function<double(double)> ref_zmp_func = [&](double t) {
+  std::function<double(double)> ref_zmp_func = [&](double t)
+  {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     if(t <= 1.5 || t >= end_t - 1.5)
@@ -187,7 +188,8 @@ TEST(TestDDPBipedal, TestCase1)
       }
     }
   };
-  std::function<double(double)> omega2_func = [](double t) {
+  std::function<double(double)> omega2_func = [](double t)
+  {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     double cog_pos_z_high = 1.0; // [m]

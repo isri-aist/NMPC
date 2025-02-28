@@ -20,7 +20,8 @@ void CgmresSolver::setup()
   // calc u by GMRES method
   Gmres gmres;
   Eigen::VectorXd DhDu_finite_diff(problem_->dim_uc_);
-  Gmres::AmulFunc Amul_func = [&](const Eigen::Ref<const Eigen::VectorXd> & vec) {
+  Gmres::AmulFunc Amul_func = [&](const Eigen::Ref<const Eigen::VectorXd> & vec)
+  {
     problem_->calcDhDu(t_initial, x_, u_ + finite_diff_delta_ * vec, lmd_initial, DhDu_finite_diff);
     return (DhDu_finite_diff - DhDu) / finite_diff_delta_;
   };
