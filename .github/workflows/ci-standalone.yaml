@@ -42,3 +42,4 @@ jobs:
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
+        options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}

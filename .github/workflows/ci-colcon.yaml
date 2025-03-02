@@ -50,7 +50,7 @@ jobs:
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DUSE_ROS2=ON 
+          cmake-args: -DUSE_ROS2=ON -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
           build-packages: NMPC
           test-packages: NMPC
 
