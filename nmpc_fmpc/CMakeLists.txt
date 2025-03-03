@@ -19,9 +19,6 @@ option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
 
 if(NOT DEFINED NMPC_STANDALONE)
   set(NMPC_STANDALONE OFF)
-  set(DOXYGEN_HTML_OUTPUT html)
-else()
-  set(DOXYGEN_HTML_OUTPUT doxygen-html)
 endif()
 
 if(NOT NMPC_STANDALONE)

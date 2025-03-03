@@ -40,6 +40,20 @@ jobs:
             optimize-for-native: ON
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Setup environment variables
+        run: |
+          set -e
+          set -x
+          if [ "${{ matrix.os }}" == "ubuntu-22.04" ] && \
+             [ "${{ matrix.build-type }}" == "RelWithDebInfo" ] && \
+             [ "${{ github.repository_owner }}" == "isri-aist" ] && \
+             [ "${{ github.ref }}" == "refs/heads/master" ]
+          then
+            echo "UPLOAD_DOCUMENTATION=true" >> $GITHUB_ENV
+            sudo apt-get install -qq doxygen graphviz
+          else
+            echo "UPLOAD_DOCUMENTATION=false" >> $GITHUB_ENV
+          fi
       - name: Install ROS
         uses: jrl-umi3218/github-actions/install-dependencies@master
         with:
@@ -50,26 +64,26 @@ jobs:
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DUSE_ROS2=ON -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
+          cmake-args: -DUSE_ROS2=ON -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
           build-packages: NMPC
           test-packages: NMPC
 
       - name: Upload documentation
         # Only run for one configuration and on origin master branch
-        if: matrix.os == 'ubuntu-22.04' && matrix.build-type == 'RelWithDebInfo' && github.repository_owner == 'isri-aist' && github.ref == 'refs/heads/master'
+        if: env.UPLOAD_DOCUMENTATION == 'true'        
         run: |
           set -e
           set -x
-          cd ${GITHUB_WORKSPACE}/catkin_ws/src/NMPC
+          cd ${GITHUB_WORKSPACE}/colcon_ws/src/${{ github.repository }}
           git config --global user.name "Masaki Murooka"
           git config --global user.email "m-murooka@aist.go.jp"
           git remote set-url origin "https://mmurooka:${{ secrets.CI_TOKEN }}@github.com/isri-aist/NMPC"
           git fetch --depth=1 origin gh-pages:gh-pages
           git checkout --quiet gh-pages
           rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/ cmake/
-          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_ddp/doc/html/ nmpc_ddp
-          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_fmpc/doc/html/ nmpc_fmpc
-          cp -r ${GITHUB_WORKSPACE}/catkin_ws/build/nmpc_cgmres/doc/html/ nmpc_cgmres
+          cp -r ${GITHUB_WORKSPACE}/colcon_ws/build/nmpc_ddp/doc/doxygen-html/ nmpc_ddp
+          cp -r ${GITHUB_WORKSPACE}/colcon_ws/build/nmpc_fmpc/doc/doxygen-html/ nmpc_fmpc
+          cp -r ${GITHUB_WORKSPACE}/colcon_ws/build/nmpc_cgmres/doc/doxygen-html/ nmpc_cgmres
           git add nmpc_ddp nmpc_fmpc nmpc_cgmres
           git_status=`git status -s`
           if test -n "$git_status"; then
