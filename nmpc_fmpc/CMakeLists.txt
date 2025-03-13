@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
+cmake_policy(SET CMP0057 NEW)
 
 set(PROJECT_NAME nmpc_fmpc)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -23,6 +24,10 @@ endif()
 
 if(NOT NMPC_STANDALONE)
   find_package(nmpc_ddp REQUIRED)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
 
   # Eigen
   find_package(Eigen3 REQUIRED)
@@ -45,6 +50,12 @@ endif()
 if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_fmpc INTERFACE -march=native)
 endif()
+
+ament_target_dependencies(nmpc_fmpc INTERFACE
+  rclcpp
+  std_srvs
+  visualization_msgs
+)
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
