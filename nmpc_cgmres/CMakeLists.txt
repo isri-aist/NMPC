@@ -13,6 +13,7 @@ set(CXX_DISABLE_WERROR ON)
 
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 option(USE_ROS2 "Use ROS2" OFF)
+option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)
