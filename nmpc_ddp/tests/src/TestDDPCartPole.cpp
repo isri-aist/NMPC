@@ -2,15 +2,15 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <limits>
-#include <chrono>
 
-#include <rclcpp/rclcpp.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <std_srvs/srv/empty.hpp>
 
 #include <nmpc_ddp/DDPSolver.h>
@@ -319,7 +319,8 @@ public:
     bool no_exit = false;
     nh_->get_parameter("no_exit", no_exit);
     constexpr double end_t = 10.0; // [sec]
-    rclcpp::TimerBase::SharedPtr mpc_timer = nh_->create_wall_timer(std::chrono::duration<double>(mpc_dt), std::bind(&TestDDPCartPole::mpcTimerCallback, this));
+    rclcpp::TimerBase::SharedPtr mpc_timer = nh_->create_wall_timer(
+        std::chrono::duration<double>(mpc_dt), std::bind(&TestDDPCartPole::mpcTimerCallback, this));
     while(rclcpp::ok() && (no_exit || current_t_ < end_t))
     {
       // Simulate one step
@@ -385,8 +386,7 @@ protected:
     return limits;
   };
 
-  void mpcTimerCallback(
-  )
+  void mpcTimerCallback()
   {
     // Solve
     ddp_solver_->solve(current_t_, current_x_, initial_u_list_);
@@ -413,7 +413,7 @@ protected:
   }
 
   void targetPosCallback(const std::shared_ptr<std_srvs::srv::Empty::Request> request, // req
-                        std::shared_ptr<std_srvs::srv::Empty::Response> response, // res
+                         std::shared_ptr<std_srvs::srv::Empty::Response> response, // res
                          double pos)
   {
     (void)request;
@@ -613,7 +613,8 @@ TEST(TestDDPCartPole, CheckDerivative)
 {
   double dt = 0.01; // [sec]
   std::function<double(double)> ref_pos_func = [&](double // t
-                                               ) {
+                                               )
+  {
     return 0.0; // [m]
   };
   auto ddp_problem = std::make_shared<DDPProblemCartPole>(dt, ref_pos_func);
