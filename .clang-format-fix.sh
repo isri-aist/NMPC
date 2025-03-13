@@ -5,5 +5,6 @@ cd $this_dir
 source .clang-format-common.sh
 
 for f in ${src_files}; do
+  echo $f
   $clang_format -style=file -i $f
 done
