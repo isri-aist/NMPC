@@ -2,15 +2,15 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <limits>
-#include <chrono>
 
-#include <rclcpp/rclcpp.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <std_srvs/srv/empty.hpp>
 
 #include <nmpc_fmpc/FmpcSolver.h>
@@ -340,8 +340,8 @@ public:
     bool no_exit = false;
     nh_->get_parameter("no_exit", no_exit);
     constexpr double end_t = 10.0; // [sec]
-    rclcpp::TimerBase::SharedPtr mpc_timer = nh_->create_wall_timer(std::chrono::duration<double>(mpc_dt),
-                                           std::bind(&TestFmpcCartPole::mpcTimerCallback, this));
+    rclcpp::TimerBase::SharedPtr mpc_timer = nh_->create_wall_timer(
+        std::chrono::duration<double>(mpc_dt), std::bind(&TestFmpcCartPole::mpcTimerCallback, this));
     while(rclcpp::ok() && (no_exit || current_t_ < end_t))
     {
       // Simulate one step
@@ -429,7 +429,7 @@ protected:
   }
 
   void targetPosCallback(const std::shared_ptr<std_srvs::srv::Empty::Request> request, // req
-                        std::shared_ptr<std_srvs::srv::Empty::Response> response, // res
+                         std::shared_ptr<std_srvs::srv::Empty::Response> response, // res
                          double pos)
   {
     (void)request;
