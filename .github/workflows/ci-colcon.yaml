@@ -56,6 +56,8 @@ jobs:
           build-type: ${{ matrix.build-type }}
           ros: |
             apt: ros-base
+      - name: Remove CMakeLists.txt
+        run: rm -f ~/catkin_ws/src/nmpc/CMakeLists.txt
       - name: Colcon build nmpc_ddp
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
