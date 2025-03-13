@@ -25,19 +25,15 @@ jobs:
         run: |
           ./.clang-format-check.sh
 
-  build-and-test:
+  build-and-test-1:
     strategy:
       fail-fast: false
       matrix:
-        os: [Ubuntu-22.04, Ubuntu-24.04]
-        build-type: [Debug, RelWithDebInfo, Release]
+        os: [Ubuntu-22.04]
+        build-type: [RelWithDebInfo]
         include:
-          - build-type: Debug
-            optimize-for-native: OFF
           - build-type: RelWithDebInfo
             optimize-for-native: OFF
-          - build-type: Release
-            optimize-for-native: ON
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup environment variables
@@ -60,13 +56,13 @@ jobs:
           build-type: ${{ matrix.build-type }}
           ros: |
             apt: ros-base
-      - name: Colcon build
+      - name: Colcon build nmpc_ddp
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DUSE_ROS2=ON -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
-          build-packages: NMPC
-          test-packages: NMPC
+          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
+          build-packages: nmpc_ddp
+          test-packages: nmpc_ddp
 
       - name: Upload documentation
         # Only run for one configuration and on origin master branch

@@ -133,8 +133,8 @@ public:
   {
     calcStateEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
 
-    if(state_eq_deriv_xx.size() != stateDim() || state_eq_deriv_uu.size() != stateDim()
-       || state_eq_deriv_xu.size() != stateDim())
+    if(state_eq_deriv_xx.size() != static_cast<size_t>(stateDim()) || state_eq_deriv_uu.size() != static_cast<size_t>(stateDim())
+       || state_eq_deriv_xu.size() != static_cast<size_t>(stateDim()))
     {
       throw std::runtime_error("Vector size should be " + std::to_string(stateDim()) + " but "
                                + std::to_string(state_eq_deriv_xx.size()));
@@ -242,8 +242,7 @@ void test(bool with_constraint)
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
-  std::function<double(double)> ref_pos_func = [&](double t)
-  {
+  std::function<double(double)> ref_pos_func = [&](double t) {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     if(t < 8.0)
@@ -259,15 +258,13 @@ void test(bool with_constraint)
 
   // Instantiate solver
   auto ddp_solver = std::make_shared<nmpc_ddp::DDPSolver<2, Eigen::Dynamic>>(ddp_problem);
-  ddp_solver->setInputLimitsFunc(
-      [&](double t) -> std::array<Eigen::VectorXd, 2>
-      {
-        std::array<Eigen::VectorXd, 2> limits;
-        int input_dim = ddp_problem->inputDim(t);
-        limits[0].setConstant(input_dim, 0.0);
-        limits[1].setConstant(input_dim, 30.0);
-        return limits;
-      });
+  ddp_solver->setInputLimitsFunc([&](double t) -> std::array<Eigen::VectorXd, 2> {
+    std::array<Eigen::VectorXd, 2> limits;
+    int input_dim = ddp_problem->inputDim(t);
+    limits[0].setConstant(input_dim, 0.0);
+    limits[1].setConstant(input_dim, 30.0);
+    return limits;
+  });
   ddp_solver->config().with_input_constraint = with_constraint;
   ddp_solver->config().horizon_steps = horizon_steps;
   ddp_solver->config().initial_lambda = 1e-6;
