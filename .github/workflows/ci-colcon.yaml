@@ -29,8 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Ubuntu-22.04]
-        build-type: [RelWithDebInfo]
+        os: [Ubuntu-22.04, Ubuntu-24.04]
+        build-type: [Debug, RelWithDebInfo, Release]
         include:
           - build-type: RelWithDebInfo
             optimize-for-native: OFF
