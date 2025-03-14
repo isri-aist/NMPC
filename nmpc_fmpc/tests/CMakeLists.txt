@@ -3,7 +3,7 @@ if(NOT NMPC_STANDALONE)
 endif()
 
 if(NMPC_STANDALONE)
-  find_package(ament_cmake_gtest REQUIRED)
+  # find_package(ament_cmake_gtest REQUIRED)
   include(GoogleTest)
   function(add_nmpc_fmpc_test NAME)
     add_executable(${NAME} src/${NAME}.cpp)

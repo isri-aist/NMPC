@@ -68,11 +68,13 @@ else()
   target_include_directories(nmpc_ddp SYSTEM INTERFACE "${EIGEN3_INCLUDE_DIR}")
 endif()
 
-ament_target_dependencies(nmpc_ddp INTERFACE
-  rclcpp
-  std_srvs
-  visualization_msgs
-)
+if(USE_ROS2)
+  ament_target_dependencies(nmpc_ddp INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
 
 install(TARGETS nmpc_ddp EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_ddp DESTINATION "${INCLUDE_INSTALL_DIR}")
@@ -85,4 +87,6 @@ if(INSTALL_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
-ament_package()
+if(USE_ROS2)
+  ament_package()
+endif()

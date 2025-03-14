@@ -8,7 +8,7 @@ set(nmpc_cgmres_gtest_list
 )
 
 if(NMPC_STANDALONE)
-find_package(ament_cmake_gtest REQUIRED)
+# find_package(ament_cmake_gtest REQUIRED)
 include(GoogleTest)
   function(add_nmpc_cgmres_test NAME)
     add_executable(${NAME} src/${NAME}.cpp)

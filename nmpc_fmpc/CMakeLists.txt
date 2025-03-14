@@ -51,11 +51,13 @@ if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_fmpc INTERFACE -march=native)
 endif()
 
-ament_target_dependencies(nmpc_fmpc INTERFACE
-  rclcpp
-  std_srvs
-  visualization_msgs
-)
+if(USE_ROS2)
+  ament_target_dependencies(nmpc_fmpc INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
