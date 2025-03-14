@@ -19,9 +19,6 @@ project(nmpc_ddp LANGUAGES CXX)
 option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
 option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
-find_package(rclcpp REQUIRED)
-find_package(visualization_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
 
 if(NOT DEFINED NMPC_STANDALONE)
   set(NMPC_STANDALONE OFF)
@@ -31,6 +28,9 @@ else()
 endif()
 if(NOT NMPC_STANDALONE)
   find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
 endif()
 
 # Eigen
