@@ -47,7 +47,7 @@ if(NOT NMPC_STANDALONE)
     EIGEN3
   )
 else()
-  set(BUILD_TESTING OFF)
+  set(CATKIN_ENABLE_TESTING OFF)
 endif()
 
 add_library(nmpc_ddp INTERFACE)
@@ -79,7 +79,7 @@ endif()
 install(TARGETS nmpc_ddp EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_ddp DESTINATION "${INCLUDE_INSTALL_DIR}")
 
-if(BUILD_TESTING)
+if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)
 endif()
 
