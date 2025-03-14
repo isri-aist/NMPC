@@ -35,7 +35,7 @@ if(NOT NMPC_STANDALONE)
 
   ament_package()
 else()
-  set(BUILD_TESTING OFF)
+  set(CATKIN_ENABLE_TESTING OFF)
   add_project_dependency(nmpc_ddp REQUIRED)
 endif()
 
@@ -62,7 +62,7 @@ endif()
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
 
-if(BUILD_TESTING)
+if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)
 endif()
 
