@@ -42,8 +42,8 @@ jobs:
           set -x
           if [ "${{ matrix.os }}" == "ubuntu-22.04" ] && \
              [ "${{ matrix.build-type }}" == "RelWithDebInfo" ] && \
-             [ "${{ github.repository_owner }}" == "isri-aist" ] && \
-             [ "${{ github.ref }}" == "refs/heads/master" ]
+             [ "${{ github.repository_owner }}" == "nqtabokado" ] && \
+             [ "${{ github.ref }}" == "refs/heads/feature/fix-unable-to-build-sub-packages-on-ros2" ]
           then
             echo "UPLOAD_DOCUMENTATION=true" >> $GITHUB_ENV
             sudo apt-get install -qq doxygen graphviz
