@@ -37,6 +37,10 @@ jobs:
         build-type: ${{ matrix.build-type }}
         ubuntu: |
           apt: cmake libeigen3-dev libgtest-dev
+    - name: Debug Path
+      run: |
+        echo "Workspace: ${{ github.workspace }}"
+        ls -R ${{ github.workspace }}
     - name: Build and test
       uses: jrl-umi3218/github-actions/build-cmake-project@master
       with:
