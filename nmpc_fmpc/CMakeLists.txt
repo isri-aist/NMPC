@@ -17,6 +17,7 @@ project(nmpc_fmpc LANGUAGES CXX)
 
 # Options
 option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
+option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
 if(NOT DEFINED NMPC_STANDALONE)
   set(NMPC_STANDALONE OFF)

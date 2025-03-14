@@ -85,9 +85,9 @@ jobs:
           set -e
           set -x
           cd ${GITHUB_WORKSPACE}/colcon_ws/src/${{ github.repository }}
-          git config --global user.name "Masaki Murooka"
-          git config --global user.email "m-murooka@aist.go.jp"
-          git remote set-url origin "https://mmurooka:${{ secrets.CI_TOKEN }}@github.com/isri-aist/NMPC"
+          git config --global user.name "Nguyen Minh Tuan"
+          git config --global user.email "nguyen.minhtuan@hachi-x.com"
+          git remote set-url origin "https://nqtabokado:${{ secrets.CI_TOKEN }}@github.com/nqtabokado/NMPC"
           git fetch --depth=1 origin gh-pages:gh-pages
           git checkout --quiet gh-pages
           rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/ cmake/
