@@ -41,10 +41,15 @@ jobs:
       run: |
         echo "Workspace: ${{ github.workspace }}"
         ls -R ${{ github.workspace }}
+    - name: Copy CMakeLists.txt to root directory
+      run: cp ${{ github.workspace }}/standalone/CMakeLists.txt ${{ github.workspace }}/CMakeLists.txt  
+    - name: Debug Path 2
+      run: |
+        echo "Workspace: ${{ github.workspace }}"
+        ls -R ${{ github.workspace }}
     - name: Build and test
       uses: jrl-umi3218/github-actions/build-cmake-project@master
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
-        project-dir: ${{ github.workspace }}/standalone
         options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
