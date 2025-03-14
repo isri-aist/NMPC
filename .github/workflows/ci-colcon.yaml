@@ -40,7 +40,7 @@ jobs:
         run: |
           set -e
           set -x
-          if [ "${{ matrix.os }}" == "ubuntu-22.04" ] && \
+          if [ "${{ matrix.os }}" == "Ubuntu-22.04" ] && \
              [ "${{ matrix.build-type }}" == "RelWithDebInfo" ] && \
              [ "${{ github.repository_owner }}" == "nqtabokado" ] && \
              [ "${{ github.ref }}" == "refs/heads/feature/fix-unable-to-build-sub-packages-on-ros2" ]
