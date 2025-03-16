@@ -68,7 +68,6 @@ public:
   }
 
   /** \brief Gets the input dimension.
-      \param t time
       \note If input dimension is dynamic, this must be overridden.
   */
   inline virtual int inputDim(double // t
