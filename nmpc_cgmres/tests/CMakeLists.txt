@@ -8,7 +8,6 @@ set(nmpc_cgmres_gtest_list
 )
 
 if(NMPC_STANDALONE)
-  include(GoogleTest)
   find_package(GTest REQUIRED)
   function(add_nmpc_cgmres_test NAME)
     add_executable(${NAME} src/${NAME}.cpp)

@@ -3,7 +3,6 @@ if(NOT NMPC_STANDALONE)
 endif()
 
 if(NMPC_STANDALONE)
-  include(GoogleTest)
   find_package(GTest REQUIRED)
   function(add_nmpc_fmpc_test NAME)
     add_executable(${NAME} src/${NAME}.cpp)

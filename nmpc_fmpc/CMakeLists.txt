@@ -34,12 +34,6 @@ if(NOT NMPC_STANDALONE)
   find_package(Eigen3 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
 
-  ament_target_dependencies(nmpc_fmpc INTERFACE
-    rclcpp
-    std_srvs
-    visualization_msgs
-  )
-
   ament_package()
 else()
   set(CATKIN_ENABLE_TESTING OFF)
@@ -60,6 +54,14 @@ endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
+
+if(NOT NMPC_STANDALONE)
+  ament_target_dependencies(nmpc_fmpc INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
 
 if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)
