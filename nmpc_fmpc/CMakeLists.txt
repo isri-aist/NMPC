@@ -34,6 +34,12 @@ if(NOT NMPC_STANDALONE)
   find_package(Eigen3 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
 
+  ament_target_dependencies(nmpc_fmpc INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+
   ament_package()
 else()
   set(CATKIN_ENABLE_TESTING OFF)
@@ -50,14 +56,6 @@ endif()
 
 if(OPTIMIZE_FOR_NATIVE)
   target_compile_options(nmpc_fmpc INTERFACE -march=native)
-endif()
-
-if(USE_ROS2)
-  ament_target_dependencies(nmpc_fmpc INTERFACE
-    rclcpp
-    std_srvs
-    visualization_msgs
-  )
 endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")

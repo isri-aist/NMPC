@@ -8,7 +8,6 @@ set(nmpc_cgmres_gtest_list
 )
 
 if(NMPC_STANDALONE)
-# find_package(ament_cmake_gtest REQUIRED)
   include(GoogleTest)
   find_package(GTest REQUIRED)
   function(add_nmpc_cgmres_test NAME)
