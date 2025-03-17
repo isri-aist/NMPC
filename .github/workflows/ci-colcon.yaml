@@ -42,8 +42,8 @@ jobs:
           set -x
           if [ "${{ matrix.os }}" == "Ubuntu-22.04" ] && \
              [ "${{ matrix.build-type }}" == "RelWithDebInfo" ] && \
-             [ "${{ github.repository_owner }}" == "nqtabokado" ] && \
-             [ "${{ github.ref }}" == "refs/heads/feature/fix-unable-to-build-sub-packages-on-ros2" ]
+             [ "${{ github.repository_owner }}" == "isri-aist" ] && \
+             [ "${{ github.ref }}" == "refs/heads/master" ]
           then
             echo "UPLOAD_DOCUMENTATION=true" >> $GITHUB_ENV
             sudo apt-get install -qq doxygen graphviz
@@ -85,9 +85,9 @@ jobs:
           set -e
           set -x
           cd ${GITHUB_WORKSPACE}/colcon_ws/src/${{ github.repository }}
-          git config --global user.name "Nguyen Minh Tuan"
-          git config --global user.email "nguyen.minhtuan@hachi-x.com"
-          git remote set-url origin "https://nqtabokado:${{ secrets.CI_TOKEN }}@github.com/nqtabokado/NMPC"
+          git config --global user.name "Masaki Murooka"
+          git config --global user.email "m-murooka@aist.go.jp"
+          git remote set-url origin "https://mmurooka:${{ secrets.CI_TOKEN }}@github.com/isri-aist/NMPC"
           git fetch --depth=1 origin gh-pages:gh-pages
           git checkout --quiet gh-pages
           rm -rf nmpc_ddp/ nmpc_fmpc/ nmpc_cgmres/ cmake/
