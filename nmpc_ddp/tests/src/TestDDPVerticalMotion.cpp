@@ -243,7 +243,8 @@ void test(bool with_constraint)
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
-  std::function<double(double)> ref_pos_func = [&](double t) {
+  std::function<double(double)> ref_pos_func = [&](double t)
+  {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     if(t < 8.0)
