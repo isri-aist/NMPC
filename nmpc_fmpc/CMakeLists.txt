@@ -17,7 +17,6 @@ project(nmpc_fmpc LANGUAGES CXX)
 
 # Options
 option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
-option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
 if(NOT DEFINED NMPC_STANDALONE)
   set(NMPC_STANDALONE OFF)
@@ -33,6 +32,10 @@ if(NOT NMPC_STANDALONE)
   # Eigen
   find_package(Eigen3 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
+
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" "")
+  endif()
 
   ament_package()
 else()

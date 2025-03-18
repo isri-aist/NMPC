@@ -12,7 +12,6 @@ set(CXX_DISABLE_WERROR ON)
 
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 option(USE_ROS2 "Use ROS2" OFF)
-option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)
@@ -37,6 +36,9 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" "")
+  endif()
   ament_package()
 else()
   set(CATKIN_ENABLE_TESTING OFF)
