@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.17)
-cmake_policy(SET CMP0057 NEW)
 
 set(PROJECT_NAME nmpc_ddp)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -11,13 +10,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
+option(USE_ROS2 "Use ROS2" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_ddp LANGUAGES CXX)
 
 # Options
 option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
-option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
+# option(AMENT_CMAKE_UNINSTALL_TARGET "Test" OFF)
 
 
 if(NOT DEFINED NMPC_STANDALONE)
@@ -43,7 +43,6 @@ endif()
 
 if(NOT NMPC_STANDALONE)
   ament_export_dependencies(
-#    rclcpp
     EIGEN3
   )
 else()
