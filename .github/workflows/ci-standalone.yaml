@@ -37,11 +37,14 @@ jobs:
         build-type: ${{ matrix.build-type }}
         ubuntu: |
           apt: cmake libeigen3-dev libgtest-dev
+    - name: Check workspace contents
+      run: |
+        echo "Workspace path: ${{ github.workspace }}"
+        ls -la ${{ github.workspace }}
     - name: Build and test
       uses: jrl-umi3218/github-actions/build-cmake-project@master
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
         source-dir: "${{ github.workspace }}/standalone"
-        build-dir: "${{ github.workspace }}/build"
         options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
