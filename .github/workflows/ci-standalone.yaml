@@ -44,4 +44,6 @@ jobs:
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
+        source-dir: "${{ github.workspace }}/standalone"
+        build-dir: "${{ github.workspace }}/build"
         options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
