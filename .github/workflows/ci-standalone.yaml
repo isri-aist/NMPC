@@ -46,5 +46,5 @@ jobs:
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
+        project-dir: standalone
         options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}
-        build-directory: standalone
