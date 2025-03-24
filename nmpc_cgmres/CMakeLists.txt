@@ -11,7 +11,6 @@ set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
-option(USE_ROS2 "Use ROS2" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)

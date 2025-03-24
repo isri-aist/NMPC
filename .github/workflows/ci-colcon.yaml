@@ -60,21 +60,21 @@ jobs:
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }} -DUSE_ROS2=ON
+          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
           build-packages: nmpc_ddp
           test-packages: nmpc_ddp
       - name: Colcon build nmpc_cgmres
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }} -DUSE_ROS2=ON
+          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
           build-packages: nmpc_cgmres
           test-packages: nmpc_cgmres
       - name: Colcon build nmpc_fmpc
         uses: jrl-umi3218/github-actions/build-colcon-project@master
         with:
           build-type: ${{ matrix.build-type }}
-          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }} -DUSE_ROS2=ON
+          cmake-args: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }} -DINSTALL_DOCUMENTATION=${{ env.UPLOAD_DOCUMENTATION }}
           build-packages: nmpc_fmpc
           test-packages: nmpc_fmpc
 

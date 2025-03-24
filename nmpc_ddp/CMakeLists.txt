@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
-option(USE_ROS2 "Use ROS2" OFF)
 
 include(../cmake/base.cmake)
 project(nmpc_ddp LANGUAGES CXX)
@@ -65,7 +64,7 @@ else()
   target_include_directories(nmpc_ddp SYSTEM INTERFACE "${EIGEN3_INCLUDE_DIR}")
 endif()
 
-if(USE_ROS2)
+if(NOT NMPC_STANDALONE)
   ament_target_dependencies(nmpc_ddp INTERFACE
     rclcpp
     std_srvs
@@ -84,10 +83,6 @@ if(INSTALL_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
-if(USE_ROS2)
-  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt")
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" "")
-  endif()
-
+if(NOT NMPC_STANDALONE)
   ament_package()
 endif()
