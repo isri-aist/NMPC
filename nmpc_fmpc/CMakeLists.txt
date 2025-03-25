@@ -38,7 +38,7 @@ if(NOT NMPC_STANDALONE)
 
   ament_package()
 else()
-  set(CATKIN_ENABLE_TESTING OFF)
+  set(BUILD_TESTING OFF)
   add_project_dependency(nmpc_ddp REQUIRED)
 endif()
 
@@ -65,7 +65,7 @@ if(NOT NMPC_STANDALONE)
   )
 endif()
 
-if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 

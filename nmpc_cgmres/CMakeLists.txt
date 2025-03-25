@@ -40,7 +40,7 @@ if(NOT NMPC_STANDALONE)
   endif()
   ament_package()
 else()
-  set(CATKIN_ENABLE_TESTING OFF)
+  set(BUILD_TESTING OFF)
 endif()
 
 add_library(nmpc_cgmres
@@ -65,7 +65,7 @@ if(OPTIMIZE_FOR_NATIVE)
   # target_compile_options(nmpc_cgmres INTERFACE -march=native)
 endif()
 
-if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 
