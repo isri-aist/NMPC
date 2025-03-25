@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17)
 
 set(PROJECT_NAME nmpc_ddp)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -23,11 +23,11 @@ if(NOT DEFINED NMPC_STANDALONE)
 else()
   set(DOXYGEN_HTML_OUTPUT doxygen-html)
 endif()
-
 if(NOT NMPC_STANDALONE)
-  find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    )
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
 endif()
 
 # Eigen
@@ -39,13 +39,9 @@ else()
 endif()
 
 if(NOT NMPC_STANDALONE)
-  catkin_package(
-    CATKIN_DEPENDS
-    roscpp
-    DEPENDS EIGEN3
-    INCLUDE_DIRS include
-    LIBRARIES
-    )
+  ament_export_dependencies(
+    EIGEN3
+  )
 else()
   set(CATKIN_ENABLE_TESTING OFF)
 endif()
@@ -54,10 +50,8 @@ add_library(nmpc_ddp INTERFACE)
 target_compile_features(nmpc_ddp INTERFACE cxx_std_17)
 if(NOT NMPC_STANDALONE)
   target_include_directories(nmpc_ddp INTERFACE
-    ${catkin_INCLUDE_DIRS}
-    )
-  target_link_libraries(nmpc_ddp INTERFACE
-    ${catkin_LIBRARIES}
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
     )
 endif()
 target_include_directories(nmpc_ddp INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
@@ -70,6 +64,14 @@ else()
   target_include_directories(nmpc_ddp SYSTEM INTERFACE "${EIGEN3_INCLUDE_DIR}")
 endif()
 
+if(NOT NMPC_STANDALONE)
+  ament_target_dependencies(nmpc_ddp INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
+
 install(TARGETS nmpc_ddp EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_ddp DESTINATION "${INCLUDE_INSTALL_DIR}")
 
@@ -79,4 +81,8 @@ endif()
 
 if(INSTALL_DOCUMENTATION)
   add_subdirectory(doc)
+endif()
+
+if(NOT NMPC_STANDALONE)
+  ament_package()
 endif()

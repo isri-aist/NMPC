@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
         build-type: [Debug, RelWithDebInfo, Release]
         compiler: [gcc, clang]
         include:
@@ -42,3 +42,5 @@ jobs:
       with:
         compiler: ${{ matrix.compiler }}
         build-type: ${{ matrix.build-type }}
+        project-dir: standalone
+        options: -DOPTIMIZE_FOR_NATIVE=${{ matrix.optimize-for-native }}

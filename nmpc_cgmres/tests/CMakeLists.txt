@@ -1,5 +1,5 @@
 if(NOT NMPC_STANDALONE)
-  find_package(rostest REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
 endif()
 
 set(nmpc_cgmres_gtest_list
@@ -17,7 +17,7 @@ if(NMPC_STANDALONE)
   endfunction()
 else()
   function(add_nmpc_cgmres_test NAME)
-    catkin_add_gtest(${NAME} src/${NAME}.cpp)
+    ament_add_gtest(${NAME} src/${NAME}.cpp TIMEOUT 200)
     target_link_libraries(${NAME} nmpc_cgmres)
   endfunction()
 endif()

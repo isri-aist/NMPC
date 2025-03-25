@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17)
 
 set(PROJECT_NAME nmpc_fmpc)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -19,27 +19,24 @@ option(OPTIMIZE_FOR_NATIVE "Enable -march=native" OFF)
 
 if(NOT DEFINED NMPC_STANDALONE)
   set(NMPC_STANDALONE OFF)
-  set(DOXYGEN_HTML_OUTPUT html)
-else()
-  set(DOXYGEN_HTML_OUTPUT doxygen-html)
 endif()
 
 if(NOT NMPC_STANDALONE)
-  find_package(catkin REQUIRED COMPONENTS
-    nmpc_ddp
-    )
+  find_package(nmpc_ddp REQUIRED)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
 
   # Eigen
   find_package(Eigen3 REQUIRED)
   include_directories(${EIGEN3_INCLUDE_DIR})
 
-  catkin_package(
-    CATKIN_DEPENDS
-    nmpc_ddp
-    DEPENDS EIGEN3
-    INCLUDE_DIRS include
-    LIBRARIES
-    )
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" "")
+  endif()
+
+  ament_package()
 else()
   set(CATKIN_ENABLE_TESTING OFF)
   add_project_dependency(nmpc_ddp REQUIRED)
@@ -47,14 +44,6 @@ endif()
 
 add_library(nmpc_fmpc INTERFACE)
 target_compile_features(nmpc_fmpc INTERFACE cxx_std_17)
-if(NOT NMPC_STANDALONE)
-target_include_directories(nmpc_fmpc INTERFACE
-  ${catkin_INCLUDE_DIRS}
-  )
-target_link_libraries(nmpc_fmpc INTERFACE
-  ${catkin_LIBRARIES}
-  )
-endif()
 
 target_include_directories(nmpc_fmpc INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 if(TARGET nmpc_ddp::nmpc_ddp)
@@ -67,6 +56,14 @@ endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
 install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
+
+if(NOT NMPC_STANDALONE)
+  ament_target_dependencies(nmpc_fmpc INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
 
 if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
   add_subdirectory(tests)

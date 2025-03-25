@@ -245,7 +245,8 @@ TEST(TestDDPCentroidalMotion, SolveMpc)
 
   // Instantiate problem
   constexpr double epsilon_t = 1e-6;
-  std::function<DDPProblemCentroidalMotion::StanceData(double)> ref_stance_func = [&](double t) {
+  std::function<DDPProblemCentroidalMotion::StanceData(double)> ref_stance_func = [&](double t)
+  {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     if(t < 1.4)
@@ -264,7 +265,8 @@ TEST(TestDDPCentroidalMotion, SolveMpc)
       return makeStanceDataFromRect({Eigen::Vector2d(0.4, -0.1), Eigen::Vector2d(0.6, 0.1)});
     }
   };
-  std::function<Eigen::Vector3d(double)> ref_pos_func = [&](double t) {
+  std::function<Eigen::Vector3d(double)> ref_pos_func = [&](double t)
+  {
     // Add small values to avoid numerical instability at inequality bounds
     t += epsilon_t;
     if(t < 1.5)
@@ -370,7 +372,8 @@ TEST(TestDDPCentroidalMotion, CheckDerivative)
     return makeStanceDataFromRect({Eigen::Vector2d(-0.1, -0.1), Eigen::Vector2d(0.1, 0.1)});
   };
   std::function<Eigen::Vector3d(double)> ref_pos_func = [](double // t
-                                                        ) {
+                                                        )
+  {
     return Eigen::Vector3d(0.0, 0.0, 1.0); // [m]
   };
   auto ddp_problem = std::make_shared<DDPProblemCentroidalMotion>(dt, ref_stance_func, ref_pos_func);
