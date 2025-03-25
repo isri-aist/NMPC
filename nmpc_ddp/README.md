@@ -2,7 +2,7 @@
 Non-linear model predictive control (NMPC) with differential dynamic drogramming (DDP)
 
 [![CI-standalone](https://github.com/isri-aist/NMPC/actions/workflows/ci-standalone.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-standalone.yaml)
-[![CI-catkin](https://github.com/isri-aist/NMPC/actions/workflows/ci-catkin.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-catkin.yaml)
+[![CI-colcon](https://github.com/isri-aist/NMPC/actions/workflows/ci-colcon.yaml/badge.svg)](https://github.com/isri-aist/NMPC/actions/workflows/ci-colcon.yaml)
 [![Documentation](https://img.shields.io/badge/doxygen-online-brightgreen?logo=read-the-docs&style=flat)](https://isri-aist.github.io/NMPC/nmpc_ddp/index.html)
 
 https://github.com/isri-aist/NMPC/assets/6636600/02f64c91-88aa-42d8-abfd-f8062d7406e9
@@ -25,7 +25,6 @@ The source code implementation is based on the following.
 - https://www.mathworks.com/matlabcentral/fileexchange/52069-ilqg-ddp-trajectory-optimization
 
 ## Examples
-Make sure that it is built with `--catkin-make-args tests` option.
 
 ### [Bipedal dynamics](tests/src/TestDDPBipedal.cpp)
 Controlling on CoM-ZMP dynamics with time-variant CoM height.
