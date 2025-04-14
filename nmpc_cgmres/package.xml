@@ -12,7 +12,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
+  <build_depend>rclcpp</build_depend>
 
   <build_depend>eigen</build_depend>
 

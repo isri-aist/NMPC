@@ -12,7 +12,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>nmpc_ddp</depend>
+  <build_depend>nmpc_ddp</build_depend>
 
   <build_depend>eigen</build_depend>
 
