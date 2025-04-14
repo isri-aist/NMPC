@@ -11,7 +11,6 @@ set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 
-include(../cmake/base.cmake)
 project(nmpc_ddp LANGUAGES CXX)
 
 # Options
@@ -33,14 +32,15 @@ endif()
 # Eigen
 find_package(Eigen3 QUIET NO_CMAKE_PACKAGE_REGISTRY)
 if(Eigen3_FOUND)
-  add_project_dependency(Eigen3 REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
+  set(${CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY} ON)
+  find_package(Eigen3 REQUIRED)
 else()
-  add_project_dependency(Eigen3 MODULE REQUIRED)
+  find_package(Eigen3 MODULE REQUIRED)
 endif()
 
 if(NOT NMPC_STANDALONE)
   ament_export_dependencies(
-    EIGEN3
+    Eigen3
   )
 else()
   set(BUILD_TESTING OFF)
@@ -73,7 +73,7 @@ if(NOT NMPC_STANDALONE)
 endif()
 
 install(TARGETS nmpc_ddp EXPORT "${TARGETS_EXPORT_NAME}")
-install(DIRECTORY include/nmpc_ddp DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(DIRECTORY include/nmpc_ddp DESTINATION include)
 
 if(BUILD_TESTING)
   add_subdirectory(tests)

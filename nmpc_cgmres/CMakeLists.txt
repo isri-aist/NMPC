@@ -12,7 +12,6 @@ set(CXX_DISABLE_WERROR ON)
 
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 
-include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)
 
 # Options
@@ -29,9 +28,9 @@ endif()
 # Eigen
 find_package(Eigen3 QUIET NO_CMAKE_PACKAGE_REGISTRY)
 if(Eigen3_FOUND)
-  add_project_dependency(Eigen3 REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
+  find_package(Eigen3 REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
 else()
-  add_project_dependency(Eigen3 MODULE REQUIRED)
+  find_package(Eigen3 MODULE REQUIRED)
 endif()
 
 if(NOT NMPC_STANDALONE)
@@ -56,7 +55,7 @@ else()
 endif()
 
 install(TARGETS nmpc_cgmres EXPORT "${TARGETS_EXPORT_NAME}")
-install(DIRECTORY include/nmpc_cgmres DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(DIRECTORY include/nmpc_cgmres DESTINATION include)
 
 
 if(OPTIMIZE_FOR_NATIVE)

@@ -11,7 +11,6 @@ set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 
-include(../cmake/base.cmake)
 project(nmpc_fmpc LANGUAGES CXX)
 
 # Options
@@ -39,7 +38,7 @@ if(NOT NMPC_STANDALONE)
   ament_package()
 else()
   set(BUILD_TESTING OFF)
-  add_project_dependency(nmpc_ddp REQUIRED)
+  find_package(nmpc_ddp REQUIRED)
 endif()
 
 add_library(nmpc_fmpc INTERFACE)
@@ -55,7 +54,7 @@ if(OPTIMIZE_FOR_NATIVE)
 endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
-install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(DIRECTORY include/nmpc_fmpc DESTINATION include)
 
 if(NOT NMPC_STANDALONE)
   ament_target_dependencies(nmpc_fmpc INTERFACE
