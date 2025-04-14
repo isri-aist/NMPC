@@ -2,6 +2,7 @@ find_package(Doxygen REQUIRED)
 
 if(DOXYGEN_FOUND)
   set(DOXYFILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  configure_file(Doxyfile.extra.in ${DOXYFILE_PATH})
 
   add_custom_target(nmpc_ddp_doc ALL
     ${DOXYGEN_EXECUTABLE} ${DOXYFILE_PATH}

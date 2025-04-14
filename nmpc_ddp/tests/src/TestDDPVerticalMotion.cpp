@@ -133,8 +133,9 @@ public:
   {
     calcStateEqDeriv(t, x, u, state_eq_deriv_x, state_eq_deriv_u);
 
-    if(state_eq_deriv_xx.size() != stateDim() || state_eq_deriv_uu.size() != stateDim()
-       || state_eq_deriv_xu.size() != stateDim())
+    if(state_eq_deriv_xx.size() != static_cast<size_t>(stateDim())
+       || state_eq_deriv_uu.size() != static_cast<size_t>(stateDim())
+       || state_eq_deriv_xu.size() != static_cast<size_t>(stateDim()))
     {
       throw std::runtime_error("Vector size should be " + std::to_string(stateDim()) + " but "
                                + std::to_string(state_eq_deriv_xx.size()));

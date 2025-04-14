@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17)
 
 set(PROJECT_NAME nmpc_cgmres)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -11,9 +11,7 @@ set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
-option(USE_ROS2 "Use ROS2" OFF)
 
-include(../cmake/base.cmake)
 project(nmpc_cgmres LANGUAGES CXX)
 
 # Options
@@ -30,15 +28,15 @@ endif()
 # Eigen
 find_package(Eigen3 QUIET NO_CMAKE_PACKAGE_REGISTRY)
 if(Eigen3_FOUND)
-  add_project_dependency(Eigen3 REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
+  find_package(Eigen3 REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
 else()
-  add_project_dependency(Eigen3 MODULE REQUIRED)
+  find_package(Eigen3 MODULE REQUIRED)
 endif()
 
 if(NOT NMPC_STANDALONE)
   ament_package()
 else()
-  set(CATKIN_ENABLE_TESTING OFF)
+  set(BUILD_TESTING OFF)
 endif()
 
 add_library(nmpc_cgmres
@@ -54,7 +52,7 @@ else()
 endif()
 
 install(TARGETS nmpc_cgmres EXPORT "${TARGETS_EXPORT_NAME}")
-install(DIRECTORY include/nmpc_cgmres DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(DIRECTORY include/nmpc_cgmres DESTINATION include)
 
 
 if(OPTIMIZE_FOR_NATIVE)
@@ -63,7 +61,7 @@ if(OPTIMIZE_FOR_NATIVE)
   # target_compile_options(nmpc_cgmres INTERFACE -march=native)
 endif()
 
-if(BUILD_TESTING OR CATKIN_ENABLE_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 

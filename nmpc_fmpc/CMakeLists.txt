@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17)
 
 set(PROJECT_NAME nmpc_fmpc)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
@@ -11,7 +11,6 @@ set(PROJECT_USE_CMAKE_EXPORT TRUE)
 set(CXX_DISABLE_WERROR ON)
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
 
-include(../cmake/base.cmake)
 project(nmpc_fmpc LANGUAGES CXX)
 
 # Options
@@ -23,6 +22,10 @@ endif()
 
 if(NOT NMPC_STANDALONE)
   find_package(nmpc_ddp REQUIRED)
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
 
   # Eigen
   find_package(Eigen3 REQUIRED)
@@ -31,7 +34,7 @@ if(NOT NMPC_STANDALONE)
   ament_package()
 else()
   set(BUILD_TESTING OFF)
-  add_project_dependency(nmpc_ddp REQUIRED)
+  find_package(nmpc_ddp REQUIRED)
 endif()
 
 add_library(nmpc_fmpc INTERFACE)
@@ -47,7 +50,15 @@ if(OPTIMIZE_FOR_NATIVE)
 endif()
 
 install(TARGETS nmpc_fmpc EXPORT "${TARGETS_EXPORT_NAME}")
-install(DIRECTORY include/nmpc_fmpc DESTINATION "${INCLUDE_INSTALL_DIR}")
+install(DIRECTORY include/nmpc_fmpc DESTINATION include)
+
+if(NOT NMPC_STANDALONE)
+  ament_target_dependencies(nmpc_fmpc INTERFACE
+    rclcpp
+    std_srvs
+    visualization_msgs
+  )
+endif()
 
 if(BUILD_TESTING)
   add_subdirectory(tests)

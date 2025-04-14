@@ -7,7 +7,7 @@
 ### Installation procedure
 It is assumed that ROS is installed.
 
-1. Setup catkin workspace.
+1. Setup colcon workspace.
 ```bash
 $ mkdir -p ~/ros/ws_nmpc/src
 $ cd ~/ros/ws_nmpc
@@ -24,7 +24,7 @@ $ rosdep install -y -r --from-paths src --ignore-src
 
 3. Build a package.
 ```bash
-$ catkin build -DCMAKE_BUILD_TYPE=RelWithDebInfo --catkin-make-args all tests
+$ colcon build -DCMAKE_BUILD_TYPE=RelWithDebInfo
 # For best performance
-$ catkin build -DOPTIMIZE_FOR_NATIVE=ON -DCMAKE_BUILD_TYPE=Release --catkin-make-args all tests
+$ colcon build -DOPTIMIZE_FOR_NATIVE=ON -DCMAKE_BUILD_TYPE=Release
 ```

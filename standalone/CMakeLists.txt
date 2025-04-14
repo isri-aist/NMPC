@@ -43,10 +43,10 @@ endif()
 include(ExternalProject)
 
 function(add_nmpc_project NAME)
-  file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${NAME}/*")
+  file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/../${NAME}/*")
   ExternalProject_Add(${NAME}
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${NAME}"
-    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../${NAME}"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/../${NAME}"
     CMAKE_ARGS
       -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -56,7 +56,7 @@ function(add_nmpc_project NAME)
       -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
       -DNMPC_STANDALONE=ON
     TEST_COMMAND ctest -C $<CONFIG>
-    INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>
+    INSTALL_COMMAND ${SUDO_CMD} ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/../${NAME} --target install --config $<CONFIG>
     USES_TERMINAL_INSTALL TRUE
     STEP_TARGETS configure install
     ${ARGN}
@@ -68,9 +68,9 @@ function(add_nmpc_project NAME)
   add_test(
     NAME test-${NAME}
     COMMAND ctest -C $<CONFIG>
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../${NAME}"
   )
-  install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${NAME} --target install --config $<CONFIG>)")
+  install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/../${NAME} --target install --config $<CONFIG>)")
 endfunction()
 add_nmpc_project(nmpc_cgmres)
 add_nmpc_project(nmpc_ddp)

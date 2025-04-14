@@ -10,13 +10,11 @@
   <url>http://ros.org/wiki/nmpc</url>
   <author>Masaki Murooka</author>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
-
   <exec_depend>nmpc_ddp</exec_depend>
   <exec_depend>nmpc_fmpc</exec_depend>
   <exec_depend>nmpc_cgmres</exec_depend>
 
   <export>
-    <metapackage/>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
