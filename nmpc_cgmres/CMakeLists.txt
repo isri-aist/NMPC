@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.14)
 
 set(PROJECT_NAME nmpc_cgmres)
 set(PROJECT_GENERATED_HEADERS_SKIP_DEPRECATED ON)
