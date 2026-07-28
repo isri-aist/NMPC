@@ -257,20 +257,42 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
 
       cost_update_actual = control_data_.cost_list.sum() - candidate_control_data_.cost_list.sum();
       cost_update_expected = -1 * alpha * (dV_[0] + alpha * dV_[1]);
-      cost_update_ratio = cost_update_actual / cost_update_expected;
-      if(cost_update_expected < 0)
+
+      constexpr double update_eps = 1e-12;
+      if(std::abs(cost_update_expected) < update_eps)
       {
-        if((!config_.with_input_constraint && config_.print_level >= 0)
-           || (config_.with_input_constraint && config_.print_level >= 2))
+        // The local model predicts no meaningful improvement
+        if(std::abs(cost_update_actual) < update_eps)
         {
-          std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+          // Numerically stationary. Do not form 0 / 0.
+          cost_update_ratio = 1.0;
+          forward_pass_success = true;
+          break;
         }
-        cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
+        else
+        {
+          // Expected update is zero, but an actual cost was changed
+          // (TODO: this should be regarded as forward_pass_success=true when cost_update_actual is positive?)
+          cost_update_ratio = (cost_update_actual > 0) ? 1 : -1;
+        }
       }
-      if(cost_update_ratio > config_.cost_update_ratio_thre)
+      else
       {
-        forward_pass_success = true;
-        break;
+        cost_update_ratio = cost_update_actual / cost_update_expected;
+        if(cost_update_expected < 0)
+        {
+          if((!config_.with_input_constraint && config_.print_level >= 0)
+             || (config_.with_input_constraint && config_.print_level >= 2))
+          {
+            std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+          }
+          cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
+        }
+        if(cost_update_ratio > config_.cost_update_ratio_thre)
+        {
+          forward_pass_success = true;
+          break;
+        }
       }
     }
     trace_data.alpha = alpha;
