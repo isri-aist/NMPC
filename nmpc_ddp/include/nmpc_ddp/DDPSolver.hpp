@@ -81,6 +81,16 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
 
   // Initialize state and cost sequence
   control_data_.u_list = initial_u_list;
+  if(config_.with_input_constraint)
+  {
+    // Impose input limits
+    for(int i = 0; i < config_.horizon_steps; ++i)
+    {
+      const double t = current_t_ + i * problem_->dt();
+      const auto & u_limits = input_limits_func_(t);
+      control_data_.u_list[i] = control_data_.u_list[i].cwiseMax(u_limits[0]).cwiseMin(u_limits[1]);
+    }
+  }
   control_data_.x_list.resize(config_.horizon_steps + 1);
   control_data_.cost_list.resize(config_.horizon_steps + 1);
   control_data_.x_list[0] = current_x;
@@ -545,10 +555,15 @@ void DDPSolver<StateDim, InputDim>::forwardPass(double alpha)
     candidate_control_data_.u_list[i] = control_data_.u_list[i] + alpha * k_list_[i]
                                         + K_list_[i] * (candidate_control_data_.x_list[i] - control_data_.x_list[i]);
 
-    // \todo Impose constraints on input
+    // Impose constraints on input
+    const double t = current_t_ + i * problem_->dt();
+    if(config_.with_input_constraint)
+    {
+      const auto & u_limits = input_limits_func_(t);
+      candidate_control_data_.u_list[i] = candidate_control_data_.u_list[i].cwiseMax(u_limits[0]).cwiseMin(u_limits[1]);
+    }
 
     // Calculate next state and cost
-    double t = current_t_ + i * problem_->dt();
     candidate_control_data_.x_list[i + 1] =
         problem_->stateEq(t, candidate_control_data_.x_list[i], candidate_control_data_.u_list[i]);
     candidate_control_data_.cost_list[i] =
