@@ -81,6 +81,16 @@ bool DDPSolver<StateDim, InputDim>::solve(double current_t,
 
   // Initialize state and cost sequence
   control_data_.u_list = initial_u_list;
+  if(config_.with_input_constraint)
+  {
+    // Impose input limits
+    for(int i = 0; i < config_.horizon_steps; ++i)
+    {
+      const double t = current_t_ + i * problem_->dt();
+      const auto & u_limits = input_limits_func_(t);
+      control_data_.u_list[i] = control_data_.u_list[i].cwiseMax(u_limits[0]).cwiseMin(u_limits[1]);
+    }
+  }
   control_data_.x_list.resize(config_.horizon_steps + 1);
   control_data_.cost_list.resize(config_.horizon_steps + 1);
   control_data_.x_list[0] = current_x;
@@ -247,20 +257,42 @@ int DDPSolver<StateDim, InputDim>::procOnce(int iter)
 
       cost_update_actual = control_data_.cost_list.sum() - candidate_control_data_.cost_list.sum();
       cost_update_expected = -1 * alpha * (dV_[0] + alpha * dV_[1]);
-      cost_update_ratio = cost_update_actual / cost_update_expected;
-      if(cost_update_expected < 0)
+
+      constexpr double update_eps = 1e-12;
+      if(std::abs(cost_update_expected) < update_eps)
       {
-        if((!config_.with_input_constraint && config_.print_level >= 0)
-           || (config_.with_input_constraint && config_.print_level >= 2))
+        // The local model predicts no meaningful improvement
+        if(std::abs(cost_update_actual) < update_eps)
         {
-          std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+          // Numerically stationary. Do not form 0 / 0.
+          cost_update_ratio = 1.0;
+          forward_pass_success = true;
+          break;
         }
-        cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
+        else
+        {
+          // Expected update is zero, but an actual cost was changed
+          // (TODO: this should be regarded as forward_pass_success=true when cost_update_actual is positive?)
+          cost_update_ratio = (cost_update_actual > 0) ? 1 : -1;
+        }
       }
-      if(cost_update_ratio > config_.cost_update_ratio_thre)
+      else
       {
-        forward_pass_success = true;
-        break;
+        cost_update_ratio = cost_update_actual / cost_update_expected;
+        if(cost_update_expected < 0)
+        {
+          if((!config_.with_input_constraint && config_.print_level >= 0)
+             || (config_.with_input_constraint && config_.print_level >= 2))
+          {
+            std::cout << "[DDP/Forward] Value is not expected to decrease." << std::endl;
+          }
+          cost_update_ratio = (cost_update_actual >= 0 ? 1 : -1);
+        }
+        if(cost_update_ratio > config_.cost_update_ratio_thre)
+        {
+          forward_pass_success = true;
+          break;
+        }
       }
     }
     trace_data.alpha = alpha;
@@ -545,10 +577,15 @@ void DDPSolver<StateDim, InputDim>::forwardPass(double alpha)
     candidate_control_data_.u_list[i] = control_data_.u_list[i] + alpha * k_list_[i]
                                         + K_list_[i] * (candidate_control_data_.x_list[i] - control_data_.x_list[i]);
 
-    // \todo Impose constraints on input
+    // Impose constraints on input
+    const double t = current_t_ + i * problem_->dt();
+    if(config_.with_input_constraint)
+    {
+      const auto & u_limits = input_limits_func_(t);
+      candidate_control_data_.u_list[i] = candidate_control_data_.u_list[i].cwiseMax(u_limits[0]).cwiseMin(u_limits[1]);
+    }
 
     // Calculate next state and cost
-    double t = current_t_ + i * problem_->dt();
     candidate_control_data_.x_list[i + 1] =
         problem_->stateEq(t, candidate_control_data_.x_list[i], candidate_control_data_.u_list[i]);
     candidate_control_data_.cost_list[i] =
